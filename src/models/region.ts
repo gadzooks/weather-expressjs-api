@@ -29,6 +29,47 @@ function parseYaml(fileName :string) :any {
     return doc;
 }
 
+// regions: {
+//   byId: {
+//     central_cascades: {
+//       id: "central_cascades",
+//       description: "Central Cascades",
+//       regionId: "central_cascades",
+//       locations: ["renton", "yakima"],
+//     },
+//     western_wa: {
+//       id: "western_wa",
+//       description: "Western WA",
+//       regionId: "western_wa",
+//       locations: ["seattle", "bellevue"],
+//     },
+//   },
+//   allIds: ["central_cascades", "western_wa"],
+// },
+// locations: {
+//   byId: {
+//     renton: {
+//       id: "renton",
+//       description: "Renton",
+//       regionId: "central_cascades",
+//     },
+
+// forecasts: {
+//   byId: {
+//     renton: [
+//       {
+//         time: "2021-04-17T07:00:00.000+00:00",
+//         summary: "Clear conditions throughout the day.",
+//         icon: "day-hail",
+//         precipProbability: 0.0,
+//         temperature: 60.9,
+//         precipAmount: 0.0,
+//       },
+//       {
+//         time: "2021-04-18T07:00:00.000+00:00",
+//         summary: "Clear conditions throughout the day.",
+//         icon: "day-sunny",
+
 function loadRegions(f :string) :RegionHash {
   const regions: Region[] = [];
   const regionsHash: RegionHash = {};
