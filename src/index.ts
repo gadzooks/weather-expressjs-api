@@ -2,10 +2,11 @@ import express, { Express, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import sum from './test-ts';
 
 import forecasts from './routes/forecasts';
-import loadRegions from './models/region';
+import loadRegions from './utils/configParser';
+
+import makeGetRequest from './api/visual_crossing';
 
 dotenv.config();
 
@@ -15,10 +16,12 @@ const app: Express = express();
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-loadRegions('regions.yml');
+loadRegions();
+
+makeGetRequest();
 
 app.get('/', (req: Request, res: Response) => {
-  res.send(`<h1>Hello from the TypeScript world! : ${sum(3,4)}</h1>`);
+  res.send(`<h1>Hello from the TypeScript world! : </h1>`);
 });
 
 app.use('/forecasts', forecasts);

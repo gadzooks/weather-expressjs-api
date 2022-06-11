@@ -4,3 +4,15 @@
 // # https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/38.96972,-77.38519?key=YOUR_KEY&include=obs,fcst
 // BASE_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline"
 // EXCLUDE_BLOCK = "?key=#{API_KEY}&include=obs,fcst,alerts&alertLevel=detail"
+
+const axios = require('axios').default;
+
+async function makeGetRequest() {
+
+    let res = await axios.get('https://dummy.restapiexample.com/api/v1/employees');
+  
+    let data = res.data;
+    console.log(data);
+  }
+  
+  export default makeGetRequest;
