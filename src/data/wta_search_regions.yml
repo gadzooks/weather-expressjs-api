@@ -1,0 +1,35 @@
+cities:
+  description: 'Cities'
+
+issaquah:
+  search_key: '592fcc9afd9208db3b81fdf93dada567'
+  description: 'Issaquah'
+
+snowqualmie_region:
+  search_key: '04d37e830680c65b61df474e7e655d64'
+  description: 'Snowqualmie Region'
+
+central_cascades:
+  search_key: 'b4845d8a21ad6a202944425c86b6e85f'
+  description: 'Central Cascades'
+
+sound_islands:
+  search_key: '0c1d82b18f8023acb08e4daf03173e94'
+  description: 'Puget Sound and Islands'
+
+north_cascades:
+  search_key: '49aff77512c523f32ae13d889f6969c9'
+  description: 'North Cascades'
+
+mt_rainier:
+  search_key: '344281caae0d5e845a5003400c0be9ef'
+  description: 'Mt Rainier'
+
+olympic_np:
+  search_key: '922e688d784aa95dfb80047d2d79dcf6'
+  description: 'Olympic National Park'
+
+central_wa:
+  search_key: '41f702968848492db697e10b14c14060'
+  description: 'Central Washington'
+

@@ -1,0 +1,70 @@
+# from https://www.latlong.net/convert-address-to-lat-long.html
+seattle:
+  description: 'Seattle city'
+  latitude: 47.606209
+  longitude: -122.332071
+
+hood canal:
+  description: 'hood canal'
+  latitude: 47.688125
+  longitude: -122.904649
+
+teanaway:
+  description: 'teanaway'
+  latitude: 47.175000
+  longitude: -120.856390
+
+north cascades:
+  description: 'north cascades'
+  latitude: 48.771817
+  longitude: -121.298465
+
+paradise mt rainier:
+  description: 'paradise mt rainier'
+  latitude: 46.785316
+  longitude: -121.734973
+
+glacier peak:
+  description: 'glacier peak'
+  latitude: 48.111934
+  longitude: -121.113243
+
+leavenworth:
+  description: leavenworth
+  latitude: 47.596233
+  longitude: -120.661476
+
+snowqualmie pass:
+  description: 'snowqualmie pass'
+  latitude: 47.392335
+  longitude: -121.400094
+
+easton:
+  description: 'Easton I-90 Exit 70'
+  latitude: 47.237060
+  longitude: -121.178979
+
+pacific_coast_nw:
+  description: 'NW ONP'
+  latitude: 47.6129
+  longitude: -124.3762
+
+shi_shi:
+  description: 'shi shi'
+  latitude: 48.2937
+  longitude: -124.665
+
+lacrosse_basin:
+  description: 'LaCrosse Basin'
+  latitude: 47.5162
+  longitude: -123.3311
+
+gold_bar:
+  description: 'Gold Bar'
+  latitude: 47.8567
+  longitude: -121.6970605
+
+stevens_pass_east:
+  description: 'Stevens pass east'
+  latitude: 47.7847
+  longitude: -121.0343

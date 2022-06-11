@@ -1,0 +1,248 @@
+seattle:
+  region: cities
+  description: 'Seattle city'
+  latitude: 47.606209
+  longitude: -122.332071
+
+bonney_lake:
+  region: cities
+  description: 'Bonney Lake'
+  latitude: 47.179774
+  longitude: -122.186741
+
+issaquah:
+  region: cities
+  description: 'Issaquah'
+  latitude: 47.179774
+  longitude: -122.186741
+
+gold bar:
+  region: central_cascades
+  description: 'Stevens Pass - West'
+  latitude: 47.8090
+  longitude: -121.5738
+  sub_region: '637634387ca38685f89162475c7fc1d2'
+
+leavenworth:
+  region: central_cascades
+  description: 'Stevens Pass - East (Leavenworth)'
+  latitude: 47.596233
+  longitude: -120.661476
+  sub_region: 'f6845d37f1edba9dc2bc8a75346f5bd5'
+
+blewett pass:
+  region: central_cascades
+  description: 'Blewett pass'
+  latitude: 47.338173
+  longitude: -120.580296
+  sub_region: '83c2ab06fbf236015c8848042f706d58'
+
+chelan:
+  region: central_cascades
+  description: 'chelan'
+  latitude: 47.849387
+  longitude: -120.014500
+  sub_region: '2b0ca41464d9baca77ced16fb4d40760'
+
+tri cities:
+  region: central_wa
+  description: 'Tri-cities'
+  latitude: 46.266891
+  longitude: -119.222523
+  sub_region: '6febb0079f87770b5e790a71aafa3770'
+
+wenatchee:
+  region: central_wa
+  description: 'Wenatche'
+  latitude: 47.427033
+  longitude:  -120.311021
+  sub_region: 'b4be8a42f05d2054cbb2ca031b9a6a03'
+
+yakima:
+  region: central_wa
+  description: 'Yakima'
+  latitude: 46.603240
+  longitude:  -120.509983
+  sub_region: '7a4397f2ffde7d0b490ff1ca77cceb9e'
+
+# cougar mountain:
+#   region: issaquah
+#   description: 'Cougar Mountain'
+#   latitude: 47.5403783
+#   longitude: -122.0992871
+#   sub_region: '325fdb0c3072b1b9acca522fb9e69ec2'
+
+issaquah:
+  region: issaquah
+  description: 'Issaquah Mountains'
+  latitude: 47.4964902
+  longitude: -122.0384518
+  sub_region: 'all'
+
+# tiger mountain:
+#   region: issaquah
+#   description: 'Tiger Mountain'
+#   latitude: 47.4884351
+#   longitude: -121.9473381
+#   sub_region: '9f13d8a3fcd2e1ab7a5b5aaab5997a9e'
+
+# taylor mountain:
+#   region: issaquah
+#   description: 'Taylor Mountain'
+#   latitude: 47.4545464
+#   longitude: -121.8945579
+#   sub_region: '98ea7186f4ff4bbba5329613f9a89bfb'
+
+bellingham area:
+  region: sound_islands
+  description: 'Bellingham Area'
+  latitude: 48.754900
+  longitude: -122.478120
+  sub_region: '92528ff6af30075eec65f35159defc50'
+
+san juan islands:
+  region: sound_islands
+  description: 'San Juan Islands'
+  latitude: 48.595350
+  longitude: -122.653470
+  sub_region: '7e0a6ce03ba1204d6bd3fdf64d3ad805'
+
+# seattle tacoma area:
+#   region: sound_islands
+#   description: 'Seattle Tacoma Area'
+#   latitude: 47.606209
+#   longitude: -122.332069
+#   sub_region: 'df2c2da1637452abe74a5d10837c2e03'
+
+whidbey island:
+  region: sound_islands
+  description: 'Whidbey Island'
+  latitude: 48.335049
+  longitude: -122.669273
+  sub_region: 'd9dddf65d66479f065d40c1aeac18da3'
+
+chinook pass:
+  region: mt_rainier
+  description: 'Chinook Pass'
+  latitude: 46.872994
+  longitude: -121.515559
+  sub_region: '883e708ab442592f904fd87c1c909f6b'
+
+sunrise:
+  region: mt_rainier
+  description: 'NE - Sunrise/White River'
+  latitude: 46.915357
+  longitude: -121.642959
+  sub_region: '883e708ab442592f904fd87c1c909f6b'
+
+carbon_river:
+  region: mt_rainier
+  description: 'NW - Carbon River/Mowich'
+  latitude: 46.975021
+  longitude: -121.812600
+  sub_region: 'cbe4acbaa2c01f9a5dbf4deece4e6ad9'
+
+paradise:
+  region: mt_rainier
+  description: 'SW - Longmire / Paradise'
+  latitude: 46.786138
+  longitude: -121.734802
+  sub_region: '3b53cfc78db378ecf7599df0fa14a51c'
+
+cayuse pass:
+  region: mt_rainier
+  description: 'SE - Cayuse pass / Stevens Canyon'
+  latitude: 46.867905
+  longitude: -121.538701
+  sub_region: 'cc329f21ff637826168e61bc9db77d65'
+
+mt_loop_hwy:
+  region: north_cascades
+  description: 'Mountain Loop Highway'
+  latitude: 48.094116
+  longitude: -121.961362
+  sub_region: '6194b417d1ae41b1ecd0d297b3fd2dea'
+
+methow_sawtooth:
+  region: north_cascades
+  description: 'Methow/Sawtooth'
+  latitude: 48.669363
+  longitude: -120.437442
+  sub_region: '5952810559bc6d85f808011a53ea6fcf'
+
+mt_baker:
+  region: north_cascades
+  description: 'Mt Baker'
+  latitude: 48.777336
+  longitude: -121.814500
+  sub_region: '5674705352f9b856f2df1da7cbb8e0b1'
+
+hwy_20:
+  region: north_cascades
+  description: 'North Cascades Highway - Hwy 20'
+  latitude: 48.628015
+  longitude: -120.557212
+  sub_region: 'b52b426625b55325e408adfacae3b6c5'
+
+pasayetan:
+  region: north_cascades
+  description: 'Pasayetan'
+  latitude: 48.861189
+  longitude:  -120.553880
+  sub_region: '425fd9e8fd7edb23fc53782f16c2ea05'
+
+hood_canal:
+  region: olympic_np
+  description: 'Hood Canal'
+  latitude: 47.624825
+  longitude:  -122.945855
+  sub_region: 'bfbc0abe0fd04783aaad717ea2699866'
+
+kitsap:
+  region: olympic_np
+  description: 'Kitsap Peninsula'
+  latitude: 47.675611
+  longitude:  -122.640073
+  sub_region: '3b2e0197b8be6c19a273c919b3301405'
+
+pacific_coast:
+  region: olympic_np
+  description: 'Pacific Coast'
+  latitude: 48.2937
+  longitude:  -124.6651
+  sub_region: '6135b6a861b5ac0c9b17a2f9b60c9295'
+
+northern_coast:
+  region: olympic_np
+  description: 'Northern Coast'
+  latitude: 47.9766
+  longitude:  -123.5178
+  sub_region: 'e4421728558408ef04e0a46afb2aa7ea'
+
+north_bend:
+  region: snowqualmie_region
+  description: 'North Bend'
+  latitude: 47.497428
+  longitude: -121.786648
+  sub_region: 'db086e5e85941a02ae188f726f7e9e2c'
+
+snowqualmie_pass:
+  region: snowqualmie_region
+  description: 'Snowqualmie Pass'
+  latitude: 47.396170
+  longitude:  -121.399756
+  sub_region: '5d45ee6e4b5b077d069382b6aac9d388'
+
+teanaway:
+  region: snowqualmie_region
+  description: 'Salman La Sac / Teanaway'
+  latitude: 47.175000
+  longitude: -120.856390
+  sub_region: 'f06510bd295c2d640ee2594d1b7a2ff6'
+
+cle_elum_area:
+  region: snowqualmie_region
+  description: 'Cle Elum Area'
+  latitude: 47.196943
+  longitude:  -120.939134
+  sub_region: '767d751df8b6495999e96486d4d32d49'

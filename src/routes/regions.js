@@ -1,5 +1,5 @@
-const express = require('express')
-const router = express.Router()
+import { Router } from 'express'
+const router = Router()
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
@@ -16,4 +16,4 @@ router.get('/:regionId', (req, res) => {
   res.send('per region')
 })
 
-module.exports = router
+export default router
