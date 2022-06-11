@@ -10,12 +10,6 @@ bonney_lake:
   latitude: 47.179774
   longitude: -122.186741
 
-issaquah:
-  region: cities
-  description: 'Issaquah'
-  latitude: 47.179774
-  longitude: -122.186741
-
 gold bar:
   region: central_cascades
   description: 'Stevens Pass - West'

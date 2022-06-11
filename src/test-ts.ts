@@ -1,6 +1,5 @@
-function sum (num1:number, num2:number){
+function sum (num1: number, num2: number): number {
     return num1 + num2;
 }
-console.log(sum(8,4));
 
 export default sum;
