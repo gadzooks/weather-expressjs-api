@@ -4,19 +4,14 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc --project tsconfig.build.json",
     "preserve": "npm run build && cpx \"src/**/*.yml\" dist",
     "cpx": "cpx \"src/**/*.{html,png,jpg}\"",
-    "serve": "cross-env NODE_ENV=development concurrently \"tsc --watch\" \"nodemon -q dist/index.js\"",
+    "serve": "cross-env NODE_ENV=development concurrently \"tsc --project tsconfig.build.json --watch\" \"nodemon -q dist/index.js\"",
     "prestart": "npm run build && cpx \"src/**/*.yml\" dist",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
-  },
-  "scripts-old": {
-    "start": "tsc && node ./src/app.js",
-    "build": "npx tsc",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon ./bin/www\""
   },
   "dependencies": {
     "@types/body-parser": "^1.19.2",

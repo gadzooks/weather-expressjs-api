@@ -1,0 +1,11 @@
+//from https://bobbyhadz.com/blog/typescript-exclude-test-files-from-compilation
+{
+    "extends": "./tsconfig.json",
+    // 👇️ this may vary depending on how you
+    // name your test files
+    "exclude": [
+      "src/**/*.spec.ts",
+      "src/**/*.test.ts"
+    ]
+  }
+  
