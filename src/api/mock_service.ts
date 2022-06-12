@@ -11,13 +11,7 @@ export function mockVisualCrossingForecast(location: string): Forecast|null{
     try {
         const doc = (fs.readFileSync(path.resolve(__dirname, filePath), 'utf8'));
         const docAny = doc as any;
-        console.log('=---------------')
-        // console.log(doc['days'][0]);
-
-        // const jsonData = require(fs.readFileSync(path.resolve(__dirname, filePath), 'utf8'));
         const parsedData = JSON.parse(docAny);
-        // console.log(jsonData['days'][0]);
-        console.log(parsedData.days[0]);
 
         fcst = parsedData as Forecast;
     } catch (error) {

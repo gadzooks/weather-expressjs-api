@@ -60,7 +60,6 @@ export function getForecastForAllRegions(regionHash: RegionHash): ForecastRespon
         insertIntoDays(fcstResponse, response);
       }
     })
-    break;
   }
 
   return fcstResponse;
