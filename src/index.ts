@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 
 import forecasts from './routes/forecasts';
-import loadRegions from './utils/configParser';
+import {loadRegions} from './utils/configParser';
 
 import makeGetRequest from './api/visual_crossing';
 
@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 loadRegions();
 
-makeGetRequest();
+// makeGetRequest();
 
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
