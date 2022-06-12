@@ -4,9 +4,10 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 
 import forecasts from './routes/forecasts';
-import {loadRegions} from './utils/configParser';
+import {loadRegions, RegionHash} from './utils/configParser';
 
-import makeGetRequest from './api/visual_crossing';
+import {getForecastForAllRegions, makeGetRequest } from './api/visual_crossing';
+import {mockVisualCrossingForecast} from './api/mock_service';;
 
 dotenv.config();
 
@@ -16,9 +17,12 @@ const app: Express = express();
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-loadRegions();
+const regionHash:RegionHash = loadRegions();
 
-// makeGetRequest();
+const res = getForecastForAllRegions(regionHash);
+console.log(res);
+
+makeGetRequest();
 
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
