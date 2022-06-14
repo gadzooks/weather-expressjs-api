@@ -5,9 +5,9 @@ import path from "path";
 import fs from 'fs';
 import Forecast from "../parser/Forecast";
 import {mockVisualCrossingForecast} from './mock_service';import { RegionHash } from "../utils/configParser";
-import { ForecastResponse, ForecastsById, LocationById, LocationsById, RegionsById } from "../response/ForecastResponse";
-import { Region } from "../models/Region";
-import { Location } from "../models/Location";
+import { ForecastResponse, ForecastsById, LocationById, LocationsById, RegionsById } from "../interfaces/ForecastResponse";
+import { Region } from "../interfaces/Region";
+import { Location } from "../interfaces/Location";
 ;
 
 // API_KEY = ENV["VISUAL_CROSSING_API_KEY"]

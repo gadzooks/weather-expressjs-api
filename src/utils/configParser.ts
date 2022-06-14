@@ -3,8 +3,8 @@ import fs from 'fs';
 import path from "path";
 
 import { readFileSync } from 'fs';
-import { Location } from '../models/Location';
-import { Region } from '../models/Region';
+import { Location } from '../interfaces/Location';
+import { Region } from '../interfaces/Region';
 
 export type RegionHash = {[key: string]: Region};
 
