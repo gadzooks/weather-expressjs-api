@@ -1,6 +1,6 @@
 import path from "path";
 import fs from 'fs';
-import Forecast from "../parser/Forecast";
+import Forecast from "../interfaces/Forecast";
 
 export function mockVisualCrossingForecast(location: string): Forecast|null{
     const fileName = location.replace(/\s+/g, '');

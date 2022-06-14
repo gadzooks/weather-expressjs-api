@@ -3,7 +3,7 @@
 import { load } from "js-yaml";
 import path from "path";
 import fs from 'fs';
-import Forecast from "../parser/Forecast";
+import Forecast from "../interfaces/Forecast";
 import {mockVisualCrossingForecast} from './mock_service';import { RegionHash } from "../utils/configParser";
 import { ForecastResponse, ForecastsById, LocationById, LocationsById, RegionsById } from "../interfaces/ForecastResponse";
 import { Region } from "../interfaces/Region";

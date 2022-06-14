@@ -1,6 +1,6 @@
-import Alert from './Alert';
-import DailyForecast from './DailyForecast';
-import Forecast from './Forecast';
+import Alert from '../interfaces/Alert';
+import DailyForecast from '../interfaces/DailyForecast';
+import Forecast from '../interfaces/Forecast';
 
 function parseForecast(input: string) {
     const dailyForecast: DailyForecast[] = [];

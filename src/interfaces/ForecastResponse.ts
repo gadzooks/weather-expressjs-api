@@ -1,7 +1,7 @@
 import { Location } from "./Location";
 import { Region } from "./Region";
-import DailyForecast from "../parser/DailyForecast";
-import Forecast from "../parser/Forecast";
+import DailyForecast from "./DailyForecast";
+import Forecast from "./Forecast";
 
 export interface ForecastResponse {
     dates: string[];
