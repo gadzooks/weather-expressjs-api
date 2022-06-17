@@ -1,15 +1,16 @@
 import path from "path";
 import fs from 'fs';
 import Forecast from "../interfaces/Forecast";
+import { Location } from "../interfaces/Location";
 
-export function mockVisualCrossingForecast(location: string): Forecast|null{
-    const fileName = location.replace(/\s+/g, '');
+export function mockVisualCrossingForecast(location: Location): Forecast|null{
+    const fileName = location.name.replace(/\s+/g, '');
     const filePath = `../mock_service/data/vc-${fileName}.json`;
     console.log(`reading from ${filePath}`);
     let fcst: Forecast|null = null;
 
     try {
-        const doc = (fs.readFileSync(path.resolve(__dirname, filePath), 'utf8'));
+        const doc = fs.readFileSync(path.resolve(__dirname, filePath), 'utf8');
         const docAny = doc as any;
         const parsedData = JSON.parse(docAny);
 
