@@ -8,7 +8,7 @@ import forecasts from './routes/forecasts';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 const app: Express = express();
 
 app.use(cors())
