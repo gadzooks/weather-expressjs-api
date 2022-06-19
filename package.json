@@ -6,14 +6,15 @@
   "scripts": {
     "build": "npm run build:clean && npm run build:typescript && npm run build:static",
     "build:clean": "rimraf dist",
-    "build:typescript": "tsc --project tsconfig.build.json",
+    "build:typescript": "npm run tsc --project tsconfig.build.json",
     "build:static": "cpx \"src/**/*.{yml,json}\" dist && cpx \"tests/**/*.{yml,json}\" dist",
     "prestart": "npm run build",
     "cpx": "cpx \"src/**/*.{html,png,jpg}\" dist && cpx \"tests/**/*.{html,png,jpg}\" dist",
-    "start": "cross-env NODE_ENV=development concurrently \"tsc --project tsconfig.build.json --watch\" \"nodemon -r dotenv/config -q --inspect dist/index.js\"",
+    "start": "cross-env NODE_ENV=development concurrently \"npm run tsc --project tsconfig.build.json --watch\" \"nodemon -r dotenv/config -q --inspect dist/index.js\"",
     "production": "cross-env NODE_ENV=production node -r dotenv/config dist/index.js",
     "pretest": "npm run build:static",
     "test": "jest --coverage",
+    "tsc": "tsc",
     "test:watch": "jest --watch"
   },
   "engines": {
