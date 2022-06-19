@@ -1,1 +1,1 @@
-web: node production
+web: npm node production
