@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "rimraf dist && tsc --project tsconfig.build.json",
-    "preserve": "npm run build && cpx \"src/**/*.{yml,json}\" dist",
-    "cpx": "cpx \"src/**/*.{html,png,jpg}\" dist",
+    "preserve": "npm run build && cpx \"src/**/*.{yml,json}\" dist && cpx \"tests/**/*.{yml,json}\" dist",
+    "cpx": "cpx \"src/**/*.{html,png,jpg}\" dist && cpx \"tests/**/*.{html,png,jpg}\" dist",
     "serve": "cross-env NODE_ENV=development concurrently \"tsc --project tsconfig.build.json --watch\" \"nodemon -r dotenv/config -q --inspect dist/index.js\"",
     "prestart": "npm run build && cpx \"src/**/*.yml\" dist",
     "production": "cross-env NODE_ENV=production node -r dotenv/config dist/index.js",

@@ -17,6 +17,8 @@ npm run serve
 
 
 ## TODO :
+- cacheing
+- using cookies (customize views)
 - cleaner error handling 
   - https://blog.logrocket.com/async-await-in-typescript/
   - https://www.toptal.com/express-js/routes-js-promises-error-handling

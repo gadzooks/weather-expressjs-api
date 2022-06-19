@@ -1,5 +1,6 @@
 import 'jest';
-import {loadRegions, RegionHash} from './configParser';
+import { RegionHash } from '../../interfaces/geo/Region';
+import {loadRegions} from './configParser';
 
 
 describe(('loadRegions'), () => {

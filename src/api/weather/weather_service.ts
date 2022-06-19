@@ -1,8 +1,7 @@
-import Forecast from "../interfaces/Forecast";
-import { RegionHash } from "../utils/configParser";
-import { ForecastResponse, ForecastsById, LocationsById, RegionsById } from "../interfaces/ForecastResponse";
-import { Region } from "../interfaces/Region";
-import { Location } from "../interfaces/Location";
+import Forecast from "../../interfaces/forecast/Forecast";
+import { ForecastResponse, LocationsById, RegionsById, ForecastsById } from "../../interfaces/forecast/ForecastResponse";
+import { Region, RegionHash } from "../../interfaces/geo/Region";
+import { Location } from "../../interfaces/geo/Location";
 
 export async function getForecastForAllRegions(regionHash: RegionHash, callback: (location: Location) => Promise<Forecast | null>): Promise<ForecastResponse> {
   const locationsById: LocationsById = {
@@ -45,6 +44,7 @@ export async function getForecastForAllRegions(regionHash: RegionHash, callback:
         console.error(error);
       }
     }
+    break;
   }
 
   return fcstResponse;

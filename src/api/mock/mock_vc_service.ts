@@ -1,11 +1,11 @@
 import path, { resolve } from "path";
 import fs from 'fs';
-import Forecast from "../interfaces/Forecast";
-import { Location } from "../interfaces/Location";
+import Forecast from "../../interfaces/forecast/Forecast";
+import { Location } from "../../interfaces/geo/Location";
 
 export function mockVisualCrossingForecast(location: Location): Promise<Forecast|null>{
     const fileName = location.name.replace(/\s+/g, '');
-    const filePath = `./mock_service_data/data/vc-${fileName}.json`;
+    const filePath = `../../mock_service_data/data/vc-${fileName}.json`;
     console.log(`reading from ${filePath}`);
     let fcst: Forecast|null = null;
 

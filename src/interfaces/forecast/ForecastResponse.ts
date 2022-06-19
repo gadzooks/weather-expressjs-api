@@ -1,5 +1,5 @@
-import { Location } from "./Location";
-import { Region } from "./Region";
+import { Location } from "../geo/Location";
+import { Region } from "../geo/Region";
 import DailyForecast from "./DailyForecast";
 import Forecast from "./Forecast";
 

@@ -5,9 +5,6 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import forecasts from './routes/forecasts';
-import {loadRegions, RegionHash} from './utils/configParser';
-import { mockVisualCrossingForecast } from './api/mock_service';
-import { getForecastForAllRegions } from './api/weather_service';
 
 dotenv.config();
 
@@ -18,18 +15,10 @@ app.use(cors())
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-const regionHash:RegionHash = loadRegions();
-
-// const res = getForecastForAllRegions(regionHash);
-// console.log(res);
-
-// makeGetRequest();
 
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
 });
-
-  const results = getForecastForAllRegions(regionHash, mockVisualCrossingForecast);
 
 app.use('/forecasts', forecasts);
 

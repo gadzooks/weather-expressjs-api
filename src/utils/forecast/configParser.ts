@@ -2,11 +2,8 @@ import { load } from 'js-yaml';
 import fs from 'fs';
 import path from "path";
 
-import { readFileSync } from 'fs';
-import { Location } from '../interfaces/Location';
-import { Region } from '../interfaces/Region';
-
-export type RegionHash = {[key: string]: Region};
+import { Location } from '../../interfaces/geo/Location';
+import { Region, RegionHash } from '../../interfaces/geo/Region';
 
 const configDir = 'config';
 const locationFileName = 'locations.yml';
@@ -14,7 +11,7 @@ const regionFileName = 'regions.yml';
 
 function parseYaml(fileName :string) :any {
   // Get document, or throw exception on error
-    const doc = load(fs.readFileSync(path.resolve(__dirname, `../${configDir}/` + fileName), 'utf8'));
+    const doc = load(fs.readFileSync(path.resolve(__dirname, `../../${configDir}/` + fileName), 'utf8'));
     return doc;
 }
 
