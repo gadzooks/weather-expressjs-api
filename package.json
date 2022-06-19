@@ -8,10 +8,11 @@
     "build:clean": "rimraf dist",
     "build:typescript": "tsc --project tsconfig.build.json",
     "build:static": "cpx \"src/**/*.{yml,json}\" dist && cpx \"tests/**/*.{yml,json}\" dist",
-    "prestart": "npm run build && cpx \"src/**/*.{yml,json}\" dist && cpx \"tests/**/*.{yml,json}\" dist",
+    "prestart": "npm run build",
     "cpx": "cpx \"src/**/*.{html,png,jpg}\" dist && cpx \"tests/**/*.{html,png,jpg}\" dist",
     "start": "cross-env NODE_ENV=development concurrently \"tsc --project tsconfig.build.json --watch\" \"nodemon -r dotenv/config -q --inspect dist/index.js\"",
     "production": "cross-env NODE_ENV=production node -r dotenv/config dist/index.js",
+    "pretest": "npm run build:static",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
