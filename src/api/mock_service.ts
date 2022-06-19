@@ -30,24 +30,3 @@ export function mockVisualCrossingForecast(location: Location): Promise<Forecast
     }
 
 };
-
-export function mockVisualCrossingForecast2(location: Location): Forecast|null{
-    const fileName = location.name.replace(/\s+/g, '');
-    const filePath = `./mock_service_data/data/vc-${fileName}.json`;
-    console.log(`reading from ${filePath}`);
-    let fcst: Forecast|null = null;
-
-    try {
-        const doc = fs.readFileSync(path.resolve(__dirname, filePath), 'utf8');
-        const docAny = doc as any;
-        const parsedData = JSON.parse(docAny);
-
-        fcst = parsedData as Forecast;
-        return fcst;
-    } catch (error) {
-        console.error(error);
-        // expected output: ReferenceError: nonExistentFunction is not defined
-        // Note - error messages will vary depending on browser
-        return null;
-    }
-};

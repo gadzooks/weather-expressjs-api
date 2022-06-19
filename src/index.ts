@@ -7,7 +7,7 @@ import cors from 'cors';
 import forecasts from './routes/forecasts';
 import {loadRegions, RegionHash} from './utils/configParser';
 import { mockVisualCrossingForecast } from './api/mock_service';
-import { getForecastForAllRegions } from './api/visual_crossing';
+import { getForecastForAllRegions } from './api/weather_service';
 
 dotenv.config();
 

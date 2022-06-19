@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { mockVisualCrossingForecast } from '../api/mock_service';
-import { getForecastForAllRegions, VisualCrossingApi } from '../api/visual_crossing';
+import { VisualCrossingApi } from '../api/visual_crossing';
 import mockWeatherForecastNormalized from '../api/mock_service_data/forecasts';
 import { RegionHash, loadRegions } from '../utils/configParser';
+import { getForecastForAllRegions } from '../api/weather_service';
 var router = Router();
 
 /* GET users listing. */
@@ -18,11 +19,13 @@ router.get('/mock', function(req, res, next) {
     .catch(err => res.status(500).json(err));
 });
 
-// router.get('/real', function(req, res, next) {
-//   const regionHash:RegionHash = loadRegions();
+router.get('/real', function(req, res, next) {
+  const regionHash:RegionHash = loadRegions();
 
-//   const results = getForecastForAllRegions(regionHash, VisualCrossingApi.getForecast);
-//   res.json({data: results});
-// });
+  getForecastForAllRegions(regionHash, VisualCrossingApi.getForecast)
+    .then(result => res.status(200).json({ data: result }))
+    .catch(err => res.status(500).json(err));
+
+});
 
 export default router;
