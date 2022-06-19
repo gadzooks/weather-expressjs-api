@@ -16,7 +16,6 @@ export function mockVisualCrossingForecast(location: Location): Promise<Forecast
 
         fcst = parsedData as Forecast;
         return new Promise((resolve, reject) => {
-            console.log(`returning : ${fcst?.description}`)
             resolve(fcst);
         })
     } catch (error) {

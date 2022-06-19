@@ -29,39 +29,24 @@ export async function getForecastForAllRegions(regionHash: RegionHash, callback:
   for (const regionKey in regionHash) {
     const region = regionHash[regionKey];
     const locations = region.locations;
-    console.log(`locations : ${locations}`);
     for(const i in locations ) {
       const location = locations[i];
       try {
         const response = await callback(location);
         if (response !== null) {
-          // locations.map(async (location) => {
-          console.log('111111111111');
-          console.log('2222222222');
-          console.log(response?.description);
           if (response !== null) {
-            console.log('aaaaaaaaaa');
-            console.log(location.name);
-            console.log(response?.description);
             insertIntoRegionsById(fcstResponse, region.name, region);
             insertIntoLocationsById(fcstResponse, location.name, location);
             insertIntoForecastsById(fcstResponse, location, response);
             insertIntoDays(fcstResponse, response);
-            console.log('44444444444444');
-            console.log(fcstResponse);
-            // return fcstResponse;
           }
         }
       } catch(error) {
         console.error(error);
       }
     }
-    // break;
   }
 
-  // Promise.all(promises);
-  console.log('000000000000000000000000000');
-  console.log(fcstResponse);
   return fcstResponse;
 };
 
@@ -93,7 +78,6 @@ function insertIntoLocationsById(fcstResponse: ForecastResponse, locationKey: st
 
 function insertIntoForecastsById(fcstResponse: ForecastResponse, location: Location, response: Forecast) {
   fcstResponse.forecasts.byId[location.name] = response.days;
-  console.log(response.days[0]);
 }
 
 function insertIntoDays(fcstResponse: ForecastResponse, response: Forecast) {

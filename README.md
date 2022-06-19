@@ -7,20 +7,29 @@
 npx express-generator
 
 # to run locally
-DEBUG=weather-expressjs:* npm start
+echo VC_API_KEY='set-my-visual-crossing-key' >> .env
+npm run serve
 ```
 
+## Blogs : 
+- https://overreacted.io/
+- https://kentcdodds.com/blog?q=react
+
+
 ## TODO :
-- copy sample VC result and write VC parser 
-- make call to VC
-- read region / location data from yaml
-- endpoints 
+- cleaner error handling 
+  - https://blog.logrocket.com/async-await-in-typescript/
+  - https://www.toptal.com/express-js/routes-js-promises-error-handling
+- morgan module
+- REST endpoints 
     - /regions /regions/:regionId
     - /locations /locations/:locationId
     - /regions/:regionId/locations
-- forecast endpoint
+    - tests
+- REST forecast endpoint
     - /forecasts/regions/:all
     - /forecasts/regions/:regionId
+    - tests
 - use interfaces for API call
 ```javascript
 interface StringValidator {

@@ -87,7 +87,6 @@ function loadLocationConfiguration(f :string, regionsHash :RegionHash) :RegionHa
   const config = parseYaml(f);
   let count = 0;
   for(const property in config) {
-    // console.log(`${property} : ${config[property]}`)
     const locationObject = config[property];
     const region: Region = regionsHash[locationObject.region];
 
