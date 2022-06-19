@@ -4,7 +4,10 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "build": "rimraf dist && tsc --project tsconfig.build.json",
+    "build": "npm run build:clean && npm run build:typescript && npm run build:static",
+    "build:clean": "rimraf dist",
+    "build:typescript": "tsc --project tsconfig.build.json",
+    "build:static": "cpx \"src/**/*.{yml,json}\" dist && cpx \"tests/**/*.{yml,json}\" dist",
     "preserve": "npm run build && cpx \"src/**/*.{yml,json}\" dist && cpx \"tests/**/*.{yml,json}\" dist",
     "cpx": "cpx \"src/**/*.{html,png,jpg}\" dist && cpx \"tests/**/*.{html,png,jpg}\" dist",
     "serve": "cross-env NODE_ENV=development concurrently \"tsc --project tsconfig.build.json --watch\" \"nodemon -r dotenv/config -q --inspect dist/index.js\"",
