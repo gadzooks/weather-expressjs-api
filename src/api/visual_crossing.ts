@@ -62,7 +62,8 @@ export const VisualCrossingApi = {
 //   console.log(data.message);
 // };
 
-export function getForecastForAllRegions(regionHash: RegionHash, callback: (location: Location) => Forecast | null): ForecastResponse {
+export async function getForecastForAllRegions(regionHash: RegionHash, callback: (location: Location) => Promise<Forecast | null>): Promise<ForecastResponse> {
+// export function getForecastForAllRegions(regionHash: RegionHash, callback: (location: Location) => Forecast|null): ForecastResponse {
   const locationsById: LocationsById = {
     byId: {},
     allIds: new Array(),
@@ -77,28 +78,51 @@ export function getForecastForAllRegions(regionHash: RegionHash, callback: (loca
     byId: {},
   }
 
-  const fcstResponse: ForecastResponse = {
+  let fcstResponse: ForecastResponse = {
     dates: new Array(),
     locations: locationsById,
     regions: regionsById,
     forecasts: forecastsById,
   };
 
+  let forecasts: any = [];
+
   for (const regionKey in regionHash) {
     const region = regionHash[regionKey];
     const locations = region.locations;
-    locations.map((location) => {
-      const response = callback(location);
-      if (response) {
-        insertIntoRegionsById(fcstResponse, regionKey, region);
-        insertIntoLocationsById(fcstResponse, location.name, location);
-        insertIntoForecastsById(fcstResponse, location, response);
-        insertIntoDays(fcstResponse, response);
+    console.log(`locations : ${locations}`);
+    for(const i in locations ) {
+      const location = locations[i];
+      try {
+        const response = await callback(location);
+        if (response !== null) {
+          // locations.map(async (location) => {
+          console.log('111111111111');
+          console.log('2222222222');
+          console.log(response?.description);
+          if (response !== null) {
+            console.log('aaaaaaaaaa');
+            console.log(location.name);
+            console.log(response?.description);
+            insertIntoRegionsById(fcstResponse, region.name, region);
+            insertIntoLocationsById(fcstResponse, location.name, location);
+            insertIntoForecastsById(fcstResponse, location, response);
+            insertIntoDays(fcstResponse, response);
+            console.log('44444444444444');
+            console.log(fcstResponse.dates[0]);
+            // return fcstResponse;
+          }
+        }
+      } catch(error) {
+        console.error(error);
       }
-    })
+    }
     // break;
   }
 
+  // Promise.all(promises);
+  console.log('000000000000000000000000000');
+  console.log(fcstResponse.dates[0]);
   return fcstResponse;
 };
 

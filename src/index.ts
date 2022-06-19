@@ -6,9 +6,8 @@ import cors from 'cors';
 
 import forecasts from './routes/forecasts';
 import {loadRegions, RegionHash} from './utils/configParser';
-
-import {getForecastForAllRegions } from './api/visual_crossing';
-import {mockVisualCrossingForecast} from './api/mock_service';;
+import { mockVisualCrossingForecast } from './api/mock_service';
+import { getForecastForAllRegions } from './api/visual_crossing';
 
 dotenv.config();
 
@@ -29,6 +28,8 @@ const regionHash:RegionHash = loadRegions();
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
 });
+
+  const results = getForecastForAllRegions(regionHash, mockVisualCrossingForecast);
 
 app.use('/forecasts', forecasts);
 

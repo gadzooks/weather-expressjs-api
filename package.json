@@ -6,10 +6,10 @@
   "scripts": {
     "build": "rimraf dist && tsc --project tsconfig.build.json",
     "preserve": "npm run build && cpx \"src/**/*.{yml,json}\" dist",
-    "cpx": "cpx \"src/**/*.{html,png,jpg}\"",
-    "serve": "cross-env NODE_ENV=development concurrently \"tsc --project tsconfig.build.json --watch\" \"nodemon -q dist/index.js\"",
+    "cpx": "cpx \"src/**/*.{html,png,jpg}\" dist",
+    "serve": "cross-env NODE_ENV=development concurrently \"tsc --project tsconfig.build.json --watch\" \"nodemon -q --inspect dist/index.js\"",
     "prestart": "npm run build && cpx \"src/**/*.yml\" dist",
-    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "production": "cross-env NODE_ENV=production node dist/index.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },

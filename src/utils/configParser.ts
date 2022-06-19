@@ -89,9 +89,7 @@ function loadLocationConfiguration(f :string, regionsHash :RegionHash) :RegionHa
   for(const property in config) {
     // console.log(`${property} : ${config[property]}`)
     const locationObject = config[property];
-
     const region: Region = regionsHash[locationObject.region];
-    // console.log(`region selected is : ${locationObject.region}` );
 
     const location: Location = {
       name: property,
