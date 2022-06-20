@@ -44,7 +44,7 @@ export async function getForecastForAllRegions(regionHash: RegionHash, callback:
         console.error(error);
       }
     }
-    break;
+    // break;
   }
 
   return fcstResponse;

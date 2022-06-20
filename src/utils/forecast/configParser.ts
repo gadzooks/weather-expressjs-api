@@ -92,6 +92,7 @@ function loadLocationConfiguration(f :string, regionsHash :RegionHash) :RegionHa
       description: locationObject.description,
       latitude: locationObject.latitude,
       longitude: locationObject.longitude,
+      sub_region: locationObject.sub_region,
       region: region.name,
     }
 
