@@ -13,11 +13,11 @@ export function mockVisualCrossingForecast(
 
   try {
     const doc = fs.readFileSync(path.resolve(__dirname, filePath), 'utf8');
-    const docAny = doc as any;
+    const docAny = doc as string;
     const parsedData = JSON.parse(docAny);
 
     fcst = parsedData as Forecast;
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       resolve(fcst);
     });
   } catch (error) {

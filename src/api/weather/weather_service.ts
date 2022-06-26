@@ -55,7 +55,7 @@ export async function getForecastForAllRegions(
       }
     }
     // break;
-    // if (count == 2) break;
+    // if (count == 1) break;
   }
 
   return fcstResponse;

@@ -9,7 +9,7 @@ import { Location } from '../../interfaces/geo/Location';
 const VC_URL =
   'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/';
 const OPTIONS = '&include=obs,fcst,alerts&alertLevel=detail';
-const VC_API_KEY = process.env.VC_API_KEY;
+const VC_API_KEY = process.env.VC_API_KEY || 'USE_VC_API_KEY';
 
 const instance = axios.create({
   baseURL: VC_URL,
@@ -30,6 +30,9 @@ export const VisualCrossingApi = {
       location.longitude +
       `?key=${VC_API_KEY}` +
       OPTIONS;
+    console.log(
+      `calling : ${VC_URL}${urlParams.replace(VC_API_KEY, 'VC_API_KEY')}`
+    );
     return requests.get(urlParams);
   }
 };

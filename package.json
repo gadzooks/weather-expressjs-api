@@ -14,7 +14,7 @@
     "production": "cross-env NODE_ENV=production node -r dotenv/config dist/index.js",
     "pretest": "npm run build:static",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint ./src --ext .ts --fix",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "tsc": "tsc",
