@@ -72,7 +72,7 @@ export function loadRegions(): RegionHash {
       name: property,
       search_key: regionObject.search_key,
       description: regionObject.description,
-      locations: new Array()
+      locations: []
     };
     regions.push(region);
     regionsHash[property] = region;

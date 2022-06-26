@@ -4,7 +4,7 @@ import { VisualCrossingApi } from '../api/weather/visual_crossing';
 import { getForecastForAllRegions } from '../api/weather/weather_service';
 import { RegionHash } from '../interfaces/geo/Region';
 import { loadRegions } from '../utils/forecast/configParser';
-var router = Router();
+const router = Router();
 
 const regionHash: RegionHash = loadRegions();
 

@@ -14,20 +14,20 @@ export async function getForecastForAllRegions(
 ): Promise<ForecastResponse> {
   const locationsById: LocationsById = {
     byId: {},
-    allIds: new Array()
+    allIds: []
   };
 
   const regionsById: RegionsById = {
     byId: {},
-    allIds: new Array()
+    allIds: []
   };
 
   const forecastsById: ForecastsById = {
     byId: {}
   };
 
-  let fcstResponse: ForecastResponse = {
-    dates: new Array(),
+  const fcstResponse: ForecastResponse = {
+    dates: [],
     locations: locationsById,
     regions: regionsById,
     forecasts: forecastsById
@@ -55,7 +55,7 @@ export async function getForecastForAllRegions(
       }
     }
     // break;
-    if (count == 5) break;
+    // if (count == 2) break;
   }
 
   return fcstResponse;

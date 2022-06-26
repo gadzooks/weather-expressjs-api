@@ -1,5 +1,3 @@
-import { Region } from './Region';
-
 export interface Location {
   name: string;
   region: string;
