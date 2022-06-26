@@ -6,20 +6,21 @@
   "scripts": {
     "build": "npm run build:clean && npm run build:typescript && npm run build:static",
     "build:clean": "rimraf dist",
-    "build:typescript": "npm run tsc -- --project tsconfig.build.json",
     "build:static": "cpx \"src/**/*.{yml,json}\" dist && cpx \"tests/**/*.{yml,json}\" dist",
-    "prestart": "npm run build",
+    "build:typescript": "npm run tsc -- --project tsconfig.build.json",
     "cpx": "cpx \"src/**/*.{html,png,jpg}\" dist && cpx \"tests/**/*.{html,png,jpg}\" dist",
-    "start": "cross-env NODE_ENV=development concurrently \"npm run tsc -- --project tsconfig.build.json --watch\" \"nodemon -r dotenv/config -q --inspect dist/index.js\"",
-    "production": "cross-env NODE_ENV=production node -r dotenv/config dist/index.js",
+    "heroku-prebuild": "npm config set ignore-scripts true",
+    "lint": "eslint ./src --ext .ts --fix",
+    "prepare": "husky install",
+    "prestart": "npm run build",
     "pretest": "npm run build:static",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
-    "lint": "eslint ./src --ext .ts --fix",
+    "production": "cross-env NODE_ENV=production node -r dotenv/config dist/index.js",
+    "start": "cross-env NODE_ENV=development concurrently \"npm run tsc -- --project tsconfig.build.json --watch\" \"nodemon -r dotenv/config -q --inspect dist/index.js\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "tsc": "tsc",
     "test:watch": "jest --watch",
-    "prepare": "husky install"
+    "tsc": "tsc"
   },
   "husky": {
     "hooks": {
