@@ -1,6 +1,6 @@
 {
   "name": "weather-expressjs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "main": "dist/index.js",
   "scripts": {
@@ -18,7 +18,8 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "tsc": "tsc",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "prepare": "husky install"
   },
   "husky": {
     "hooks": {
