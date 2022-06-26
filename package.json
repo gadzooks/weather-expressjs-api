@@ -22,8 +22,14 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run prettier-format && npm run lint && npm run test"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.tsx": [
+      "eslint",
+      "prettier --write"
+    ]
   },
   "engines": {
     "node": "12.18.2"
