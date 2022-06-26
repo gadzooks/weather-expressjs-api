@@ -1,6 +1,6 @@
 import { load } from 'js-yaml';
 import fs from 'fs';
-import path from "path";
+import path from 'path';
 
 import { Location } from '../../interfaces/geo/Location';
 import { Region, RegionHash } from '../../interfaces/geo/Region';
@@ -9,10 +9,15 @@ const configDir = 'config';
 const locationFileName = 'locations.yml';
 const regionFileName = 'regions.yml';
 
-function parseYaml(fileName :string) :any {
+function parseYaml(fileName: string): any {
   // Get document, or throw exception on error
-    const doc = load(fs.readFileSync(path.resolve(__dirname, `../../${configDir}/` + fileName), 'utf8'));
-    return doc;
+  const doc = load(
+    fs.readFileSync(
+      path.resolve(__dirname, `../../${configDir}/` + fileName),
+      'utf8'
+    )
+  );
+  return doc;
 }
 
 // regions: {
@@ -56,34 +61,37 @@ function parseYaml(fileName :string) :any {
 //         summary: "Clear conditions throughout the day.",
 //         icon: "day-sunny",
 
-export function loadRegions() :RegionHash {
+export function loadRegions(): RegionHash {
   const regions: Region[] = [];
   const regionsHash: RegionHash = {};
   const config = parseYaml(regionFileName);
   let count = 0;
-  for(const property in config) {
+  for (const property in config) {
     const regionObject = config[property];
     const region: Region = {
       name: property,
       search_key: regionObject.search_key,
       description: regionObject.description,
-      locations: new Array(),
-    }
+      locations: new Array()
+    };
     regions.push(region);
     regionsHash[property] = region;
     count++;
   }
 
-  loadLocationConfiguration(locationFileName, regionsHash)
+  loadLocationConfiguration(locationFileName, regionsHash);
 
   console.log(`loaded ${count} regions.`);
   return regionsHash;
-};
+}
 
-function loadLocationConfiguration(f :string, regionsHash :RegionHash) :RegionHash {
+function loadLocationConfiguration(
+  f: string,
+  regionsHash: RegionHash
+): RegionHash {
   const config = parseYaml(f);
   let count = 0;
-  for(const property in config) {
+  for (const property in config) {
     const locationObject = config[property];
     const region: Region = regionsHash[locationObject.region];
 
@@ -93,8 +101,8 @@ function loadLocationConfiguration(f :string, regionsHash :RegionHash) :RegionHa
       latitude: locationObject.latitude,
       longitude: locationObject.longitude,
       sub_region: locationObject.sub_region,
-      region: region.name,
-    }
+      region: region.name
+    };
 
     count++;
 
@@ -103,4 +111,4 @@ function loadLocationConfiguration(f :string, regionsHash :RegionHash) :RegionHa
 
   console.log(`loaded ${count} locations.`);
   return regionsHash;
-};
+}

@@ -1,34 +1,44 @@
-import Forecast from "../../interfaces/forecast/Forecast";
-import { ForecastResponse, LocationsById, RegionsById, ForecastsById } from "../../interfaces/forecast/ForecastResponse";
-import { Region, RegionHash } from "../../interfaces/geo/Region";
-import { Location } from "../../interfaces/geo/Location";
+import Forecast from '../../interfaces/forecast/Forecast';
+import {
+  ForecastResponse,
+  LocationsById,
+  RegionsById,
+  ForecastsById
+} from '../../interfaces/forecast/ForecastResponse';
+import { Region, RegionHash } from '../../interfaces/geo/Region';
+import { Location } from '../../interfaces/geo/Location';
 
-export async function getForecastForAllRegions(regionHash: RegionHash, callback: (location: Location) => Promise<Forecast | null>): Promise<ForecastResponse> {
+export async function getForecastForAllRegions(
+  regionHash: RegionHash,
+  callback: (location: Location) => Promise<Forecast | null>
+): Promise<ForecastResponse> {
   const locationsById: LocationsById = {
     byId: {},
-    allIds: new Array(),
-  }
+    allIds: new Array()
+  };
 
   const regionsById: RegionsById = {
     byId: {},
-    allIds: new Array(),
-  }
+    allIds: new Array()
+  };
 
   const forecastsById: ForecastsById = {
-    byId: {},
-  }
+    byId: {}
+  };
 
   let fcstResponse: ForecastResponse = {
     dates: new Array(),
     locations: locationsById,
     regions: regionsById,
-    forecasts: forecastsById,
+    forecasts: forecastsById
   };
 
   for (const regionKey in regionHash) {
     const region = regionHash[regionKey];
     const locations = region.locations;
-    for(const i in locations ) {
+    let count = 0;
+    for (const i in locations) {
+      count++;
       const location = locations[i];
       try {
         const response = await callback(location);
@@ -40,17 +50,22 @@ export async function getForecastForAllRegions(regionHash: RegionHash, callback:
             insertIntoDays(fcstResponse, response);
           }
         }
-      } catch(error) {
+      } catch (error) {
         console.error(error);
       }
     }
     // break;
+    if (count == 5) break;
   }
 
   return fcstResponse;
-};
+}
 
-function insertIntoRegionsById(fcstResponse: ForecastResponse, regionKey: string, region: Region) {
+function insertIntoRegionsById(
+  fcstResponse: ForecastResponse,
+  regionKey: string,
+  region: Region
+) {
   let regionObject: Region = fcstResponse.regions.byId[regionKey];
   if (!regionObject) {
     regionObject = { ...region };
@@ -63,7 +78,11 @@ function insertIntoRegionsById(fcstResponse: ForecastResponse, regionKey: string
   }
 }
 
-function insertIntoLocationsById(fcstResponse: ForecastResponse, locationKey: string, location: Location) {
+function insertIntoLocationsById(
+  fcstResponse: ForecastResponse,
+  locationKey: string,
+  location: Location
+) {
   let locationObject: Location = fcstResponse.locations.byId[locationKey];
   if (!locationObject) {
     locationObject = { ...location };
@@ -76,7 +95,11 @@ function insertIntoLocationsById(fcstResponse: ForecastResponse, locationKey: st
   }
 }
 
-function insertIntoForecastsById(fcstResponse: ForecastResponse, location: Location, response: Forecast) {
+function insertIntoForecastsById(
+  fcstResponse: ForecastResponse,
+  location: Location,
+  response: Forecast
+) {
   fcstResponse.forecasts.byId[location.name] = response.days;
 }
 
@@ -84,7 +107,6 @@ function insertIntoDays(fcstResponse: ForecastResponse, response: Forecast) {
   if (fcstResponse.dates.length === 0) {
     fcstResponse.dates = response.days.map((dailyForecast) => {
       return dailyForecast.datetime;
-    })
+    });
   }
 }
-

@@ -1,39 +1,39 @@
-import { Location } from "../geo/Location";
-import { Region } from "../geo/Region";
-import DailyForecast from "./DailyForecast";
-import Forecast from "./Forecast";
+import { Location } from '../geo/Location';
+import { Region } from '../geo/Region';
+import DailyForecast from './DailyForecast';
+import Forecast from './Forecast';
 
 export interface ForecastResponse {
-    dates: string[];
-    regions: RegionsById;
-    locations: LocationsById;
-    forecasts: ForecastsById;
+  dates: string[];
+  regions: RegionsById;
+  locations: LocationsById;
+  forecasts: ForecastsById;
 }
 
 export interface RegionsById {
-    byId: RegionById;
-    allIds: string[];
+  byId: RegionById;
+  allIds: string[];
 }
 
 export interface RegionById {
-    [key: string]: Region;
+  [key: string]: Region;
 }
 
 export interface LocationsById {
-    byId: LocationById;
-    allIds: string[];
+  byId: LocationById;
+  allIds: string[];
 }
 
 export interface LocationById {
-    [key: string]: Location;
+  [key: string]: Location;
 }
 
 export interface ForecastsById {
-    byId: ForecastById;
+  byId: ForecastById;
 }
 
 export interface ForecastById {
-    [key: string]: DailyForecast[];
+  [key: string]: DailyForecast[];
 }
 
 // dates: [

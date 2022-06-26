@@ -8,17 +8,16 @@ var router = Router();
 
 const regionHash: RegionHash = loadRegions();
 
-router.get('/mock', function(req, res, next) {
+router.get('/mock', function (req, res, next) {
   getForecastForAllRegions(regionHash, mockVisualCrossingForecast)
-    .then(result => res.status(200).json({data: result}))
-    .catch(err => res.status(500).json(err));
+    .then((result) => res.status(200).json({ data: result }))
+    .catch((err) => res.status(500).json(err));
 });
 
-router.get('/real', function(req, res, next) {
+router.get('/real', function (req, res, next) {
   getForecastForAllRegions(regionHash, VisualCrossingApi.getForecast)
-    .then(result => res.status(200).json({ data: result }))
-    .catch(err => res.status(500).json(err));
-
+    .then((result) => res.status(200).json({ data: result }))
+    .catch((err) => res.status(500).json(err));
 });
 
 export default router;
