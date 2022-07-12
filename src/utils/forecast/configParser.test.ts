@@ -9,7 +9,7 @@ describe('loadRegions', () => {
     regionHash = loadRegions();
   });
 
-  it('should parse regions correctly', () => {
+  it('should parse cities correctly', () => {
     expect(regionHash).toBeDefined();
     expect(Object.keys(regionHash).length).toEqual(9);
 
@@ -20,5 +20,18 @@ describe('loadRegions', () => {
 
     const locations = cities.locations;
     expect(locations.length).toBe(2);
+  });
+
+  it('should parse regions correctly', () => {
+    expect(regionHash).toBeDefined();
+    expect(Object.keys(regionHash).length).toEqual(9);
+
+    const cities = regionHash['central_cascades'];
+    expect(cities.description).toBeDefined();
+    expect(cities.name).toEqual('central_cascades');
+    expect(cities.search_key).toEqual('b4845d8a21ad6a202944425c86b6e85f');
+
+    const locations = cities.locations;
+    expect(locations.length).toBe(4);
   });
 });

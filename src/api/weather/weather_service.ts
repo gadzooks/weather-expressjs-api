@@ -43,19 +43,17 @@ export async function getForecastForAllRegions(
       try {
         const response = await callback(location);
         if (response !== null) {
-          if (response !== null) {
-            insertIntoRegionsById(fcstResponse, region.name, region);
-            insertIntoLocationsById(fcstResponse, location.name, location);
-            insertIntoForecastsById(fcstResponse, location, response);
-            insertIntoDays(fcstResponse, response);
-          }
+          insertIntoRegionsById(fcstResponse, region.name, region);
+          insertIntoLocationsById(fcstResponse, location.name, location);
+          insertIntoForecastsById(fcstResponse, location, response);
+          insertIntoDays(fcstResponse, response);
         }
       } catch (error) {
         console.error(error);
       }
     }
     // break;
-    // if (count == 1) break;
+    // if (count == 2) break;
   }
 
   return fcstResponse;
