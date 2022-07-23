@@ -12,14 +12,14 @@ bonney_lake:
 
 gold bar:
   region: central_cascades
-  description: 'Stevens Pass - West'
+  description: 'Stevens West'
   latitude: 47.8090
   longitude: -121.5738
   sub_region: '637634387ca38685f89162475c7fc1d2'
 
 leavenworth:
   region: central_cascades
-  description: 'Stevens Pass - East (Leavenworth)'
+  description: 'Leavenworth'
   latitude: 47.596233
   longitude: -120.661476
   sub_region: 'f6845d37f1edba9dc2bc8a75346f5bd5'
@@ -68,7 +68,7 @@ yakima:
 
 issaquah:
   region: issaquah
-  description: 'Issaquah Mountains'
+  description: 'Issaquah'
   latitude: 47.4964902
   longitude: -122.0384518
   sub_region: 'all'
@@ -89,14 +89,14 @@ issaquah:
 
 bellingham area:
   region: sound_islands
-  description: 'Bellingham Area'
+  description: 'Bellingham'
   latitude: 48.754900
   longitude: -122.478120
   sub_region: '92528ff6af30075eec65f35159defc50'
 
 san juan islands:
   region: sound_islands
-  description: 'San Juan Islands'
+  description: 'San Juan'
   latitude: 48.595350
   longitude: -122.653470
   sub_region: '7e0a6ce03ba1204d6bd3fdf64d3ad805'
@@ -110,7 +110,7 @@ san juan islands:
 
 whidbey island:
   region: sound_islands
-  description: 'Whidbey Island'
+  description: 'Whidbey'
   latitude: 48.335049
   longitude: -122.669273
   sub_region: 'd9dddf65d66479f065d40c1aeac18da3'
@@ -124,35 +124,35 @@ chinook pass:
 
 sunrise:
   region: mt_rainier
-  description: 'NE - Sunrise/White River'
+  description: 'Sunrise'
   latitude: 46.915357
   longitude: -121.642959
   sub_region: '883e708ab442592f904fd87c1c909f6b'
 
 carbon_river:
   region: mt_rainier
-  description: 'NW - Carbon River/Mowich'
+  description: 'Mowich'
   latitude: 46.975021
   longitude: -121.812600
   sub_region: 'cbe4acbaa2c01f9a5dbf4deece4e6ad9'
 
 paradise:
   region: mt_rainier
-  description: 'SW - Longmire / Paradise'
+  description: 'Longmire / Paradise'
   latitude: 46.786138
   longitude: -121.734802
   sub_region: '3b53cfc78db378ecf7599df0fa14a51c'
 
 cayuse pass:
   region: mt_rainier
-  description: 'SE - Cayuse pass / Stevens Canyon'
+  description: 'Stevens Canyon'
   latitude: 46.867905
   longitude: -121.538701
   sub_region: 'cc329f21ff637826168e61bc9db77d65'
 
 mt_loop_hwy:
   region: north_cascades
-  description: 'Mountain Loop Highway'
+  description: 'Mt. Loop Hwy'
   latitude: 48.094116
   longitude: -121.961362
   sub_region: '6194b417d1ae41b1ecd0d297b3fd2dea'
@@ -166,14 +166,14 @@ methow_sawtooth:
 
 mt_baker:
   region: north_cascades
-  description: 'Mt Baker'
+  description: 'Mt. Baker'
   latitude: 48.777336
   longitude: -121.814500
   sub_region: '5674705352f9b856f2df1da7cbb8e0b1'
 
 hwy_20:
   region: north_cascades
-  description: 'North Cascades Highway - Hwy 20'
+  description: 'N Cascades Hwy 20'
   latitude: 48.628015
   longitude: -120.557212
   sub_region: 'b52b426625b55325e408adfacae3b6c5'
@@ -222,14 +222,14 @@ north_bend:
 
 snowqualmie_pass:
   region: snowqualmie_region
-  description: 'Snowqualmie Pass'
+  description: 'Snowqualmie'
   latitude: 47.396170
   longitude:  -121.399756
   sub_region: '5d45ee6e4b5b077d069382b6aac9d388'
 
 teanaway:
   region: snowqualmie_region
-  description: 'Salman La Sac / Teanaway'
+  description: 'Teanaway'
   latitude: 47.175000
   longitude: -120.856390
   sub_region: 'f06510bd295c2d640ee2594d1b7a2ff6'

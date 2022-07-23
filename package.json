@@ -21,16 +21,6 @@
     "watch": "jest --watch",
     "tsc": "tsc"
   },
-  "husky": {
-    "hooks": {
-      "precommit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,json,css,scss,html,md,ts,tsx}": [
-      "prettier --write"
-    ]
-  },
   "engines": {
     "node": "18.x"
   },
