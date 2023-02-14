@@ -1,6 +1,16 @@
 # Weather REST API with ExpressJS
 
+## caching 
+done via express-cache-middleware
 
+## JWT auth
+- using jsonwebtoken
+
+### Steps to set up : 
+- https://jwt.io/ go here and specify the payload and secret_key that you want to use
+- client will use the generated token and pass it as part of Authorization token as 'Bearer <TOKEN_GENERATED_ABOVE>
+- specify JWT_TOKEN_SECRET that was used above as env variable for expressjs
+- via middleware decode the token and verify that client has access to that path
 
 ```sh
 # set up skeleton files with 
