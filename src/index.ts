@@ -8,7 +8,7 @@ import forecasts from './routes/forecasts';
 import ExpressCache from 'express-cache-middleware';
 import cacheManager from 'cache-manager';
 
-import { auth } from './auth';
+import { auth } from './middleware/auth';
 
 dotenv.config();
 
@@ -21,19 +21,21 @@ const cacheMiddleware = new ExpressCache(
   })
 )
 
-
 app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(auth)
+// these routes do not require any auth
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
 });
 
 // Layer the caching in front of the other routes
 cacheMiddleware.attach(app)
+
+// Require auth for the routes from here on
+app.use(auth)
 app.use('/forecasts', forecasts);
 
 app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
