@@ -8,6 +8,8 @@ import forecasts from './routes/forecasts';
 import ExpressCache from 'express-cache-middleware';
 import cacheManager from 'cache-manager';
 
+import { auth } from './auth';
+
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -25,12 +27,7 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// // Attach the routes to be cached
-// app.all('/forecasts', (req, res) => {
-//   // ... do something expensive like a fetch() here ...
-//   res.send('response')
-// })
-
+app.use(auth)
 app.get('/', (req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
 });
