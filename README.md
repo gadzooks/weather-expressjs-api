@@ -12,6 +12,8 @@ done via express-cache-middleware
 - specify JWT_TOKEN_SECRET that was used above as env variable for expressjs
 - via middleware decode the token and verify that client has access to that path
 
+- you can decode a JWT token here https://www.jstoolset.com/jwt to see how it looks
+
 ```sh
 # set up skeleton files with 
 npx express-generator
