@@ -19,7 +19,6 @@ describe("parse forecast response", () => {
   it('should parse forecast for a region correctly', async () => {
     const region = REGIONS['cities']
     const location = region.locations[1]
-    console.log(__dirname)
     const apiResponse = await mockVisualCrossingForecast(location)
 
     parseResponse(apiResponse, results, region, location)
@@ -56,6 +55,22 @@ describe("parse forecast response", () => {
     const apiResponse = await mockVisualCrossingForecast(location)
 
     parseResponse(apiResponse, results, region, location)
+
+    const alertIds = results.alertsById
+    const alertId = 'NOAA-NWS-ALERTS-WA12619ABCAC9C.AvalancheWarning.12619AD89588WA.SEWSABSEW.48f14a084d383b4e2e16869bf8a0f678'
+    
+    expect(alertId).toContain(alertId)
+    const alert = alertIds[alertId]
+    expect(alert.description).toBeTruthy()
+    expect(alert.ends).toBeTruthy()
+    expect(alert.endsEpoch).toBeTruthy()
+    expect(alert.event).toBeTruthy()
+    expect(alert.headline).toBeTruthy()
+    expect(alert.id).toBeTruthy()
+    expect(alert.link).toBeTruthy()
+
+    const locationAlerts = location.alertIds
+    expect(locationAlerts).toEqual([alertId])
 
   })
 

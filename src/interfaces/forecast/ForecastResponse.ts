@@ -1,5 +1,6 @@
 import { Location } from '../geo/Location';
 import { Region } from '../geo/Region';
+import Alert from './Alert';
 import DailyForecast from './DailyForecast';
 
 export interface ForecastResponse {
@@ -7,6 +8,7 @@ export interface ForecastResponse {
   regions: RegionsById;
   locations: LocationsById;
   forecasts: ForecastsById;
+  alertsById: AlertsById;
 }
 
 export interface RegionsById {
@@ -33,6 +35,14 @@ export interface ForecastsById {
 
 export interface ForecastById {
   [key: string]: DailyForecast[];
+}
+
+export interface AlertsById {
+  [key: string]: Alert
+}
+
+export interface LocationAlerts {
+  [key: Location["name"]]: Alert["id"][]
 }
 
 // dates: [

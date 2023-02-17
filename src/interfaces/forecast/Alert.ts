@@ -1,9 +1,10 @@
 interface Alert {
+  id: string;
   event: string;
   headline: string;
   description: string;
   ends: string;
-  id: string;
+  endsEpoch: number;
   link: string;
 }
 

@@ -3,10 +3,12 @@ import {
   ForecastResponse,
   LocationsById,
   RegionsById,
-  ForecastsById
+  ForecastsById,
+  AlertsById,
 } from '../../interfaces/forecast/ForecastResponse';
 import { Region, RegionHash } from '../../interfaces/geo/Region';
 import { Location } from '../../interfaces/geo/Location';
+import Alert from '../../interfaces/forecast/Alert';
 
 export async function getForecastForAllRegions(
   regionHash: RegionHash,
@@ -51,11 +53,14 @@ export function initializeForecastResponse() {
     byId: {}
   };
 
+  const alertsById: AlertsById = {};
+
   const fcstResponse: ForecastResponse = {
     dates: [],
     locations: locationsById,
     regions: regionsById,
-    forecasts: forecastsById
+    forecasts: forecastsById,
+    alertsById: alertsById,
   };
 
   return fcstResponse;
@@ -72,6 +77,7 @@ export function parseResponse(
     insertIntoLocationsById(fcstResponse, location.name, location);
     insertIntoForecastsById(fcstResponse, location, response);
     insertIntoDays(fcstResponse, response);
+    insertIntoAlerts(fcstResponse, location, response)
   }
 }
 
@@ -122,5 +128,29 @@ function insertIntoDays(fcstResponse: ForecastResponse, response: Forecast) {
     fcstResponse.dates = response.days.map((dailyForecast) => {
       return dailyForecast.datetime;
     });
+  }
+}
+
+function insertIntoAlerts(
+  fcstResponse: ForecastResponse,
+  location: Location,
+  response: Forecast
+) {
+  const alerts: Alert[] = response.alerts;
+
+  if (alerts && alerts.length > 0) {
+    const alertsById: AlertsById = fcstResponse.alertsById || {};
+    fcstResponse.alertsById = alertsById;
+
+    const alertIds: string[] = [];
+
+    alerts.map((weatherAlert) => {
+      if(!alertsById[weatherAlert.id]) {
+        alertsById[weatherAlert.id] = weatherAlert;
+      }
+      alertIds.push(weatherAlert.id)
+    })
+
+    location.alertIds = alertIds
   }
 }
