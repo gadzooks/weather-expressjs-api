@@ -7,12 +7,12 @@ export function mockVisualCrossingForecast(
   location: Location
 ): Promise<Forecast | null> {
   const fileName = location.name.replace(/\s+/g, '');
-  const filePath = `../../mock_service_data/data/vc-${fileName}.json`;
-  console.log(`reading from ${filePath}`);
+  const dataDirectory = 'tests/mock_service_data/data'
+  const filePath = `${dataDirectory}/vc-${fileName}.json`;
   let fcst: Forecast | null = null;
 
   try {
-    const doc = fs.readFileSync(path.resolve(__dirname, filePath), 'utf8');
+    const doc = fs.readFileSync(path.resolve(filePath), 'utf8');
     const docAny = doc as string;
     const parsedData = JSON.parse(docAny);
 

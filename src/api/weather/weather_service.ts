@@ -12,6 +12,31 @@ export async function getForecastForAllRegions(
   regionHash: RegionHash,
   callback: (location: Location) => Promise<Forecast | null>
 ): Promise<ForecastResponse> {
+ 
+  const fcstResponse = initializeForecastResponse()
+
+  for (const regionKey in regionHash) {
+    const region = regionHash[regionKey];
+    const locations = region.locations;
+    let count = 0;
+    for (const i in locations) {
+      count++;
+      const location = locations[i];
+      try {
+        const response = await callback(location);
+        parseResponse(response, fcstResponse, region, location)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    // break;
+    // if (count == 2) break;
+  }
+
+  return fcstResponse;
+}
+
+export function initializeForecastResponse() {
   const locationsById: LocationsById = {
     byId: {},
     allIds: []
@@ -33,30 +58,21 @@ export async function getForecastForAllRegions(
     forecasts: forecastsById
   };
 
-  for (const regionKey in regionHash) {
-    const region = regionHash[regionKey];
-    const locations = region.locations;
-    let count = 0;
-    for (const i in locations) {
-      count++;
-      const location = locations[i];
-      try {
-        const response = await callback(location);
-        if (response !== null) {
-          insertIntoRegionsById(fcstResponse, region.name, region);
-          insertIntoLocationsById(fcstResponse, location.name, location);
-          insertIntoForecastsById(fcstResponse, location, response);
-          insertIntoDays(fcstResponse, response);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    // break;
-    // if (count == 2) break;
-  }
-
   return fcstResponse;
+}
+
+export function parseResponse(
+  response : Forecast | null,
+  fcstResponse: ForecastResponse,
+  region : Region,
+  location : Location
+) {
+  if (response !== null) {
+    insertIntoRegionsById(fcstResponse, region.name, region);
+    insertIntoLocationsById(fcstResponse, location.name, location);
+    insertIntoForecastsById(fcstResponse, location, response);
+    insertIntoDays(fcstResponse, response);
+  }
 }
 
 function insertIntoRegionsById(
