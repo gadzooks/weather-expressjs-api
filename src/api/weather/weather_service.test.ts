@@ -72,6 +72,9 @@ describe("parse forecast response", () => {
     const locationAlerts = location.alertIds
     expect(locationAlerts).toEqual([alertId])
 
+    const allAlertIds = results.allAlertIds;
+    expect(allAlertIds).toEqual([alertId])
+
   })
 
 

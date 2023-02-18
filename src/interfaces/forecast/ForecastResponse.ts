@@ -9,6 +9,7 @@ export interface ForecastResponse {
   locations: LocationsById;
   forecasts: ForecastsById;
   alertsById: AlertsById;
+  allAlertIds: string[];
 }
 
 export interface RegionsById {

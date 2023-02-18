@@ -26,7 +26,7 @@ export async function getForecastForAllRegions(
       const location = locations[i];
       try {
         const response = await callback(location);
-        parseResponse(response, fcstResponse, region, location)
+        parseResponse(response, fcstResponse, region, location);
       } catch (error) {
         console.error(error);
       }
@@ -54,6 +54,7 @@ export function initializeForecastResponse() {
   };
 
   const alertsById: AlertsById = {};
+  const allAlertIds: string[] = [];
 
   const fcstResponse: ForecastResponse = {
     dates: [],
@@ -61,6 +62,7 @@ export function initializeForecastResponse() {
     regions: regionsById,
     forecasts: forecastsById,
     alertsById: alertsById,
+    allAlertIds: allAlertIds
   };
 
   return fcstResponse;
@@ -142,15 +144,16 @@ function insertIntoAlerts(
     const alertsById: AlertsById = fcstResponse.alertsById || {};
     fcstResponse.alertsById = alertsById;
 
-    const alertIds: string[] = [];
+    const uniqueIds = new Set<string>();
 
     alerts.map((weatherAlert) => {
-      if(!alertsById[weatherAlert.id]) {
-        alertsById[weatherAlert.id] = weatherAlert;
-      }
-      alertIds.push(weatherAlert.id)
+      alertsById[weatherAlert.id] = weatherAlert;
+      uniqueIds.add(weatherAlert.id);
     })
 
-    location.alertIds = alertIds
+    location.alertIds = Array.from(uniqueIds);
+
+    fcstResponse.allAlertIds.forEach((id) => uniqueIds.add(id))
+    fcstResponse.allAlertIds = Array.from(uniqueIds);
   }
 }
