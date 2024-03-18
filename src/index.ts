@@ -38,4 +38,7 @@ app.get('/', (req: Request, res: Response) => {
 // cacheMiddleware.attach(app)
 app.use('/forecasts', forecasts);
 
-app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
+// disable listen and add module.exports
+// https://claudiajs.com/tutorials/serverless-express.html
+// app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
+module.exports = app; 

@@ -5,6 +5,18 @@
 npx ts-node src/index.ts
 ```
 
+## Deploy to AWS Lambda via ClaudiaJS : 
+- https://medium.com/@zahreva/typescript-with-claudia-js-dc4d16acc948
+- https://claudiajs.com/tutorials/serverless-express.html
+
+```sh
+claudia generate-serverless-express-proxy --express-module dist/index --profile claudia
+
+# create API gateway and lambda function 
+claudia create --handler lambda.handler --deploy-proxy-api --region us-west-1 --profile claudia --runtime nodejs20.x
+
+```
+
 
 ```sh
 # set up skeleton files with 

@@ -1,0 +1,10 @@
+{
+  "lambda": {
+    "role": "weather-expressjs-executor",
+    "name": "weather-expressjs",
+    "region": "us-west-1"
+  },
+  "api": {
+    "id": "4gpn105y9k"
+  }
+}
