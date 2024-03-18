@@ -5,20 +5,19 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import forecasts from './routes/forecasts';
-import ExpressCache from 'express-cache-middleware';
-import cacheManager from 'cache-manager';
+// import ExpressCache from 'express-cache-middleware';
+// import cacheManager from 'cache-manager';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const app: Express = express();
 
-const cacheMiddleware = new ExpressCache(
-  cacheManager.caching({
-    store: 'memory', max: 10000, ttl: 3600
-  })
-)
-
+// const cacheMiddleware = new ExpressCache(
+//   cacheManager.caching({
+//     store: 'memory', max: 10000, ttl: 3600
+//   })
+// )
 
 app.use(cors());
 app.use(helmet());
@@ -36,7 +35,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Layer the caching in front of the other routes
-cacheMiddleware.attach(app)
+// cacheMiddleware.attach(app)
 app.use('/forecasts', forecasts);
 
 app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));

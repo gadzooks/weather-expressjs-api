@@ -1,5 +1,9 @@
 # Weather REST API with ExpressJS
 
+## To run
+```sh
+npx ts-node src/index.ts
+```
 
 
 ```sh
