@@ -11,6 +11,10 @@ const VC_URL =
 const OPTIONS = '&include=obs,fcst,alerts&alertLevel=detail';
 const VC_API_KEY = process.env.VC_API_KEY || 'USE_VC_API_KEY';
 
+if(VC_API_KEY !== 'USE_VC_API_KEY') {
+  console.log("VC_API_KEY has been set to some value other than the default")
+}
+
 const instance = axios.create({
   baseURL: VC_URL,
   timeout: 1_000
