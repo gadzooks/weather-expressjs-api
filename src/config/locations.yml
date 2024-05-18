@@ -17,12 +17,19 @@ gold bar:
   longitude: -121.5738
   sub_region: '637634387ca38685f89162475c7fc1d2'
 
+stevens east:
+  region: central_cascades
+  description: 'Stevens East'
+  latitude: 47.5881
+  longitude:  -120.5992
+  sub_region: 'f6845d37f1edba9dc2bc8a75346f5bd5'
+
 leavenworth:
   region: central_cascades
   description: 'Leavenworth'
   latitude: 47.596233
   longitude: -120.661476
-  sub_region: 'f6845d37f1edba9dc2bc8a75346f5bd5'
+  sub_region: '684278bc46c11ebe3c5b7212b6f8e486'
 
 blewett pass:
   region: central_cascades
