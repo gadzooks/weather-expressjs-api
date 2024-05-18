@@ -4,8 +4,18 @@ import { RegionHash } from '../../interfaces/geo/Region';
 import { loadRegions } from '../../utils/forecast/configParser';
 
 export function getLocationsForRegions(
+  regionId: string | null
 ): RegionHash {
-  const regionHash: RegionHash = loadRegions();
-  return regionHash
+  console.log(`getting locations for ${regionId}`)
+  const allRegions: RegionHash = loadRegions();
+
+  if (regionId === null)
+    return allRegions
+
+  const regionsHash: RegionHash = {};
+  regionsHash[regionId] = allRegions[regionId]
+
+  return regionsHash
+
 
 }
