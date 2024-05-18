@@ -104,6 +104,7 @@ function loadLocationConfiguration(
       region: region.name
     };
 
+    console.log(`loaded ${property} location`)
     count++;
 
     region.locations.push(location);

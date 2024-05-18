@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import forecasts from './routes/forecasts';
+import geo from './routes/geo'
 // import ExpressCache from 'express-cache-middleware';
 // import cacheManager from 'cache-manager';
 
@@ -37,8 +38,11 @@ app.get('/', (req: Request, res: Response) => {
 // Layer the caching in front of the other routes
 // cacheMiddleware.attach(app)
 app.use('/forecasts', forecasts);
+app.use('/geo', geo);
 
 // disable listen and add module.exports
 // https://claudiajs.com/tutorials/serverless-express.html
+
+// COMMENT out to run locally
 // app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
 module.exports = app; 

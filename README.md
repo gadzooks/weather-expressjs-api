@@ -5,7 +5,30 @@
 npx ts-node src/index.ts
 ```
 
+## Run locally
+
+
+```sh
+# Comment out this line in index.ts
+# app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
+
+npm run start
+
+```
+
 ## Deploy to AWS Lambda via ClaudiaJS : 
+```sh
+# we are using node version 20 right now
+nvm use 20
+
+# install claudia
+npm install claudia -g
+
+# this will run - claudia update 
+npm run update
+
+```
+
 - https://medium.com/@zahreva/typescript-with-claudia-js-dc4d16acc948
 - https://claudiajs.com/tutorials/serverless-express.html
 

@@ -19,6 +19,9 @@
     "test": "cross-env NODE_ENV=test jest --testTimeout=5000",
     "test:coverage": "jest --coverage",
     "watch": "jest --watch",
+    "api:deploy": "tsc && claudia update --api-module bin/index",
+    "api:create": "tsc && claudia create --api-module bin/index",
+    "pack": "tsc && claudia pack --api-module bin/index --force",
     "tsc": "tsc"
   },
   "engines": {
