@@ -1,0 +1,45 @@
+version = 0.1
+
+[default]
+[default.global.parameters]
+stack_name = "weather-expressjs"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+region = "us-west-1"
+profile = "claudia"
+
+[default.package.parameters]
+resolve_s3 = true
+
+[default.sync.parameters]
+watch = true
+
+[default.local_start_api.parameters]
+warm_containers = "EAGER"
+
+[default.local_start_lambda.parameters]
+warm_containers = "EAGER"
+
+# Environment-specific configurations
+
+[prod]
+[prod.deploy.parameters]
+stack_name = "weather-expressjs-prod"
+parameter_overrides = "EnvironmentType=prod"
+
+[qa]
+[qa.deploy.parameters]
+stack_name = "weather-expressjs-qa"
+parameter_overrides = "EnvironmentType=qa"
+
+[dev]
+[dev.deploy.parameters]
+stack_name = "weather-expressjs-dev"
+parameter_overrides = "EnvironmentType=dev"

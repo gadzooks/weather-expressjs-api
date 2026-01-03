@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Weather Express.js API - SAM Template
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 128
+    Runtime: nodejs24.x
+    Environment:
+      Variables:
+        NODE_ENV: production
+
+Parameters:
+  EnvironmentType:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - dev
+      - qa
+      - prod
+    Description: Environment type for deployment
+
+  VisualCrossingApiKey:
+    Type: String
+    NoEcho: true
+    Description: Visual Crossing API Key
+    Default: ''
+
+Resources:
+  WeatherApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'weather-expressjs-${EnvironmentType}'
+      CodeUri: ./
+      Handler: lambda.handler
+      Description: Weather Express.js API Lambda Function
+      Environment:
+        Variables:
+          VC_API_KEY: !Ref VisualCrossingApiKey
+      Events:
+        RootApi:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+            RestApiId: !Ref WeatherApiGateway
+        ProxyApi:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            RestApiId: !Ref WeatherApiGateway
+
+  WeatherApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub 'weather-api-${EnvironmentType}'
+      StageName: !Ref EnvironmentType
+      EndpointConfiguration:
+        Type: REGIONAL
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+Outputs:
+  WeatherApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${WeatherApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${EnvironmentType}/'
+
+  WeatherApiFunctionArn:
+    Description: Weather API Lambda Function ARN
+    Value: !GetAtt WeatherApiFunction.Arn
+
+  WeatherApiFunctionName:
+    Description: Weather API Lambda Function Name
+    Value: !Ref WeatherApiFunction

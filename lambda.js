@@ -1,16 +1,17 @@
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-var-requires */
 'use strict'
-const awsServerlessExpress = require('aws-serverless-express')
+const serverlessExpress = require('@vendia/serverless-express')
 const app = require('./dist/index')
-const binaryMimeTypes = [
-	'application/octet-stream',
-	'font/eot',
-	'font/opentype',
-	'font/otf',
-	'image/jpeg',
-	'image/png',
-	'image/svg+xml'
-]
-const server = awsServerlessExpress.createServer(app, null, binaryMimeTypes);
-exports.handler = (event, context) => awsServerlessExpress.proxy(server, event, context)
+
+let serverlessExpressInstance
+
+async function setup(event, context) {
+  serverlessExpressInstance = serverlessExpress({ app })
+  return serverlessExpressInstance(event, context)
+}
+
+exports.handler = async (event, context) => {
+  if (serverlessExpressInstance) return serverlessExpressInstance(event, context)
+  return setup(event, context)
+}

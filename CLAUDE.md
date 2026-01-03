@@ -67,7 +67,6 @@ npm run prettier-format     # Format code with Prettier (single quotes, 80 char 
    - `GET /forecasts/mock` - Returns mock data for testing without hitting the API
    - `GET /forecasts/real` - Fetches live data from Visual Crossing API
    - Both routes return the same normalized `ForecastResponse` structure
-   - Caching middleware (`express-cache-middleware` with memory store, 1 hour TTL, max 10000 entries) is applied to both routes
 
 ### Data Normalization Pattern
 
@@ -117,7 +116,6 @@ Alerts are handled through a denormalized relationship:
 
 - `tsconfig.json` - Base config: strict mode, ES2016 target, CommonJS modules, rootDir: ./src, outDir: dist
 - `tsconfig.build.json` - Extends base, excludes test files (`*.spec.ts`, `*.test.ts`) from compilation
-- Custom type declaration: `src/express-cache-middleware.d.ts` for the untyped npm package
 
 ### Testing
 
@@ -128,56 +126,80 @@ Alerts are handled through a denormalized relationship:
 
 ## Deployment (AWS Lambda)
 
-This project is deployed to AWS Lambda using Claudia.js with API Gateway.
+This project is deployed to AWS Lambda using AWS SAM (Serverless Application Model) with API Gateway.
 
 ### Current Deployment Configuration
 
-The `claudia.json` file contains the existing Lambda deployment:
-- Lambda function: `weather-expressjs`
-- IAM Role: `weather-expressjs-executor`
-- Region: `us-west-1`
-- API Gateway ID: `4gpn105y9k`
-- Runtime: Node.js 20.x
+The `template.yaml` file contains the SAM template defining:
+- Lambda function: `weather-expressjs-prod` (production), `weather-expressjs-qa` (QA), `weather-expressjs-dev` (development)
+- Runtime: Node.js 24.x
+- Region: us-west-1
+- API Gateway with CORS enabled
+- Environment variables managed via SAM parameters
 
 ### Deployment Commands
 
 ```bash
-# Deploy updates to existing Lambda function
-npm run api:deploy       # Compiles TypeScript and updates Lambda
+# Deploy to production
+yarn sam:deploy          # Build and deploy to prod environment
 
-# Create new Lambda function (first-time setup only)
-npm run api:create       # Compiles TypeScript and creates new Lambda
+# Deploy to QA
+yarn sam:deploy:qa       # Build and deploy to QA environment
 
-# Package for Lambda without deploying
-npm run pack            # Creates deployment package
+# Deploy to development
+yarn sam:deploy:dev      # Build and deploy to dev environment
+
+# Build only (no deployment)
+yarn sam:build           # Compile TypeScript and build SAM application
+
+# Validate SAM template
+yarn sam:validate        # Validate template syntax
+
+# Test locally (requires Docker)
+yarn sam:local           # Start local API server at http://localhost:3000
 ```
 
 ### How Deployment Works
 
 1. TypeScript compiles `src/` to `dist/`
 2. The `lambda.js` file (in project root) acts as the Lambda handler
-3. `lambda.js` uses `aws-serverless-express` to wrap the Express app from `dist/index`
-4. Claudia packages and deploys `lambda.handler` to AWS Lambda
-5. API Gateway routes HTTP requests to the Lambda function
+3. `lambda.js` uses `@vendia/serverless-express` to wrap the Express app from `dist/index`
+4. SAM packages the application and uploads it to S3
+5. CloudFormation creates/updates the Lambda function and API Gateway
+6. Environment variables are injected via SAM parameters
 
 ### Prerequisites
 
-1. Ensure you're using Node 20: `nvm use 20`
-2. Install Claudia globally: `npm install claudia -g`
-3. Configure AWS credentials with the `claudia` profile
-4. Ensure `aws-serverless-express` is installed as a dependency
+1. Install AWS SAM CLI: `brew install aws-sam-cli`
+2. Configure AWS credentials with the `claudia` profile
+3. Ensure the IAM user has these managed policies:
+   - AWSCloudFormationFullAccess
+   - AWSLambda_FullAccess
+   - AmazonAPIGatewayAdministrator
+   - IAMFullAccess
+   - S3 permissions for `aws-sam-cli-managed-*` buckets
 
-### First-Time Setup (if creating new deployment)
+### Multiple Environments
 
-```bash
-# Create API Gateway and Lambda function
-claudia create --handler lambda.handler --deploy-proxy-api --region us-west-1 --profile claudia --runtime nodejs20.x
-```
+SAM supports multiple environments through the `samconfig.toml` file:
+- **prod**: Production environment (`weather-expressjs-prod` stack)
+- **qa**: QA environment (`weather-expressjs-qa` stack)
+- **dev**: Development environment (`weather-expressjs-dev` stack)
 
-This generates the `claudia.json` configuration file.
+Each environment creates a separate CloudFormation stack with its own Lambda function and API Gateway.
 
 ### Important Notes
 
-- The `lambda.js` handler wraps the Express app and handles binary MIME types (images, fonts, etc.)
-- Environment variables (like `VC_API_KEY`) must be configured in Lambda's environment settings via AWS Console
+- The `lambda.js` handler uses an async function (required for Node.js 24.x)
+- Environment variables like `VC_API_KEY` are passed via `--parameter-overrides` in deployment scripts
 - The Express app's `app.listen()` is only called in local development (Lambda doesn't need it)
+- SAM local testing requires Docker to be running
+- The old Claudia.js commands are still available as `yarn claudia:deploy`, `yarn claudia:create`, etc.
+
+### Migration from Claudia.js
+
+If you were previously using Claudia.js:
+1. The old `claudia.json` configuration is no longer used
+2. Old Claudia commands are renamed with `claudia:` prefix
+3. SAM provides better multi-environment support and is actively maintained
+4. Node.js 24.x requires async Lambda handlers (callback-based handlers are deprecated)
