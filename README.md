@@ -2,7 +2,8 @@
 
 ## To run
 ```sh
-npx ts-node src/index.ts
+yarn # to install package
+yarn run start # to run locally
 ```
 
 ## Run locally
@@ -12,14 +13,14 @@ npx ts-node src/index.ts
 # Comment out this line in index.ts
 # app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
 
-npm run start
+yarn run start # to run locally
 
 ```
 
 ## Deploy to AWS Lambda via ClaudiaJS : 
 ```sh
-# we are using node version 20 right now
-nvm use 20
+# we are using node version 24 right now
+nvm use 24.12.0
 
 # install claudia
 npm install claudia -g
