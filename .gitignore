@@ -133,4 +133,6 @@ samconfig.toml.bak
 .yarn/install-state.gz
 .pnp.*
 
-.claude
+.claude/
+
+.idea
