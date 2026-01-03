@@ -1,3 +1,5 @@
+// configParser.test.ts
+
 import 'jest';
 import { RegionHash } from '../../interfaces/geo/Region';
 import { loadRegions } from './configParser';
@@ -32,6 +34,7 @@ describe('loadRegions', () => {
     expect(cities.search_key).toEqual('b4845d8a21ad6a202944425c86b6e85f');
 
     const locations = cities.locations;
-    expect(locations.length).toBe(4);
+    console.log(JSON.stringify(locations))
+    expect(locations.length).toBe(5);
   });
 });

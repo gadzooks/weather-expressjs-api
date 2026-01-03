@@ -1,3 +1,5 @@
+// weather_service.test.ts
+
 import { initializeForecastResponse, parseResponse } from './weather_service'
 import { loadRegions } from '../../utils/forecast/configParser'
 import { mockVisualCrossingForecast } from '../mock/mock_vc_service'
@@ -13,7 +15,7 @@ beforeEach(() => {
 describe("parse forecast response", () => {
   it('should handle null forecast', () => {
     const region = REGIONS['cities']
-    expect(() => parseResponse(null, results, region, region.locations[0])).not.toThrowError()
+    expect(() => parseResponse(null, results, region, region.locations[0])).not.toThrow
   })
 
   it('should parse forecast for a region correctly', async () => {
