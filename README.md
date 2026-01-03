@@ -8,40 +8,6 @@ yarn run start # to run locally
 
 ## Run locally
 
-
-```sh
-# Comment out this line in index.ts
-# app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
-
-yarn run start # to run locally
-
-```
-
-## Deploy to AWS Lambda via ClaudiaJS : 
-```sh
-# we are using node version 24 right now
-nvm use 24.12.0
-
-# install claudia
-npm install claudia -g
-
-# this will run - claudia update 
-npm run update
-
-```
-
-- https://medium.com/@zahreva/typescript-with-claudia-js-dc4d16acc948
-- https://claudiajs.com/tutorials/serverless-express.html
-
-```sh
-claudia generate-serverless-express-proxy --express-module dist/index --profile claudia
-
-# create API gateway and lambda function 
-claudia create --handler lambda.handler --deploy-proxy-api --region us-west-1 --profile claudia --runtime nodejs20.x
-
-```
-
-
 ```sh
 # set up skeleton files with 
 npx express-generator

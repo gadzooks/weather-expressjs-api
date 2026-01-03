@@ -25,9 +25,6 @@
     "sam:deploy": "yarn sam:build && sam deploy --profile claudia --region us-west-1 --config-env prod --parameter-overrides 'EnvironmentType=prod VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
     "sam:deploy:qa": "yarn sam:build && sam deploy --profile claudia --region us-west-1 --config-env qa --parameter-overrides 'EnvironmentType=qa VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
     "sam:deploy:dev": "yarn sam:build && sam deploy --profile claudia --region us-west-1 --config-env dev --parameter-overrides 'EnvironmentType=dev VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
-    "claudia:deploy": "tsc && claudia update --api-module bin/index --profile claudia",
-    "claudia:create": "tsc && claudia create --api-module bin/index",
-    "claudia:pack": "tsc && claudia pack --api-module bin/index --force",
     "tsc": "tsc"
   },
   "engines": {
