@@ -13,7 +13,8 @@ import * as forecastCacheService from '../../utils/cache/forecastCacheService';
 
 export async function getForecastForAllRegions(
   regionHash: RegionHash,
-  callback: (location: Location) => Promise<Forecast | null>
+  callback: (location: Location) => Promise<Forecast | null>,
+  endpoint: string = 'default'
 ): Promise<ForecastResponse> {
   const fcstResponse = initializeForecastResponse();
 
@@ -29,7 +30,7 @@ export async function getForecastForAllRegions(
       const location = locations[i];
       try {
         // Check cache first
-        const cached = forecastCacheService.get(location);
+        const cached = forecastCacheService.get(location, endpoint);
         let response: Forecast | null;
 
         if (cached) {
@@ -42,7 +43,7 @@ export async function getForecastForAllRegions(
 
           // Store in cache if successful
           if (response) {
-            forecastCacheService.set(location, response);
+            forecastCacheService.set(location, response, endpoint);
           }
         }
 
