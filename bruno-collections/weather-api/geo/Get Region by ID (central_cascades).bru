@@ -1,0 +1,28 @@
+meta {
+  name: Get Region by ID (central_cascades)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseURL}}/geo/central_cascades
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains central_cascades region", function() {
+    expect(res.body).to.have.property('central_cascades');
+  });
+
+  test("Central Cascades region has locations", function() {
+    expect(res.body.central_cascades.locations).to.be.an('array');
+    expect(res.body.central_cascades.locations.length).to.be.greaterThan(0);
+  });
+}

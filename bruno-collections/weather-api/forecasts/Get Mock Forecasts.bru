@@ -1,0 +1,42 @@
+meta {
+  name: Get Mock Forecasts
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseURL}}/forecasts/mock
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response has data property", function() {
+    expect(res.body).to.have.property('data');
+  });
+
+  test("Data has dates array with 15 elements", function() {
+    expect(res.body.data.dates).to.be.an('array');
+    expect(res.body.data.dates.length).to.equal(15);
+  });
+
+  test("Data has locations", function() {
+    expect(res.body.data.locations).to.have.property('byId');
+    expect(res.body.data.locations).to.have.property('allIds');
+    expect(res.body.data.locations.allIds).to.be.an('array');
+  });
+
+  test("Data has at least 8 regions", function() {
+    expect(res.body.data.regions.allIds.length).to.be.at.least(8);
+  });
+
+  test("Response time is acceptable", function() {
+    expect(res.responseTime).to.be.below(5000);
+  });
+}

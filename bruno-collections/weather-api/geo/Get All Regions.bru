@@ -1,0 +1,36 @@
+meta {
+  name: Get All Regions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseURL}}/geo/
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response is an object", function() {
+    expect(res.body).to.be.an('object');
+  });
+
+  test("Response has at least 8 regions", function() {
+    const regionNames = Object.keys(res.body);
+    expect(regionNames.length).to.be.at.least(8);
+  });
+
+  test("Each region has locations array", function() {
+    const regionNames = Object.keys(res.body);
+    regionNames.forEach((regionName) => {
+      expect(res.body[regionName]).to.have.property('locations');
+      expect(res.body[regionName].locations).to.be.an('array');
+    });
+  });
+}
