@@ -22,19 +22,48 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Run linter
-        run: npm run lint
+        run: yarn lint
 
       - name: Run tests
-        run: npm test
+        run: yarn test
 
       - name: Run tests with coverage
-        run: npm run test:coverage
+        run: yarn test:coverage
 
       - name: Build
-        run: npm run build
+        run: yarn build
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run yarn audit
+        run: yarn audit --level moderate
+        continue-on-error: true
+
+      - name: Run Trivy security scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH'
+          format: 'table'
+        continue-on-error: true

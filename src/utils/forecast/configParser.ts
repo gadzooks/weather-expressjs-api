@@ -9,7 +9,7 @@ const configDir = 'config';
 const locationFileName = 'locations.yml';
 const regionFileName = 'regions.yml';
 
-function parseYaml(fileName: string): any {
+function parseYaml(fileName: string): Record<string, unknown> {
   // Get document, or throw exception on error
   const doc = load(
     fs.readFileSync(
@@ -17,7 +17,7 @@ function parseYaml(fileName: string): any {
       'utf8'
     )
   );
-  return doc;
+  return doc as Record<string, unknown>;
 }
 
 // regions: {
@@ -67,7 +67,8 @@ export function loadRegions(): RegionHash {
   const config = parseYaml(regionFileName);
   let count = 0;
   for (const property in config) {
-    const regionObject = config[property];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const regionObject = config[property] as any;
     const region: Region = {
       name: property,
       search_key: regionObject.search_key,
@@ -92,7 +93,8 @@ function loadLocationConfiguration(
   const config = parseYaml(f);
   let count = 0;
   for (const property in config) {
-    const locationObject = config[property];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const locationObject = config[property] as any;
     const region: Region = regionsHash[locationObject.region];
 
     const location: Location = {

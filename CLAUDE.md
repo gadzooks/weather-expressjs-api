@@ -22,34 +22,34 @@ VC_API_KEY=your-visual-crossing-api-key
 
 ### Development
 ```bash
-npm start                    # Build and run dev server with hot reload (watches TypeScript files)
-npm run production          # Run production build from dist/
+yarn start                  # Build and run dev server with hot reload (watches TypeScript files)
+yarn production             # Run production build from dist/
 ```
 
 Server runs on port 3000 by default (configurable via PORT env var).
 
 ### Build
 ```bash
-npm run build               # Full build (clean + TypeScript + static files)
-npm run build:clean         # Remove dist directory
-npm run build:typescript    # Compile TypeScript only
-npm run build:static        # Copy YAML/JSON config files to dist
+yarn build                  # Full build (clean + TypeScript + static files)
+yarn build:clean            # Remove dist directory
+yarn build:typescript       # Compile TypeScript only
+yarn build:static           # Copy YAML/JSON config files to dist
 ```
 
 Note: The build process must copy YAML config files from `src/config/` to `dist/config/` because the runtime code reads them using relative paths from the compiled location.
 
 ### Testing
 ```bash
-npm test                       # Run all tests with Jest (5 second timeout)
-npm run test:coverage          # Run tests with coverage report
-npm run watch                  # Run tests in watch mode
-npm test -- src/utils/forecast/configParser.test.ts  # Run specific test file
+yarn test                      # Run all tests with Jest (5 second timeout)
+yarn test:coverage             # Run tests with coverage report
+yarn watch                     # Run tests in watch mode
+yarn test src/utils/forecast/configParser.test.ts  # Run specific test file
 ```
 
 ### Code Quality
 ```bash
-npm run lint                # Run ESLint with auto-fix
-npm run prettier-format     # Format code with Prettier (single quotes, 80 char width, semicolons)
+yarn lint                   # Run ESLint with auto-fix (includes security checks)
+yarn prettier-format        # Format code with Prettier (single quotes, 80 char width, semicolons)
 ```
 
 ## Architecture

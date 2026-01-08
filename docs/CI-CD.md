@@ -22,13 +22,33 @@ The project uses GitHub Actions for automated testing and deployment across thre
 **Steps:**
 1. Checkout code
 2. Setup Node.js 24
-3. Install dependencies (`npm ci`)
-4. Run ESLint (`npm run lint`)
-5. Run tests (`npm test`)
-6. Run tests with coverage (`npm run test:coverage`)
-7. Build the project (`npm run build`)
+3. Install dependencies (`yarn install --frozen-lockfile`)
+4. Run ESLint (`yarn lint`)
+5. Run tests (`yarn test`)
+6. Run tests with coverage (`yarn test:coverage`)
+7. Build the project (`yarn build`)
+8. Run security audit (`yarn audit`)
+9. Run Trivy security scanner
 
 **Status:** This workflow should be marked as **required** in branch protection rules to prevent merging PRs with failing tests.
+
+#### Security Job (runs in parallel with tests)
+
+The CI workflow includes a dedicated security job that runs the following checks:
+
+1. **yarn audit** - Scans for known vulnerabilities in dependencies (moderate level and above)
+2. **Trivy Scanner** - Comprehensive security scanner that checks for:
+   - Vulnerable dependencies
+   - Configuration issues
+   - Exposed secrets
+   - Critical and high severity issues
+
+Both security checks use `continue-on-error: true`, meaning they will report issues but won't block PRs. This allows you to see security warnings while maintaining development velocity.
+
+**ESLint Security Plugins:**
+The lint step now includes:
+- `eslint-plugin-security` - Detects common security anti-patterns
+- `eslint-plugin-no-secrets` - Prevents accidental secret commits
 
 ---
 

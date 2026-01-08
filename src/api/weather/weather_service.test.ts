@@ -16,7 +16,7 @@ describe('parse forecast response', () => {
   it('should handle null forecast', () => {
     const region = REGIONS['cities'];
     expect(() => parseResponse(null, results, region, region.locations[0])).not
-      .toThrow;
+      .toThrow();
   });
 
   it('should parse forecast for a region correctly', async () => {
