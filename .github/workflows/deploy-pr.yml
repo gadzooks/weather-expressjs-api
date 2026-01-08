@@ -42,10 +42,13 @@ jobs:
 
       - name: Deploy to Dev
         run: |
-          sam deploy --config-env dev \
+          sam deploy --region us-west-1 \
+            --config-env dev \
+            --parameter-overrides "EnvironmentType=dev VisualCrossingApiKey=${{ secrets.VC_API_KEY }}" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
-            --parameter-overrides "VCApiKey=${{ secrets.VC_API_KEY }}"
+            --resolve-s3 \
+            --capabilities CAPABILITY_IAM
 
       - name: Comment PR with deployment status
         uses: actions/github-script@v7

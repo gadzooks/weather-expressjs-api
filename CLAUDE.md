@@ -176,7 +176,13 @@ yarn sam:local           # Start local API server at http://localhost:3000
 ### Prerequisites
 
 1. Install AWS SAM CLI: `brew install aws-sam-cli`
-2. Configure AWS credentials with the `claudia` profile
+2. Configure AWS credentials via environment variables:
+   ```bash
+   export AWS_ACCESS_KEY_ID=your-access-key
+   export AWS_SECRET_ACCESS_KEY=your-secret-key
+   export AWS_REGION=us-west-1
+   ```
+   Or use the default AWS CLI profile: `aws configure`
 3. Ensure the IAM user has these managed policies:
    - AWSCloudFormationFullAccess
    - AWSLambda_FullAccess
