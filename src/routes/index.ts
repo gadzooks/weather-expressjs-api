@@ -3,7 +3,7 @@ import express from 'express';
 
 /* GET home page. */
 const router = express.Router();
-router.get('/', function (req, res, next) {
+router.get('/', function (_req, res) {
   res.send('index');
 });
 

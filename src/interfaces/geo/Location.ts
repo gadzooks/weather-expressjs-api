@@ -7,5 +7,5 @@ export interface Location {
   latitude: number;
   longitude: number;
   sub_region?: string;
-  alertIds?: Alert["id"][]; //array of alertIds
+  alertIds?: Alert['id'][]; //array of alertIds
 }

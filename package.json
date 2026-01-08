@@ -19,16 +19,16 @@
     "test": "cross-env NODE_ENV=test jest --testTimeout=5000",
     "test:coverage": "jest --coverage",
     "watch": "jest --watch",
-    "sam:validate": "sam validate --profile claudia --region us-west-1",
-    "sam:build": "yarn build && sam build --profile claudia --region us-west-1",
-    "sam:local": "yarn sam:build && sam local start-api --profile claudia --region us-west-1",
-    "sam:deploy": "yarn sam:build && sam deploy --profile claudia --region us-west-1 --config-env prod --parameter-overrides 'EnvironmentType=prod VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
-    "sam:deploy:qa": "yarn sam:build && sam deploy --profile claudia --region us-west-1 --config-env qa --parameter-overrides 'EnvironmentType=qa VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
-    "sam:deploy:dev": "yarn sam:build && sam deploy --profile claudia --region us-west-1 --config-env dev --parameter-overrides 'EnvironmentType=dev VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
+    "sam:validate": "sam validate --region us-west-1",
+    "sam:build": "yarn build && sam build --region us-west-1",
+    "sam:local": "yarn sam:build && sam local start-api --region us-west-1",
+    "sam:deploy": "yarn sam:build && sam deploy --region us-west-1 --config-env prod --parameter-overrides 'EnvironmentType=prod VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
+    "sam:deploy:qa": "yarn sam:build && sam deploy --region us-west-1 --config-env qa --parameter-overrides 'EnvironmentType=qa VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
+    "sam:deploy:dev": "yarn sam:build && sam deploy --region us-west-1 --config-env dev --parameter-overrides 'EnvironmentType=dev VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
     "tsc": "tsc"
   },
   "engines": {
-    "node": ">=20.x"
+    "node": ">=24.x"
   },
   "dependencies": {
     "@types/body-parser": "^1.19.6",
@@ -46,6 +46,7 @@
     "http-errors": "~2.0.1",
     "js-yaml": "^4.1.1",
     "morgan": "~1.10.1",
+    "node-cache": "^5.1.2",
     "picomatch": "4.0.3",
     "rimraf": "^6.1.2"
   },
@@ -68,6 +69,8 @@
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-no-secrets": "^2.2.1",
+    "eslint-plugin-security": "^3.0.1",
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",
     "prettier": "^3.7.4",

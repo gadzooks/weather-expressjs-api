@@ -39,11 +39,11 @@ export interface ForecastById {
 }
 
 export interface AlertsById {
-  [key: string]: Alert
+  [key: string]: Alert;
 }
 
 export interface LocationAlerts {
-  [key: Location["name"]]: Alert["id"][]
+  [key: Location['name']]: Alert['id'][];
 }
 
 // dates: [

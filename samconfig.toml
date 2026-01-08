@@ -13,7 +13,6 @@ capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
 region = "us-west-1"
-profile = "claudia"
 
 [default.package.parameters]
 resolve_s3 = true
