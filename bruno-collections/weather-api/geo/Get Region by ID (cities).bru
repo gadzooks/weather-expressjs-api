@@ -1,0 +1,28 @@
+meta {
+  name: Get Region by ID (cities)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseURL}}/geo/cities
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains cities region", function() {
+    expect(res.body).to.have.property('cities');
+  });
+
+  test("Cities region has locations", function() {
+    expect(res.body.cities.locations).to.be.an('array');
+    expect(res.body.cities.locations.length).to.be.greaterThan(0);
+  });
+}
