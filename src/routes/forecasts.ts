@@ -70,7 +70,7 @@ router.get('/clear', function (req, res) {
 // Cache invalidation endpoint (POST)
 router.post('/clear', function (req, res) {
   try {
-    const endpoint = req.body.endpoint as string | undefined;
+    const endpoint = req.body?.endpoint as string | undefined;
     let keysCleared: number;
     let message: string;
 
@@ -93,10 +93,11 @@ router.post('/clear', function (req, res) {
       }
     });
   } catch (err) {
+    console.error('POST /clear error:', err);
     res.status(500).json({
       success: false,
       message: 'Failed to clear cache',
-      error: err
+      error: err instanceof Error ? err.message : String(err)
     });
   }
 });

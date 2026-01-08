@@ -23,10 +23,12 @@ export async function getForecastForAllRegions(
   let totalLocations = 0;
 
   for (const regionKey in regionHash) {
+    // eslint-disable-next-line security/detect-object-injection
     const region = regionHash[regionKey];
     const locations = region.locations;
     for (const i in locations) {
       totalLocations++;
+      // eslint-disable-next-line security/detect-object-injection
       const location = locations[i];
       try {
         // Check cache first
@@ -118,10 +120,12 @@ function insertIntoRegionsById(
   regionKey: string,
   region: Region
 ) {
+  // eslint-disable-next-line security/detect-object-injection
   let regionObject: Region = fcstResponse.regions.byId[regionKey];
   if (!regionObject) {
     regionObject = { ...region };
   }
+  // eslint-disable-next-line security/detect-object-injection
   fcstResponse.regions.byId[regionKey] = regionObject;
 
   const allIds: string[] = fcstResponse.regions.allIds;
@@ -135,10 +139,12 @@ function insertIntoLocationsById(
   locationKey: string,
   location: Location
 ) {
+  // eslint-disable-next-line security/detect-object-injection
   let locationObject: Location = fcstResponse.locations.byId[locationKey];
   if (!locationObject) {
     locationObject = { ...location };
   }
+  // eslint-disable-next-line security/detect-object-injection
   fcstResponse.locations.byId[locationKey] = locationObject;
 
   const allIds: string[] = fcstResponse.locations.allIds;

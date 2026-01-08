@@ -12,6 +12,7 @@ const regionFileName = 'regions.yml';
 function parseYaml(fileName: string): Record<string, unknown> {
   // Get document, or throw exception on error
   const doc = load(
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     fs.readFileSync(
       path.resolve(__dirname, `../../${configDir}/` + fileName),
       'utf8'
@@ -67,7 +68,7 @@ export function loadRegions(): RegionHash {
   const config = parseYaml(regionFileName);
   let count = 0;
   for (const property in config) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
     const regionObject = config[property] as any;
     const region: Region = {
       name: property,
@@ -76,6 +77,7 @@ export function loadRegions(): RegionHash {
       locations: []
     };
     regions.push(region);
+    // eslint-disable-next-line security/detect-object-injection
     regionsHash[property] = region;
     count++;
   }
@@ -93,8 +95,9 @@ function loadLocationConfiguration(
   const config = parseYaml(f);
   let count = 0;
   for (const property in config) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
     const locationObject = config[property] as any;
+    // eslint-disable-next-line security/detect-object-injection
     const region: Region = regionsHash[locationObject.region];
 
     const location: Location = {
