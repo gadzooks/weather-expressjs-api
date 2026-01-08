@@ -31,7 +31,7 @@ jobs:
         run: yarn lint
 
       - name: Run tests
-        run: yarn test
+        run: yarn test:all
 
       - name: Run tests with coverage
         run: yarn test:coverage

@@ -1,0 +1,33 @@
+meta {
+  name: Clear Cache (GET)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseURL}}/forecasts/clear
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response indicates success", function() {
+    expect(res.body.success).to.equal(true);
+  });
+
+  test("Response has stats with keysCleared", function() {
+    expect(res.body).to.have.property('stats');
+    expect(res.body.stats).to.have.property('keysCleared');
+    expect(res.body.stats.keysCleared).to.be.a('number');
+  });
+
+  test("Response has timestamp", function() {
+    expect(res.body.stats).to.have.property('timestamp');
+  });
+}
