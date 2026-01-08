@@ -10,6 +10,7 @@ export function getLocationsForRegions(regionId: string | null): RegionHash {
   if (regionId === null) return allRegions;
 
   const regionsHash: RegionHash = {};
+  // eslint-disable-next-line security/detect-object-injection
   regionsHash[regionId] = allRegions[regionId];
 
   return regionsHash;

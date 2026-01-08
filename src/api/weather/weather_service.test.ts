@@ -63,6 +63,7 @@ describe('parse forecast response', () => {
       'NOAA-NWS-ALERTS-WA12619ABCAC9C.AvalancheWarning.12619AD89588WA.SEWSABSEW.48f14a084d383b4e2e16869bf8a0f678';
 
     expect(alertId).toContain(alertId);
+    // eslint-disable-next-line security/detect-object-injection
     const alert = alertIds[alertId];
     expect(alert.description).toBeTruthy();
     expect(alert.ends).toBeTruthy();

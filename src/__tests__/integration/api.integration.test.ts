@@ -7,6 +7,7 @@ import {
   expectValidDailyForecast,
   expectValidCacheClearResponse,
 } from './helpers/assertions';
+import DailyForecast from '../../interfaces/forecast/DailyForecast';
 
 describe('Weather API Integration Tests', () => {
   const app = getApp();
@@ -62,13 +63,14 @@ describe('Weather API Integration Tests', () => {
         const { data } = response.body;
 
         data.locations.allIds.forEach((locationId: string) => {
+          // eslint-disable-next-line security/detect-object-injection
           const locationForecasts = data.forecasts.byId[locationId];
           expect(locationForecasts).toBeDefined();
           expect(locationForecasts).toBeInstanceOf(Array);
           expect(locationForecasts.length).toBe(15);
 
           // Validate each daily forecast
-          locationForecasts.forEach((dailyForecast: any) => {
+          locationForecasts.forEach((dailyForecast: DailyForecast) => {
             expectValidDailyForecast(dailyForecast);
           });
         });

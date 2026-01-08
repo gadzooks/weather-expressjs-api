@@ -2,7 +2,20 @@
  * Custom assertion helpers for integration tests
  */
 
-export function expectValidForecastResponse(data: any): void {
+import { ForecastResponse } from '../../../interfaces/forecast/ForecastResponse';
+import { RegionHash } from '../../../interfaces/geo/Region';
+import { Location } from '../../../interfaces/geo/Location';
+import DailyForecast from '../../../interfaces/forecast/DailyForecast';
+
+interface CacheClearResponse {
+  success: boolean;
+  stats: {
+    keysCleared: number;
+    timestamp: string;
+  };
+}
+
+export function expectValidForecastResponse(data: ForecastResponse): void {
   expect(data).toHaveProperty('dates');
   expect(data.dates).toBeInstanceOf(Array);
   expect(data.dates.length).toBe(15);
@@ -28,6 +41,7 @@ export function expectValidForecastResponse(data: any): void {
   expect(data.allAlertIds).toBeInstanceOf(Array);
 
   data.locations.allIds.forEach((locationId: string) => {
+    // eslint-disable-next-line security/detect-object-injection
     const location = data.locations.byId[locationId];
     expect(location).toBeDefined();
     expect(location).toHaveProperty('name');
@@ -36,6 +50,7 @@ export function expectValidForecastResponse(data: any): void {
     expect(location).toHaveProperty('region');
 
     // Check that forecasts exist for this location (keyed by location name only)
+    // eslint-disable-next-line security/detect-object-injection
     const locationForecasts = data.forecasts.byId[locationId];
     expect(locationForecasts).toBeDefined();
     expect(locationForecasts).toBeInstanceOf(Array);
@@ -43,19 +58,20 @@ export function expectValidForecastResponse(data: any): void {
   });
 }
 
-export function expectValidRegionHash(data: any): void {
+export function expectValidRegionHash(data: RegionHash): void {
   expect(typeof data).toBe('object');
 
   const regionNames = Object.keys(data);
   expect(regionNames.length).toBeGreaterThanOrEqual(8);
 
   regionNames.forEach((regionName) => {
+    // eslint-disable-next-line security/detect-object-injection
     const region = data[regionName];
     expect(region).toHaveProperty('locations');
     expect(region.locations).toBeInstanceOf(Array);
     expect(region.locations.length).toBeGreaterThan(0);
 
-    region.locations.forEach((location: any) => {
+    region.locations.forEach((location: Location) => {
       expect(location).toHaveProperty('name');
       expect(location).toHaveProperty('latitude');
       expect(location).toHaveProperty('longitude');
@@ -65,12 +81,14 @@ export function expectValidRegionHash(data: any): void {
   });
 }
 
-export function expectValidCacheHeaders(headers: any): void {
+export function expectValidCacheHeaders(
+  headers: Record<string, string | string[]>
+): void {
   expect(headers).toHaveProperty('cache-control');
   expect(headers).toHaveProperty('vary');
 }
 
-export function expectValidDailyForecast(forecast: any): void {
+export function expectValidDailyForecast(forecast: DailyForecast): void {
   expect(forecast).toHaveProperty('datetime');
   expect(forecast).toHaveProperty('tempmax');
   expect(forecast).toHaveProperty('tempmin');
@@ -84,7 +102,9 @@ export function expectValidDailyForecast(forecast: any): void {
   expect(forecast).toHaveProperty('icon');
 }
 
-export function expectValidCacheClearResponse(data: any): void {
+export function expectValidCacheClearResponse(
+  data: CacheClearResponse
+): void {
   expect(data).toHaveProperty('success');
   expect(data.success).toBe(true);
   expect(data).toHaveProperty('stats');
