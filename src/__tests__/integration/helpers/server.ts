@@ -1,11 +1,11 @@
+// server.ts
+
 import path from 'path';
-import { createRequire } from 'module';
 import { Express } from 'express';
 
 // Import the Express app from the compiled dist folder
 // This is necessary because the routes are set up at module load time
-const require = createRequire(import.meta.url);
-// eslint-disable-next-line security/detect-non-literal-require
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, security/detect-non-literal-require
 const app: Express = require(path.join(process.cwd(), 'dist', 'index.js'));
 
 /**
