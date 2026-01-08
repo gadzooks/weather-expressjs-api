@@ -40,6 +40,7 @@ jobs:
           aws-region: us-west-1
 
       - name: Deploy to QA
+        id: deploy
         run: |
           sam deploy --region us-west-1 \
             --config-env qa \
@@ -48,6 +49,38 @@ jobs:
             --no-fail-on-empty-changeset \
             --resolve-s3 \
             --capabilities CAPABILITY_IAM
+
+          # Get the API URL from CloudFormation outputs
+          API_URL=$(aws cloudformation describe-stacks \
+            --stack-name weather-expressjs-qa \
+            --region us-west-1 \
+            --query 'Stacks[0].Outputs[?OutputKey==`WeatherApiUrl`].OutputValue' \
+            --output text)
+          echo "api_url=$API_URL" >> $GITHUB_OUTPUT
+          echo "QA API URL: $API_URL"
+
+      - name: Smoke Test - QA Deployment
+        run: |
+          API_URL="${{ steps.deploy.outputs.api_url }}"
+          ENDPOINT="${API_URL}forecasts/mock"
+
+          echo "Testing endpoint: $ENDPOINT"
+
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" "$ENDPOINT")
+
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            if jq -e '.locations.allIds | length > 0' response.json > /dev/null; then
+              echo "✅ QA smoke test passed"
+            else
+              echo "❌ QA smoke test failed: Invalid response structure"
+              cat response.json
+              exit 1
+            fi
+          else
+            echo "❌ QA smoke test failed: HTTP $HTTP_STATUS"
+            cat response.json
+            exit 1
+          fi
 
   deploy-prod:
     runs-on: ubuntu-latest
@@ -85,6 +118,7 @@ jobs:
           aws-region: us-west-1
 
       - name: Deploy to Production
+        id: deploy
         run: |
           sam deploy --region us-west-1 \
             --config-env prod \
@@ -93,3 +127,35 @@ jobs:
             --no-fail-on-empty-changeset \
             --resolve-s3 \
             --capabilities CAPABILITY_IAM
+
+          # Get the API URL from CloudFormation outputs
+          API_URL=$(aws cloudformation describe-stacks \
+            --stack-name weather-expressjs-prod \
+            --region us-west-1 \
+            --query 'Stacks[0].Outputs[?OutputKey==`WeatherApiUrl`].OutputValue' \
+            --output text)
+          echo "api_url=$API_URL" >> $GITHUB_OUTPUT
+          echo "Production API URL: $API_URL"
+
+      - name: Smoke Test - Production Deployment
+        run: |
+          API_URL="${{ steps.deploy.outputs.api_url }}"
+          ENDPOINT="${API_URL}forecasts/mock"
+
+          echo "Testing endpoint: $ENDPOINT"
+
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" "$ENDPOINT")
+
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            if jq -e '.locations.allIds | length > 0' response.json > /dev/null; then
+              echo "✅ Production smoke test passed"
+            else
+              echo "❌ Production smoke test failed: Invalid response structure"
+              cat response.json
+              exit 1
+            fi
+          else
+            echo "❌ Production smoke test failed: HTTP $HTTP_STATUS"
+            cat response.json
+            exit 1
+          fi
