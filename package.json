@@ -28,7 +28,7 @@
     "test:bruno:local": "bruno run bruno-collections/weather-api --env local",
     "watch": "jest --watch",
     "watch:integration": "jest --watch --testMatch='**/*.integration.test.ts'",
-    "pretest:integration": "yarn build:static",
+    "pretest:integration": "yarn build:typescript && yarn build:static",
     "sam:validate": "sam validate --region us-west-1",
     "sam:build": "yarn build && sam build --region us-west-1",
     "sam:local": "yarn sam:build && sam local start-api --region us-west-1",
