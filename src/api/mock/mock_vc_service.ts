@@ -7,7 +7,7 @@ export function mockVisualCrossingForecast(
   location: Location
 ): Promise<Forecast | null> {
   const fileName = location.name.replace(/\s+/g, '');
-  const dataDirectory = 'tests/mock_service_data/data'
+  const dataDirectory = 'tests/mock_service_data/data';
   const filePath = `${dataDirectory}/vc-${fileName}.json`;
   let fcst: Forecast | null = null;
 

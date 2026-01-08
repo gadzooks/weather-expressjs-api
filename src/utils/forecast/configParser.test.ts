@@ -34,7 +34,7 @@ describe('loadRegions', () => {
     expect(cities.search_key).toEqual('b4845d8a21ad6a202944425c86b6e85f');
 
     const locations = cities.locations;
-    console.log(JSON.stringify(locations))
+    console.log(JSON.stringify(locations));
     expect(locations.length).toBe(5);
   });
 });

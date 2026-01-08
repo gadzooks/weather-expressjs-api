@@ -4,7 +4,7 @@ Description: Weather Express.js API - SAM Template
 
 Globals:
   Function:
-    Timeout: 30
+    Timeout: 90
     MemorySize: 128
     Runtime: nodejs24.x
     Environment:
