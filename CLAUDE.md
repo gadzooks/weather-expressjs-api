@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Documentation Index
+
+- **[CI/CD Pipeline](docs/CI-CD.md)** - Automated testing and deployment workflows via GitHub Actions
+- **[README.md](README.md)** - Quick start guide and common commands
+
 ## Project Overview
 
 Weather REST API built with Express.js and TypeScript that fetches weather forecasts from the Visual Crossing API. The application is organized around geographic regions and locations, with forecast data normalized into a Redux-like structure (byId/allIds pattern).

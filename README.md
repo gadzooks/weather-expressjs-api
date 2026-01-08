@@ -1,21 +1,57 @@
 # Weather REST API with ExpressJS
 
-## To run
-```sh
-yarn # to install package
-yarn run start # to run locally
-```
+Weather forecast REST API built with Express.js and TypeScript, deployed to AWS Lambda using SAM (Serverless Application Model).
 
-## Run locally
+## Quick Start
 
 ```sh
-# set up skeleton files with 
-npx express-generator
+# Install dependencies
+yarn
 
-# to run locally
-echo VC_API_KEY='set-my-visual-crossing-key' >> .env
-npm run serve
+# Set up environment variables
+echo VC_API_KEY='your-visual-crossing-api-key' >> .env
+
+# Run locally
+yarn start
 ```
+
+## Documentation
+
+- **[CI/CD Pipeline](docs/CI-CD.md)** - GitHub Actions workflows, deployment process, and setup instructions
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive project documentation (architecture, deployment, testing)
+
+## Available Commands
+
+```sh
+# Development
+yarn start              # Build and run with hot reload
+yarn production         # Run production build
+
+# Testing
+yarn test               # Run tests
+yarn test:coverage      # Run tests with coverage
+yarn watch              # Run tests in watch mode
+
+# Code Quality
+yarn lint               # Run ESLint with auto-fix
+yarn prettier-format    # Format code with Prettier
+
+# Build
+yarn build              # Full build (TypeScript + copy configs)
+
+# Deployment
+yarn sam:deploy:dev     # Deploy to dev environment
+yarn sam:deploy:qa      # Deploy to QA environment
+yarn sam:deploy         # Deploy to production
+```
+
+## Environments
+
+- **Dev**: Auto-deploys on every pull request
+- **QA**: Auto-deploys on merge to master
+- **Prod**: Manual approval required after QA deployment
+
+See [CI/CD Documentation](docs/CI-CD.md) for details on the automated deployment pipeline.
 
 ## Blogs : 
 - https://overreacted.io/
