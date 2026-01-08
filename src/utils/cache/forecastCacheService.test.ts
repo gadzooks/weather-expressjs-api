@@ -47,9 +47,14 @@ describe('forecastCacheService', () => {
   });
 
   describe('getCacheKey', () => {
-    it('should generate correct cache key from location', () => {
+    it('should generate correct cache key from location with default endpoint', () => {
       const key = forecastCacheService.getCacheKey(mockLocation);
-      expect(key).toBe('forecast:seattle');
+      expect(key).toBe('forecast:default:seattle');
+    });
+
+    it('should generate correct cache key with custom endpoint', () => {
+      const key = forecastCacheService.getCacheKey(mockLocation, 'real');
+      expect(key).toBe('forecast:real:seattle');
     });
 
     it('should handle different location names', () => {
@@ -58,7 +63,15 @@ describe('forecastCacheService', () => {
         name: 'gold bar'
       };
       const key = forecastCacheService.getCacheKey(location);
-      expect(key).toBe('forecast:gold bar');
+      expect(key).toBe('forecast:default:gold bar');
+    });
+
+    it('should isolate caches by endpoint', () => {
+      const keyReal = forecastCacheService.getCacheKey(mockLocation, 'real');
+      const keyMock = forecastCacheService.getCacheKey(mockLocation, 'mock');
+      expect(keyReal).not.toBe(keyMock);
+      expect(keyReal).toBe('forecast:real:seattle');
+      expect(keyMock).toBe('forecast:mock:seattle');
     });
   });
 
@@ -111,6 +124,22 @@ describe('forecastCacheService', () => {
       expect(cachedObject).toHaveProperty('cachedAt');
       expect(cachedObject).toHaveProperty('expiresAt');
     });
+
+    it('should isolate caches by endpoint', () => {
+      const forecast1 = { ...mockForecast, description: 'Real API data' };
+      const forecast2 = { ...mockForecast, description: 'Mock API data' };
+
+      // Set different data for same location but different endpoints
+      forecastCacheService.set(mockLocation, forecast1, 'real');
+      forecastCacheService.set(mockLocation, forecast2, 'mock');
+
+      // Retrieve should get correct data based on endpoint
+      const retrievedReal = forecastCacheService.get(mockLocation, 'real');
+      const retrievedMock = forecastCacheService.get(mockLocation, 'mock');
+
+      expect(retrievedReal?.description).toBe('Real API data');
+      expect(retrievedMock?.description).toBe('Mock API data');
+    });
   });
 
   describe('clearLocation', () => {
@@ -145,6 +174,50 @@ describe('forecastCacheService', () => {
       expect(forecastCacheService.get(location1)).toBeNull();
       expect(forecastCacheService.get(location2)).toBeNull();
       expect(forecastCacheService.get(location3)).toBeNull();
+    });
+  });
+
+  describe('clearByEndpoint', () => {
+    it('should clear only caches for specified endpoint', () => {
+      const location1: Location = { ...mockLocation, name: 'seattle' };
+      const location2: Location = { ...mockLocation, name: 'portland' };
+
+      // Set data for both real and mock endpoints
+      forecastCacheService.set(location1, mockForecast, 'real');
+      forecastCacheService.set(location2, mockForecast, 'real');
+      forecastCacheService.set(location1, mockForecast, 'mock');
+      forecastCacheService.set(location2, mockForecast, 'mock');
+
+      // Clear only 'real' endpoint
+      const deletedCount = forecastCacheService.clearByEndpoint('real');
+      expect(deletedCount).toBe(2);
+
+      // Real endpoint should be cleared
+      expect(forecastCacheService.get(location1, 'real')).toBeNull();
+      expect(forecastCacheService.get(location2, 'real')).toBeNull();
+
+      // Mock endpoint should still have data
+      expect(forecastCacheService.get(location1, 'mock')).not.toBeNull();
+      expect(forecastCacheService.get(location2, 'mock')).not.toBeNull();
+    });
+
+    it('should clear only mock endpoint caches', () => {
+      const location: Location = { ...mockLocation, name: 'seattle' };
+
+      forecastCacheService.set(location, mockForecast, 'real');
+      forecastCacheService.set(location, mockForecast, 'mock');
+
+      const deletedCount = forecastCacheService.clearByEndpoint('mock');
+      expect(deletedCount).toBe(1);
+
+      expect(forecastCacheService.get(location, 'real')).not.toBeNull();
+      expect(forecastCacheService.get(location, 'mock')).toBeNull();
+    });
+
+    it('should return 0 when clearing non-existent endpoint', () => {
+      const deletedCount =
+        forecastCacheService.clearByEndpoint('nonexistent');
+      expect(deletedCount).toBe(0);
     });
   });
 
