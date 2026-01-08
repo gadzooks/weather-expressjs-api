@@ -69,7 +69,7 @@ jobs:
           HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" "$ENDPOINT")
 
           if [ "$HTTP_STATUS" -eq 200 ]; then
-            if jq -e '.locations.allIds | length > 0' response.json > /dev/null; then
+            if jq -e '.data.locations.allIds | length > 0' response.json > /dev/null; then
               echo "✅ QA smoke test passed"
             else
               echo "❌ QA smoke test failed: Invalid response structure"
@@ -147,7 +147,7 @@ jobs:
           HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" "$ENDPOINT")
 
           if [ "$HTTP_STATUS" -eq 200 ]; then
-            if jq -e '.locations.allIds | length > 0' response.json > /dev/null; then
+            if jq -e '.data.locations.allIds | length > 0' response.json > /dev/null; then
               echo "✅ Production smoke test passed"
             else
               echo "❌ Production smoke test failed: Invalid response structure"

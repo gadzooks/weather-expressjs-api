@@ -72,7 +72,7 @@ jobs:
 
           if [ "$HTTP_STATUS" -eq 200 ]; then
             # Validate response has expected structure
-            if jq -e '.locations.allIds | length > 0' response.json > /dev/null; then
+            if jq -e '.data.locations.allIds | length > 0' response.json > /dev/null; then
               echo "status=success" >> $GITHUB_OUTPUT
               echo "✅ Smoke test passed: Endpoint returned valid data"
             else
