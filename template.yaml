@@ -71,14 +71,8 @@ Resources:
       StageName: !Ref EnvironmentType
       EndpointConfiguration:
         Type: REGIONAL
-      Cors:
-        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
-        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: !Sub
-          - "'${Origins}'"
-          - Origins: !Join [',', !Split [',', !Ref AllowedOrigins]]
-        AllowCredentials: true
-        MaxAge: 86400
+      # CORS handled by Express middleware for dynamic origin checking
+      # API Gateway CORS only supports single origin or '*', not multiple origins
 
 Outputs:
   WeatherApiUrl:
