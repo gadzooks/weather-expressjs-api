@@ -1,3 +1,5 @@
+// cacheManager.test.ts
+
 import * as cacheManager from './cacheManager';
 
 describe('cacheManager', () => {
@@ -139,7 +141,7 @@ describe('cacheManager', () => {
       expect(cacheManager.get('temp-key')).toBe('temp-value');
 
       // Fast-forward time by 1 hour + 1 second (beyond TTL)
-      jest.advanceTimersByTime(3601 * 1000);
+      jest.advanceTimersByTime(86401 * 1000);
 
       // Entry should be expired
       expect(cacheManager.get('temp-key')).toBeUndefined();

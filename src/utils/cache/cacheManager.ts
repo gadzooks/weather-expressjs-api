@@ -1,13 +1,20 @@
+// cacheManager.ts
+
 import NodeCache from 'node-cache';
 import { CacheStats } from '../../interfaces/cache/CachedForecast';
 
+// Get cache TTL from environment variable (in hours), default to 3 hours
+const CACHE_TTL_HOURS = parseInt(process.env.CACHE_TTL_HOURS || '3', 10);
+export const CACHE_TTL_SECONDS = CACHE_TTL_HOURS * 3600;
+export const CACHE_TTL_MS = CACHE_TTL_SECONDS * 1000;
+
 // Create singleton NodeCache instance
 const cache = new NodeCache({
-  stdTTL: 3600, // 1 hour TTL
+  stdTTL: CACHE_TTL_SECONDS, // Configurable TTL (default 3 hours)
   checkperiod: 600, // Check for expired keys every 10 minutes
   useClones: false, // Don't clone objects for performance
   deleteOnExpire: true, // Auto-delete expired entries
-  maxKeys: 100 // Max 100 locations (safety limit)
+  maxKeys: 1000 // Max 1000 locations (safety limit)
 });
 
 // Log cache events for debugging

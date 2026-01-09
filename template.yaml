@@ -27,6 +27,11 @@ Parameters:
     Description: Visual Crossing API Key
     Default: ''
 
+  CacheTTLHours:
+    Type: Number
+    Default: 3
+    Description: Cache TTL in hours (dev=24, qa=12, prod=3)
+
 Resources:
   WeatherApiFunction:
     Type: AWS::Serverless::Function
@@ -38,6 +43,7 @@ Resources:
       Environment:
         Variables:
           VC_API_KEY: !Ref VisualCrossingApiKey
+          CACHE_TTL_HOURS: !Ref CacheTTLHours
       Events:
         RootApi:
           Type: Api

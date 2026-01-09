@@ -1,3 +1,5 @@
+// configParser.ts
+
 import { load } from 'js-yaml';
 import fs from 'fs';
 import path from 'path';
@@ -109,7 +111,7 @@ function loadLocationConfiguration(
       region: region.name
     };
 
-    console.log(`loaded ${property} location`);
+    // console.log(`loaded ${property} location`);
     count++;
 
     region.locations.push(location);

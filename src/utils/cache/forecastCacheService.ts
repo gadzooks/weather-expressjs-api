@@ -2,6 +2,7 @@ import { Location } from '../../interfaces/geo/Location';
 import Forecast from '../../interfaces/forecast/Forecast';
 import { CachedForecast } from '../../interfaces/cache/CachedForecast';
 import * as cacheManager from './cacheManager';
+import { CACHE_TTL_MS } from './cacheManager';
 
 // Generate cache key from location with optional endpoint prefix
 export function getCacheKey(
@@ -39,7 +40,7 @@ export function set(
   const cachedForecast: CachedForecast = {
     forecast,
     cachedAt: now,
-    expiresAt: now + 3600 * 1000 // 1 hour from now
+    expiresAt: now + CACHE_TTL_MS // Uses configurable TTL (default 3 hours)
   };
 
   cacheManager.set(key, cachedForecast);
