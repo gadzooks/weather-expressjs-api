@@ -56,7 +56,7 @@ jobs:
         run: |
           sam deploy --region us-west-1 \
             --config-env dev \
-            --parameter-overrides "EnvironmentType=dev VisualCrossingApiKey=${{ secrets.VC_API_KEY }}" \
+            --parameter-overrides "EnvironmentType=dev VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://dev-weather-react.onrender.com,http://localhost:3000,http://localhost:5173,http://localhost:5174'" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --resolve-s3 \

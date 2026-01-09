@@ -53,7 +53,7 @@ jobs:
         run: |
           sam deploy --region us-west-1 \
             --config-env qa \
-            --parameter-overrides "EnvironmentType=qa VisualCrossingApiKey=${{ secrets.VC_API_KEY }}" \
+            --parameter-overrides "EnvironmentType=qa VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://qa-weather-react.onrender.com'" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --resolve-s3 \
@@ -133,7 +133,7 @@ jobs:
         run: |
           sam deploy --region us-west-1 \
             --config-env prod \
-            --parameter-overrides "EnvironmentType=prod VisualCrossingApiKey=${{ secrets.VC_API_KEY }}" \
+            --parameter-overrides "EnvironmentType=prod VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://weather.weekendwanderings.com'" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --resolve-s3 \
