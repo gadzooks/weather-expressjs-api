@@ -31,14 +31,14 @@ warm_containers = "EAGER"
 [prod]
 [prod.deploy.parameters]
 stack_name = "weather-expressjs-prod"
-parameter_overrides = "EnvironmentType=prod CacheTTLHours=3"
+parameter_overrides = "EnvironmentType=prod VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=3 AllowedOrigins='https://weather.weekendwanderings.com'"
 
 [qa]
 [qa.deploy.parameters]
 stack_name = "weather-expressjs-qa"
-parameter_overrides = "EnvironmentType=qa CacheTTLHours=12"
+parameter_overrides = "EnvironmentType=qa VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=12 AllowedOrigins='https://qa-weather-react.onrender.com'"
 
 [dev]
 [dev.deploy.parameters]
 stack_name = "weather-expressjs-dev"
-parameter_overrides = "EnvironmentType=dev CacheTTLHours=24"
+parameter_overrides = "EnvironmentType=dev VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=24 AllowedOrigins='http://localhost:3000,http://localhost:5173,http://localhost:5174'"

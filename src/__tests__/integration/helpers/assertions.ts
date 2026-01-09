@@ -112,3 +112,38 @@ export function expectValidCacheClearResponse(
   expect(typeof data.stats.keysCleared).toBe('number');
   expect(data.stats).toHaveProperty('timestamp');
 }
+
+/**
+ * Assert that response has valid CORS headers for the given origin
+ */
+export function expectValidCorsHeaders(
+  headers: Record<string, string | string[]>,
+  expectedOrigin: string
+): void {
+  expect(headers['access-control-allow-origin']).toBe(expectedOrigin);
+  expect(headers['access-control-allow-credentials']).toBe('true');
+}
+
+/**
+ * Assert that response does NOT have CORS headers (origin rejected)
+ */
+export function expectNoCorsHeaders(
+  headers: Record<string, string | string[]>
+): void {
+  expect(headers['access-control-allow-origin']).toBeUndefined();
+}
+
+/**
+ * Assert that preflight response has valid CORS headers
+ */
+export function expectValidPreflightHeaders(
+  headers: Record<string, string | string[]>,
+  expectedOrigin: string
+): void {
+  expect(headers['access-control-allow-origin']).toBe(expectedOrigin);
+  expect(headers['access-control-allow-methods']).toMatch(/GET/);
+  expect(headers['access-control-allow-methods']).toMatch(/POST/);
+  expect(headers['access-control-allow-credentials']).toBe('true');
+  expect(headers['access-control-max-age']).toBe('86400');
+  expect(headers['access-control-allow-headers']).toBeDefined();
+}
