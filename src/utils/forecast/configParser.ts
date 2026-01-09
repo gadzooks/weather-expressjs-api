@@ -68,7 +68,7 @@ export function loadRegions(): RegionHash {
   const regions: Region[] = [];
   const regionsHash: RegionHash = {};
   const config = parseYaml(regionFileName);
-  let count = 0;
+  // let count = 0;
   for (const property in config) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
     const regionObject = config[property] as any;
@@ -81,12 +81,12 @@ export function loadRegions(): RegionHash {
     regions.push(region);
     // eslint-disable-next-line security/detect-object-injection
     regionsHash[property] = region;
-    count++;
+    // count++;
   }
 
   loadLocationConfiguration(locationFileName, regionsHash);
 
-  console.log(`loaded ${count} regions.`);
+  // console.log(`loaded ${count} regions.`);
   return regionsHash;
 }
 
@@ -95,7 +95,7 @@ function loadLocationConfiguration(
   regionsHash: RegionHash
 ): RegionHash {
   const config = parseYaml(f);
-  let count = 0;
+  // let count = 0;
   for (const property in config) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
     const locationObject = config[property] as any;
@@ -112,11 +112,11 @@ function loadLocationConfiguration(
     };
 
     // console.log(`loaded ${property} location`);
-    count++;
+    // count++;
 
     region.locations.push(location);
   }
 
-  console.log(`loaded ${count} locations.`);
+  // console.log(`loaded ${count} locations.`);
   return regionsHash;
 }

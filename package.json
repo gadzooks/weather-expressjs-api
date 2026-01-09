@@ -32,9 +32,9 @@
     "sam:validate": "sam validate --region us-west-1",
     "sam:build": "yarn build && sam build --region us-west-1",
     "sam:local": "yarn sam:build && sam local start-api --region us-west-1",
-    "sam:deploy": "yarn sam:build && sam deploy --region us-west-1 --config-env prod --parameter-overrides 'EnvironmentType=prod VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF CacheTTLHours=3' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
-    "sam:deploy:qa": "yarn sam:build && sam deploy --region us-west-1 --config-env qa --parameter-overrides 'EnvironmentType=qa VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF CacheTTLHours=12' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
-    "sam:deploy:dev": "yarn sam:build && sam deploy --region us-west-1 --config-env dev --parameter-overrides 'EnvironmentType=dev VisualCrossingApiKey=N6D2TQKQXUA4JAT8QQFW3M4DF CacheTTLHours=24' --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
+    "sam:deploy": "yarn sam:build && sam deploy --region us-west-1 --config-env prod --parameter-overrides \"EnvironmentType=prod VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=3 AllowedOrigins=https://weather.weekendwanderings.com\" --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
+    "sam:deploy:qa": "yarn sam:build && sam deploy --region us-west-1 --config-env qa --parameter-overrides \"EnvironmentType=qa VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=12 AllowedOrigins=https://qa-weather-react.onrender.com\" --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
+    "sam:deploy:dev": "yarn sam:build && sam deploy --region us-west-1 --config-env dev --parameter-overrides \"EnvironmentType=dev VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=24 AllowedOrigins=http://localhost:3000,http://localhost:5173,http://localhost:5174\" --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
     "tsc": "tsc"
   },
   "engines": {
@@ -93,5 +93,10 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
+  },
+  "resolutions": {
+    "braces": "^3.0.3",
+    "micromatch": "^4.0.8",
+    "qs": "^6.14.1"
   }
 }

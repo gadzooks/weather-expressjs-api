@@ -32,6 +32,11 @@ Parameters:
     Default: 3
     Description: Cache TTL in hours (dev=24, qa=12, prod=3)
 
+  AllowedOrigins:
+    Type: String
+    Default: 'http://localhost:3000,http://localhost:5173'
+    Description: Comma-separated list of allowed CORS origins
+
 Resources:
   WeatherApiFunction:
     Type: AWS::Serverless::Function
@@ -44,6 +49,7 @@ Resources:
         Variables:
           VC_API_KEY: !Ref VisualCrossingApiKey
           CACHE_TTL_HOURS: !Ref CacheTTLHours
+          ALLOWED_ORIGINS: !Ref AllowedOrigins
       Events:
         RootApi:
           Type: Api
@@ -68,7 +74,11 @@ Resources:
       Cors:
         AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: "'*'"
+        AllowOrigin: !Sub
+          - "'${Origins}'"
+          - Origins: !Join [',', !Split [',', !Ref AllowedOrigins]]
+        AllowCredentials: true
+        MaxAge: 86400
 
 Outputs:
   WeatherApiUrl:

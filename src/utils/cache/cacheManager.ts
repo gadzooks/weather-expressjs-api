@@ -44,7 +44,7 @@ export function set<T>(key: string, value: T): boolean {
 export function clearCache(): CacheStats {
   const keys = cache.keys().length;
   cache.flushAll();
-  console.log(`Cache cleared: ${keys} keys removed`);
+  // console.log(`Cache cleared: ${keys} keys removed`);
   return {
     hits: 0,
     misses: 0,

@@ -8,6 +8,7 @@ import cors from 'cors';
 
 import forecasts from './routes/forecasts';
 import geo from './routes/geo';
+import { corsOptions } from './config/corsConfig';
 // import ExpressCache from 'express-cache-middleware';
 // import cacheManager from 'cache-manager';
 
@@ -21,7 +22,7 @@ const app: Express = express();
 //   })
 // )
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //   res.send('response')
 // })
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
 });
 
