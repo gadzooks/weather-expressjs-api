@@ -1,11 +1,19 @@
 name: Deploy PR to Dev
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - '**'  # Run for all branches with PRs
 
 jobs:
   deploy-dev:
+    # Only deploy if CI workflow succeeded and was triggered by a pull request
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-latest
     environment: dev
     permissions:
@@ -13,8 +21,11 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout code
+      - name: Checkout PR code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -101,6 +112,7 @@ jobs:
             const testEmoji = smokeTestStatus === 'success' ? '✅' : '❌';
 
             let message = `## ${emoji} Dev Deployment ${status}\n\n`;
+            message += `**Triggered by:** CI workflow completion\n\n`;
 
             if (apiUrl) {
               message += `**API URL:** ${apiUrl}\n\n`;
@@ -113,9 +125,19 @@ jobs:
               message += `**Smoke Test:** ${testEmoji} ${smokeTestStatus}\n`;
             }
 
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            // Get PR number from the workflow run event
+            const pulls = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: message
+              commit_sha: '${{ github.event.workflow_run.head_sha }}'
             });
+
+            if (pulls.data.length > 0) {
+              const prNumber = pulls.data[0].number;
+              await github.rest.issues.createComment({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: message
+              });
+            }
