@@ -1,3 +1,5 @@
+// corsConfig.ts
+
 import { CorsOptions } from 'cors';
 
 /**
@@ -47,7 +49,8 @@ export function getCorsOptions(): CorsOptions {
       return callback(new Error(errorMessage), false);
     },
     credentials: true, // Allow cookies and authentication headers
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    // methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET'],
     allowedHeaders: [
       'Content-Type',
       'Authorization',
