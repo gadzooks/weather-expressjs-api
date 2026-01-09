@@ -13,9 +13,10 @@ Weather REST API built with Express.js and TypeScript that fetches weather forec
 
 ## Environment Setup
 
-Required environment variable in `.env`:
+Required environment variables in `.env`:
 ```
 VC_API_KEY=your-visual-crossing-api-key
+CACHE_TTL_HOURS=3  # Optional: Forecast cache duration in hours (default: 3)
 ```
 
 ## Common Commands
@@ -198,6 +199,25 @@ SAM supports multiple environments through the `samconfig.toml` file:
 - **dev**: Development environment (`weather-expressjs-dev` stack)
 
 Each environment creates a separate CloudFormation stack with its own Lambda function and API Gateway.
+
+### Environment-Specific Cache Configuration
+
+The forecast cache duration is configurable per environment via the `CACHE_TTL_HOURS` environment variable:
+
+- **dev**: 24 hours - Longer cache to reduce API calls during development
+- **qa**: 12 hours - Extended cache for testing stability
+- **prod**: 3 hours - Fresher data for production users
+
+This is configured in three places:
+1. **template.yaml**: Defines the `CacheTTLHours` parameter (default: 3)
+2. **package.json**: Deployment scripts pass environment-specific values via `--parameter-overrides`
+3. **samconfig.toml**: Each environment section includes the `CacheTTLHours` parameter
+
+The cache is managed by:
+- **cacheManager.ts**: NodeCache instance with `stdTTL` set from `CACHE_TTL_HOURS` env var
+- **forecastCacheService.ts**: Per-location forecast caching with `expiresAt` timestamps
+
+For local development, set `CACHE_TTL_HOURS=3` in your `.env` file (or any value in hours).
 
 ### Important Notes
 
