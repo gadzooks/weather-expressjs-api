@@ -84,6 +84,19 @@ describe('CORS Configuration', () => {
       expect(options.maxAge).toBe(86400);
     });
 
+    it('should only allow GET method', () => {
+      process.env.ALLOWED_ORIGINS = 'http://localhost:3000';
+      const { getCorsOptions } = require('./corsConfig');
+      const options = getCorsOptions();
+
+      expect(options.methods).toEqual(['GET']);
+      expect(options.methods).toHaveLength(1);
+      expect(options.methods).not.toContain('POST');
+      expect(options.methods).not.toContain('PUT');
+      expect(options.methods).not.toContain('DELETE');
+      expect(options.methods).not.toContain('PATCH');
+    });
+
     it('should allow origin in whitelist', (done) => {
       process.env.ALLOWED_ORIGINS =
         'http://localhost:3000,https://example.com';
