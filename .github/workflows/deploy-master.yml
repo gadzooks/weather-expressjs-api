@@ -28,13 +28,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'yarn'
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: corepack yarn install --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: corepack yarn build
 
       - name: Setup AWS SAM CLI
         uses: aws-actions/setup-sam@v2
@@ -108,13 +110,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'yarn'
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: corepack yarn install --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: corepack yarn build
 
       - name: Setup AWS SAM CLI
         uses: aws-actions/setup-sam@v2
