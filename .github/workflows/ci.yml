@@ -25,7 +25,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'yarn'
+
+      - name: Enable Corepack and setup Yarn
+        run: |
+          corepack enable
+          hash -r
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -33,14 +38,14 @@ jobs:
       - name: Run linter
         run: yarn lint
 
+      - name: Build
+        run: yarn build
+
       - name: Run tests
         run: yarn test:all
 
       - name: Run tests with coverage
         run: yarn test:coverage
-
-      - name: Build
-        run: yarn build
 
   security:
     runs-on: ubuntu-latest
@@ -53,7 +58,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'yarn'
+
+      - name: Enable Corepack and setup Yarn
+        run: |
+          corepack enable
+          hash -r
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile

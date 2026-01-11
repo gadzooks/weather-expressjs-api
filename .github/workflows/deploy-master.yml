@@ -28,7 +28,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'yarn'
+
+      - name: Enable Corepack and setup Yarn
+        run: |
+          corepack enable
+          hash -r
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -108,7 +113,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'yarn'
+
+      - name: Enable Corepack and setup Yarn
+        run: |
+          corepack enable
+          hash -r
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
