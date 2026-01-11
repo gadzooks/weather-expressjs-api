@@ -1,0 +1,35 @@
+meta {
+  name: Clear WTA Cache
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseURL}}/api/wta/clear
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Success is true", function() {
+    expect(res.body).to.have.property('success');
+    expect(res.body.success).to.be.true;
+  });
+
+  test("Has message property", function() {
+    expect(res.body).to.have.property('message');
+    expect(res.body.message).to.include('WTA cache cleared');
+  });
+
+  test("Has keysCleared property", function() {
+    expect(res.body).to.have.property('keysCleared');
+    expect(res.body.keysCleared).to.be.a('number');
+    expect(res.body.keysCleared).to.be.at.least(0);
+  });
+}
