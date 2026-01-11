@@ -280,7 +280,7 @@ describe('WTA Service', () => {
       ];
 
       mockedCache.getKeys.mockReturnValue(mockKeys);
-      mockedCache.del.mockImplementation(() => true);
+      mockedCache.del.mockImplementation(() => 1);
 
       const result = clearWtaCache();
 

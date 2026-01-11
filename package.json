@@ -2,6 +2,7 @@
   "name": "weather-expressjs",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "yarn@4.12.0",
   "main": "dist/index.js",
   "scripts": {
     "build": "yarn build:clean && yarn build:typescript && yarn build:static",

@@ -1,0 +1,46 @@
+meta {
+  name: Get Trip Reports - With Subregion
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseURL}}/api/wta/reports?region=mount-rainier&subregion=longmire-and-paradise&page=1
+}
+
+params:query {
+  region: mount-rainier
+  subregion: longmire-and-paradise
+  page: 1
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response has data property", function() {
+    expect(res.body).to.have.property('data');
+  });
+
+  test("Data has reports array", function() {
+    expect(res.body.data).to.have.property('reports');
+    expect(res.body.data.reports).to.be.an('array');
+  });
+
+  test("Reports match subregion filter if present", function() {
+    if (res.body.data.reports.length > 0) {
+      const report = res.body.data.reports[0];
+      expect(report).to.have.property('region');
+      expect(report).to.have.property('subregion');
+    }
+  });
+
+  test("Response time is acceptable", function() {
+    expect(res.responseTime).to.be.below(20000);
+  });
+}

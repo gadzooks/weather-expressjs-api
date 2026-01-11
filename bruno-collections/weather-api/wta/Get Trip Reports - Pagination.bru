@@ -1,0 +1,36 @@
+meta {
+  name: Get Trip Reports - Pagination
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseURL}}/api/wta/reports?region=central-cascades&page=2
+}
+
+params:query {
+  region: central-cascades
+  page: 2
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Page number is correct", function() {
+    expect(res.body.data.page).to.equal(2);
+  });
+
+  test("Reports array exists", function() {
+    expect(res.body.data.reports).to.be.an('array');
+  });
+
+  test("Page size is 50", function() {
+    expect(res.body.data.pageSize).to.equal(50);
+  });
+}

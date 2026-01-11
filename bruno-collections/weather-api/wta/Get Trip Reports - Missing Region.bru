@@ -1,0 +1,24 @@
+meta {
+  name: Get Trip Reports - Missing Region
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseURL}}/api/wta/reports
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 400 for missing region", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("Error message is present", function() {
+    expect(res.body).to.have.property('error');
+    expect(res.body.error).to.include('region');
+  });
+}

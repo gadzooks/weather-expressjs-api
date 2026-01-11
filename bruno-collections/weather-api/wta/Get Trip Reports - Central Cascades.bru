@@ -1,0 +1,68 @@
+meta {
+  name: Get Trip Reports - Central Cascades
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseURL}}/api/wta/reports?region=central-cascades&page=1
+}
+
+params:query {
+  region: central-cascades
+  page: 1
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response has data property", function() {
+    expect(res.body).to.have.property('data');
+  });
+
+  test("Data has totalCount", function() {
+    expect(res.body.data).to.have.property('totalCount');
+    expect(res.body.data.totalCount).to.be.a('number');
+  });
+
+  test("Data has page and pageSize", function() {
+    expect(res.body.data).to.have.property('page');
+    expect(res.body.data).to.have.property('pageSize');
+    expect(res.body.data.page).to.equal(1);
+    expect(res.body.data.pageSize).to.equal(50);
+  });
+
+  test("Data has reports array", function() {
+    expect(res.body.data).to.have.property('reports');
+    expect(res.body.data.reports).to.be.an('array');
+  });
+
+  test("Each report has required fields", function() {
+    if (res.body.data.reports.length > 0) {
+      const report = res.body.data.reports[0];
+      expect(report).to.have.property('id');
+      expect(report).to.have.property('title');
+      expect(report).to.have.property('date');
+      expect(report).to.have.property('trailName');
+      expect(report).to.have.property('region');
+      expect(report).to.have.property('author');
+      expect(report.author).to.have.property('name');
+      expect(report).to.have.property('reportUrl');
+    }
+  });
+
+  test("Response has Cache-Control header", function() {
+    expect(res.headers['cache-control']).to.exist;
+    expect(res.headers['cache-control']).to.include('max-age=1800');
+  });
+
+  test("Response time is acceptable", function() {
+    expect(res.responseTime).to.be.below(20000);
+  });
+}
