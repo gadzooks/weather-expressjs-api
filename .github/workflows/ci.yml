@@ -27,7 +27,9 @@ jobs:
           node-version: '24'
 
       - name: Enable Corepack
-        run: corepack enable
+        run: |
+          corepack enable
+          corepack prepare yarn@4.12.0 --activate
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -57,7 +59,9 @@ jobs:
           node-version: '24'
 
       - name: Enable Corepack
-        run: corepack enable
+        run: |
+          corepack enable
+          corepack prepare yarn@4.12.0 --activate
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
