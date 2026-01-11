@@ -29,14 +29,12 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Enable Corepack and setup Yarn
-        run: |
-          corepack enable
-          hash -r
-          yarn --version
-
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: |
+          sudo rm -f /usr/local/bin/yarn /usr/local/bin/yarnpkg
+          corepack enable
+          yarn --version
+          yarn install --frozen-lockfile
 
       - name: Build
         run: yarn build
@@ -114,14 +112,12 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Enable Corepack and setup Yarn
-        run: |
-          corepack enable
-          hash -r
-          yarn --version
-
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: |
+          sudo rm -f /usr/local/bin/yarn /usr/local/bin/yarnpkg
+          corepack enable
+          yarn --version
+          yarn install --frozen-lockfile
 
       - name: Build
         run: yarn build
