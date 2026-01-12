@@ -36,6 +36,7 @@ yarn watch              # Run tests in watch mode
 # Code Quality
 yarn lint               # Run ESLint with auto-fix
 yarn prettier-format    # Format code with Prettier
+# Note: Pre-commit hooks automatically run lint and format on staged files
 
 # Build
 yarn build              # Full build (TypeScript + copy configs)

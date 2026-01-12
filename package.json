@@ -35,7 +35,8 @@
     "sam:deploy": "yarn sam:build && sam deploy --region us-west-1 --config-env prod --parameter-overrides \"EnvironmentType=prod VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=3 AllowedOrigins=https://weather.weekendwanderings.com\" --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
     "sam:deploy:qa": "yarn sam:build && sam deploy --region us-west-1 --config-env qa --parameter-overrides \"EnvironmentType=qa VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=12 AllowedOrigins=https://qa-weather-react.onrender.com\" --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
     "sam:deploy:dev": "yarn sam:build && sam deploy --region us-west-1 --config-env dev --parameter-overrides \"EnvironmentType=dev VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=24 AllowedOrigins=https://beta-weather-react.onrender.com,https://dev-weather-react.onrender.com,http://localhost:3000,http://localhost:5173,http://localhost:5174\" --no-confirm-changeset --resolve-s3 --capabilities CAPABILITY_IAM",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=24.x"
