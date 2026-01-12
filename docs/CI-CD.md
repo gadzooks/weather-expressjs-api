@@ -9,6 +9,30 @@ The project uses GitHub Actions for automated testing and deployment across thre
 - **QA**: Deployed automatically on merge to master
 - **Prod**: Deployed manually after QA deployment (requires approval)
 
+## Pre-commit Hooks
+
+This project uses **Husky** and **lint-staged** to automatically run linting and formatting on staged files before each commit.
+
+**What happens on commit:**
+- Husky triggers the pre-commit hook
+- lint-staged runs ESLint and Prettier only on staged `.ts` files
+- If linting fails, the commit is blocked
+- If linting succeeds, the commit proceeds
+
+**Configuration:**
+- `.husky/pre-commit` - Husky hook that runs `yarn lint-staged`
+- `.lintstagedrc.json` - Defines which commands run on staged files
+
+**Benefits:**
+- Catches linting errors early, before they reach CI
+- Reduces CI failures and speeds up development
+- Automatically formats code to match project standards
+- Only checks files you're committing (fast feedback)
+
+**Note:** Pre-commit hooks run locally. The CI workflow still runs full lint, build, and tests on all files to ensure nothing is missed.
+
+---
+
 ## Workflows
 
 ### 1. CI Workflow (`.github/workflows/ci.yml`)
@@ -151,7 +175,7 @@ To enable the manual approval gate for production deployments:
 
 ### 3. Enable Branch Protection (Make CI Required)
 
-To ensure all PRs pass tests before merging:
+To ensure all PRs pass tests, build, and lint before merging:
 
 1. Go to **Settings → Branches**
 2. Click **Add branch protection rule**
@@ -159,11 +183,16 @@ To ensure all PRs pass tests before merging:
 4. Check the following options:
    - ✅ **Require a pull request before merging**
    - ✅ **Require status checks to pass before merging**
-   - Select the `test` status check (from the CI workflow)
+   - Select the **`test`** status check (from the CI workflow) - this is REQUIRED
+   - Optionally select the **`security`** status check for additional security validation
    - ✅ **Require branches to be up to date before merging**
+   - ✅ **Do not allow bypassing the above settings** (to prevent merging failed PRs even by admins)
+   - Alternatively: ✅ **Allow specified actors to bypass required pull requests** and add specific admin users who can override in emergency situations
 5. Click **Create** or **Save changes**
 
-**Result:** PRs cannot be merged unless the CI workflow's `test` job passes.
+**Result:** PRs cannot be merged unless the CI workflow's `test` job passes (which includes lint, build, and tests). Only designated admins can bypass these checks if configured.
+
+**Note:** The `security` job runs `yarn audit` and Trivy scanner with `continue-on-error: true`, so it won't block PRs but will show warnings for security issues.
 
 ---
 
@@ -286,16 +315,27 @@ The production deployment will then proceed.
 - Verify that you're added as a required reviewer
 - Check that the workflow references `environment: production`
 
+### Pre-commit hooks not running
+- Ensure Husky is installed: `yarn install`
+- Verify `.husky/pre-commit` file exists and is executable
+- Check that you're committing from within the git repository
+- Try running manually: `yarn lint-staged`
+
+### Pre-commit hook fails but you need to commit anyway
+- Fix the linting errors shown in the output
+- Or run `git commit --no-verify` to bypass hooks (not recommended - CI will still catch the issues)
+
 ---
 
 ## Best Practices
 
 1. **Always create a PR** - Never push directly to master
-2. **Wait for CI to pass** - Don't merge failing PRs
-3. **Test in dev** - Verify your changes work in the dev deployment before merging
-4. **Review QA deployment** - Check the QA environment before approving production
-5. **Monitor deployments** - Watch CloudWatch logs after production deployments
-6. **Use semantic commit messages** - Helps track changes in deployment history
+2. **Let pre-commit hooks run** - They catch issues before they reach CI (lint errors, formatting)
+3. **Wait for CI to pass** - Don't merge failing PRs (CI checks build, lint, and all tests)
+4. **Test in dev** - Verify your changes work in the dev deployment before merging
+5. **Review QA deployment** - Check the QA environment before approving production
+6. **Monitor deployments** - Watch CloudWatch logs after production deployments
+7. **Use semantic commit messages** - Helps track changes in deployment history
 
 ---
 

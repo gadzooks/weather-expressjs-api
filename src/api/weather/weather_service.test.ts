@@ -1,9 +1,17 @@
 // weather_service.test.ts
 
-import { initializeForecastResponse, parseResponse } from './weather_service';
+import {
+  initializeForecastResponse,
+  parseResponse,
+  getHourlyForecastForLocation
+} from './weather_service';
 import { loadRegions } from '../../utils/forecast/configParser';
 import { mockVisualCrossingForecast } from '../mock/mock_vc_service';
 import { ForecastResponse } from '../../interfaces/forecast/ForecastResponse';
+import { Location } from '../../interfaces/geo/Location';
+import Forecast from '../../interfaces/forecast/Forecast';
+import DailyForecastWithHours from '../../interfaces/forecast/DailyForecastWithHours';
+import * as forecastCacheService from '../../utils/cache/forecastCacheService';
 
 const REGIONS = loadRegions();
 let results: ForecastResponse;
@@ -15,8 +23,9 @@ beforeEach(() => {
 describe('parse forecast response', () => {
   it('should handle null forecast', () => {
     const region = REGIONS['cities'];
-    expect(() => parseResponse(null, results, region, region.locations[0])).not
-      .toThrow();
+    expect(() =>
+      parseResponse(null, results, region, region.locations[0])
+    ).not.toThrow();
   });
 
   it('should parse forecast for a region correctly', async () => {
@@ -78,5 +87,253 @@ describe('parse forecast response', () => {
 
     const allAlertIds = results.allAlertIds;
     expect(allAlertIds).toEqual([alertId]);
+  });
+});
+
+describe('getHourlyForecastForLocation', () => {
+  const mockLocation: Location = {
+    name: 'test_location',
+    region: 'test_region',
+    description: 'Test Location',
+    latitude: 47.6,
+    longitude: -122.3
+  };
+
+  const mockForecast: Forecast = {
+    latitude: 47.6,
+    longitude: -122.3,
+    description: 'Test forecast',
+    days: [
+      {
+        datetime: '2026-01-11',
+        tempmax: 50,
+        tempmin: 40,
+        precip: 0.1,
+        precipprob: 50,
+        precipcover: 10,
+        cloudCover: 0.5,
+        sunrise: '07:00:00',
+        sunset: '17:00:00',
+        moonphase: 0.5,
+        conditions: 'Cloudy',
+        description: 'Cloudy day',
+        icon: 'cloudy',
+        hours: [
+          {
+            datetime: '00:00:00',
+            datetimeEpoch: 1768118400,
+            temp: 42,
+            feelslike: 40,
+            humidity: 80,
+            dew: 38,
+            precip: 0,
+            precipprob: 0,
+            preciptype: null,
+            snow: 0,
+            snowdepth: 0,
+            windgust: 10,
+            windspeed: 5,
+            winddir: 180,
+            pressure: 1020,
+            visibility: 10,
+            cloudcover: 50,
+            solarradiation: 0,
+            solarenergy: 0,
+            uvindex: 0,
+            severerisk: 10,
+            conditions: 'Cloudy',
+            icon: 'cloudy'
+          }
+        ]
+      } as DailyForecastWithHours,
+      {
+        datetime: '2026-01-12',
+        tempmax: 52,
+        tempmin: 42,
+        precip: 0.2,
+        precipprob: 60,
+        precipcover: 20,
+        cloudCover: 0.7,
+        sunrise: '07:00:00',
+        sunset: '17:00:00',
+        moonphase: 0.6,
+        conditions: 'Rain',
+        description: 'Rainy day',
+        icon: 'rain',
+        hours: []
+      } as DailyForecastWithHours
+    ] as DailyForecastWithHours[],
+    alerts: []
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    forecastCacheService.clearAll();
+  });
+
+  it('should return HourlyForecastResponse with location metadata', async () => {
+    const callback = jest.fn().mockResolvedValue(mockForecast);
+
+    const result = await getHourlyForecastForLocation(
+      mockLocation,
+      callback,
+      'test-endpoint'
+    );
+
+    expect(result.location.name).toBe('test_location');
+    expect(result.days).toHaveLength(2);
+    expect(result.totalHours).toBe(1);
+    expect(callback).toHaveBeenCalledWith(mockLocation);
+  });
+
+  it('should filter by date range', async () => {
+    const callback = jest.fn().mockResolvedValue({
+      ...mockForecast,
+      days: [
+        {
+          datetime: '2026-01-10',
+          hours: [],
+          tempmax: 50,
+          tempmin: 40,
+          precip: 0,
+          precipprob: 0,
+          precipcover: 0,
+          cloudCover: 0,
+          sunrise: '07:00:00',
+          sunset: '17:00:00',
+          moonphase: 0.5,
+          conditions: 'Clear',
+          description: 'Clear day',
+          icon: 'clear-day'
+        },
+        {
+          datetime: '2026-01-11',
+          hours: [],
+          tempmax: 50,
+          tempmin: 40,
+          precip: 0,
+          precipprob: 0,
+          precipcover: 0,
+          cloudCover: 0,
+          sunrise: '07:00:00',
+          sunset: '17:00:00',
+          moonphase: 0.5,
+          conditions: 'Clear',
+          description: 'Clear day',
+          icon: 'clear-day'
+        },
+        {
+          datetime: '2026-01-12',
+          hours: [],
+          tempmax: 50,
+          tempmin: 40,
+          precip: 0,
+          precipprob: 0,
+          precipcover: 0,
+          cloudCover: 0,
+          sunrise: '07:00:00',
+          sunset: '17:00:00',
+          moonphase: 0.5,
+          conditions: 'Clear',
+          description: 'Clear day',
+          icon: 'clear-day'
+        },
+        {
+          datetime: '2026-01-13',
+          hours: [],
+          tempmax: 50,
+          tempmin: 40,
+          precip: 0,
+          precipprob: 0,
+          precipcover: 0,
+          cloudCover: 0,
+          sunrise: '07:00:00',
+          sunset: '17:00:00',
+          moonphase: 0.5,
+          conditions: 'Clear',
+          description: 'Clear day',
+          icon: 'clear-day'
+        }
+      ]
+    });
+
+    const result = await getHourlyForecastForLocation(
+      mockLocation,
+      callback,
+      'test-endpoint',
+      { startDate: '2026-01-11', endDate: '2026-01-12' }
+    );
+
+    expect(result.days).toHaveLength(2);
+    expect(result.requestedDates).toEqual(['2026-01-11', '2026-01-12']);
+    expect(result.days[0].datetime).toBe('2026-01-11');
+    expect(result.days[1].datetime).toBe('2026-01-12');
+  });
+
+  it('should calculate total hours correctly', async () => {
+    const callback = jest.fn().mockResolvedValue(mockForecast);
+
+    const result = await getHourlyForecastForLocation(
+      mockLocation,
+      callback,
+      'test-endpoint'
+    );
+
+    expect(result.totalHours).toBe(1); // One hour in first day
+  });
+
+  it('should throw error if callback returns null', async () => {
+    const callback = jest.fn().mockResolvedValue(null);
+
+    await expect(
+      getHourlyForecastForLocation(mockLocation, callback, 'test-endpoint')
+    ).rejects.toThrow('Failed to fetch forecast for location: test_location');
+  });
+
+  it('should handle empty hours arrays', async () => {
+    const callback = jest.fn().mockResolvedValue({
+      ...mockForecast,
+      days: [
+        {
+          datetime: '2026-01-11',
+          hours: [],
+          tempmax: 50,
+          tempmin: 40,
+          precip: 0,
+          precipprob: 0,
+          precipcover: 0,
+          cloudCover: 0,
+          sunrise: '07:00:00',
+          sunset: '17:00:00',
+          moonphase: 0.5,
+          conditions: 'Clear',
+          description: 'Clear day',
+          icon: 'clear-day'
+        },
+        {
+          datetime: '2026-01-12',
+          tempmax: 50,
+          tempmin: 40,
+          precip: 0,
+          precipprob: 0,
+          precipcover: 0,
+          cloudCover: 0,
+          sunrise: '07:00:00',
+          sunset: '17:00:00',
+          moonphase: 0.5,
+          conditions: 'Clear',
+          description: 'Clear day',
+          icon: 'clear-day'
+        }
+      ]
+    });
+
+    const result = await getHourlyForecastForLocation(
+      mockLocation,
+      callback,
+      'test-endpoint'
+    );
+
+    expect(result.totalHours).toBe(0);
   });
 });
