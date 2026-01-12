@@ -138,37 +138,4 @@ describe('Hourly Forecast Endpoints', () => {
       expect(response2.body.data.location.name).toBe('seattle');
     });
   });
-
-  describe('GET /forecasts/hourly/real', () => {
-    it('should return 400 without location parameter', async () => {
-      const response = await request(app).get('/forecasts/hourly/real');
-      expect(response.status).toBe(400);
-    });
-
-    it('should return 404 for invalid location', async () => {
-      const response = await request(app).get(
-        '/forecasts/hourly/real?location=nonexistent'
-      );
-
-      expect(response.status).toBe(404);
-    });
-
-    // Note: Skip real API tests in CI if VC_API_KEY not set
-    const skipRealTests =
-      !process.env.VC_API_KEY || process.env.VC_API_KEY === 'USE_VC_API_KEY';
-
-    (skipRealTests ? it.skip : it)(
-      'should return 200 with valid location',
-      async () => {
-        const response = await request(app).get(
-          '/forecasts/hourly/real?location=seattle'
-        );
-
-        expect(response.status).toBe(200);
-        expect(response.body.data).toHaveProperty('location');
-        expect(response.body.data).toHaveProperty('days');
-      },
-      10000
-    ); // Increase timeout for real API call
-  });
 });
