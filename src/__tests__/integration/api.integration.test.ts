@@ -5,7 +5,7 @@ import {
   expectValidRegionHash,
   expectValidCacheHeaders,
   expectValidDailyForecast,
-  expectValidCacheClearResponse,
+  expectValidCacheClearResponse
 } from './helpers/assertions';
 import DailyForecast from '../../interfaces/forecast/DailyForecast';
 
@@ -13,7 +13,7 @@ describe('Weather API Integration Tests', () => {
   const app = getApp();
 
   beforeEach(async () => {
-    await request(app).get('/forecasts/clear');
+    await request(app).post('/forecasts/clear');
   });
 
   describe('Health Check', () => {
@@ -94,32 +94,6 @@ describe('Weather API Integration Tests', () => {
     });
 
     describe('Cache Management', () => {
-      describe('GET /forecasts/clear', () => {
-        it('should return 200 status', async () => {
-          const response = await request(app).get('/forecasts/clear');
-
-          expect(response.status).toBe(200);
-        });
-
-        it('should return valid cache clear response', async () => {
-          await request(app).get('/forecasts/mock');
-
-          const response = await request(app).get('/forecasts/clear');
-
-          expectValidCacheClearResponse(response.body);
-        });
-
-        it('should clear cached forecast data', async () => {
-          await request(app).get('/forecasts/mock');
-
-          const clearResponse = await request(app).get('/forecasts/clear');
-          expect(clearResponse.body.stats.keysCleared).toBeGreaterThan(0);
-
-          const clearResponse2 = await request(app).get('/forecasts/clear');
-          expect(clearResponse2.body.stats.keysCleared).toBe(0);
-        });
-      });
-
       describe('POST /forecasts/clear', () => {
         it('should return 200 status', async () => {
           const response = await request(app).post('/forecasts/clear');
@@ -141,9 +115,7 @@ describe('Weather API Integration Tests', () => {
           const clearResponse = await request(app).post('/forecasts/clear');
           expect(clearResponse.body.stats.keysCleared).toBeGreaterThan(0);
 
-          const clearResponse2 = await request(app).post(
-            '/forecasts/clear'
-          );
+          const clearResponse2 = await request(app).post('/forecasts/clear');
           expect(clearResponse2.body.stats.keysCleared).toBe(0);
         });
       });

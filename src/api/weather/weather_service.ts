@@ -14,6 +14,10 @@ import Alert from '../../interfaces/forecast/Alert';
 import * as forecastCacheService from '../../utils/cache/forecastCacheService';
 import { HourlyForecastResponse } from '../../interfaces/forecast/HourlyForecastResponse';
 import DailyForecastWithHours from '../../interfaces/forecast/DailyForecastWithHours';
+import { LocationForecastResponse } from '../../interfaces/forecast/LocationForecastResponse';
+import { CachedForecast } from '../../interfaces/cache/CachedForecast';
+import * as cacheManager from '../../utils/cache/cacheManager';
+import { CACHE_TTL_MS } from '../../utils/cache/cacheManager';
 
 export async function getForecastForAllRegions(
   regionHash: RegionHash,
@@ -280,4 +284,61 @@ function filterByDateRange(
     if (endDate && date > endDate) return false;
     return true;
   });
+}
+
+// Get forecast for a single location
+export async function getForecastForLocation(
+  location: Location,
+  region: Region,
+  callback: (location: Location) => Promise<Forecast | null>,
+  endpoint: string = 'real'
+): Promise<LocationForecastResponse> {
+  // Check cache first
+  const cached = forecastCacheService.get(location, endpoint);
+
+  let forecast: Forecast | null;
+  let wasCached = false;
+  let expiresAt: number | undefined;
+
+  if (cached) {
+    console.log(
+      `Cache hit for location: ${location.name}, endpoint: ${endpoint}`
+    );
+    forecast = cached;
+    wasCached = true;
+
+    // Get expiration time from cache
+    const cacheKey = forecastCacheService.getCacheKey(location, endpoint);
+    const cachedData = cacheManager.get<CachedForecast>(cacheKey);
+    if (cachedData) {
+      expiresAt = cachedData.expiresAt;
+    }
+  } else {
+    console.log(
+      `Cache miss for location: ${location.name}, endpoint: ${endpoint}`
+    );
+    forecast = await callback(location);
+
+    if (forecast) {
+      forecastCacheService.set(location, forecast, endpoint);
+      // Calculate expiration
+      expiresAt = Date.now() + CACHE_TTL_MS;
+    }
+  }
+
+  if (!forecast) {
+    throw new Error(`Failed to fetch forecast for location: ${location.name}`);
+  }
+
+  return {
+    location,
+    forecast: forecast.days,
+    alerts: forecast.alerts || [],
+    region,
+    metadata: {
+      cached: wasCached,
+      endpoint,
+      expiresAt
+    }
+  };
 }

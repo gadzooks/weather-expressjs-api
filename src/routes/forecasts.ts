@@ -5,13 +5,15 @@ import { mockVisualCrossingForecast } from '../api/mock/mock_vc_service';
 import { VisualCrossingApi } from '../api/weather/visual_crossing';
 import {
   getForecastForAllRegions,
-  getHourlyForecastForLocation
+  getHourlyForecastForLocation,
+  getForecastForLocation
 } from '../api/weather/weather_service';
-import { RegionHash } from '../interfaces/geo/Region';
+import { RegionHash, Region } from '../interfaces/geo/Region';
 import { Location } from '../interfaces/geo/Location';
 import { loadRegions } from '../utils/forecast/configParser';
 import * as forecastCacheService from '../utils/cache/forecastCacheService';
 import { HourlyForecastResponse } from '../interfaces/forecast/HourlyForecastResponse';
+import { LocationForecastResponse } from '../interfaces/forecast/LocationForecastResponse';
 const router = Router();
 
 const regionHash: RegionHash = loadRegions();
@@ -251,6 +253,120 @@ router.get('/hourly/real', async function (req, res) {
     res.status(200).json({ data: result });
   } catch (err) {
     console.error('Error in /forecasts/hourly/real:', err);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: err instanceof Error ? err.message : String(err)
+    });
+  }
+});
+
+// GET /location/:locationName/mock - Get mock forecast for a single location
+router.get('/location/:locationName/mock', async function (req, res) {
+  try {
+    const locationName = req.params.locationName;
+
+    // Find location in config
+    const location = findLocationByName(regionHash, locationName);
+    if (!location) {
+      return res.status(404).json({
+        error: 'Location not found',
+        message: `Location '${locationName}' does not exist in configuration`,
+        availableLocations: getAllLocationNames(regionHash)
+      });
+    }
+
+    // Find region for this location
+    let region: Region | null = null;
+    for (const regionKey in regionHash) {
+      // eslint-disable-next-line security/detect-object-injection
+      const r = regionHash[regionKey];
+      if (r.locations.some((loc) => loc.name === locationName)) {
+        region = r;
+        break;
+      }
+    }
+
+    if (!region) {
+      return res.status(500).json({
+        error: 'Internal server error',
+        message: `Could not find region for location: ${locationName}`
+      });
+    }
+
+    // Fetch forecast (from cache or API)
+    const result: LocationForecastResponse = await getForecastForLocation(
+      location,
+      region,
+      mockVisualCrossingForecast,
+      'mock'
+    );
+
+    // Set cache headers
+    res.set({
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      Vary: 'Accept-Encoding'
+    });
+
+    res.status(200).json({ data: result });
+  } catch (err) {
+    console.error('Error in /forecasts/location/:locationName/mock:', err);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: err instanceof Error ? err.message : String(err)
+    });
+  }
+});
+
+// GET /location/:locationName/real - Get real forecast for a single location
+router.get('/location/:locationName/real', async function (req, res) {
+  try {
+    const locationName = req.params.locationName;
+
+    // Find location in config
+    const location = findLocationByName(regionHash, locationName);
+    if (!location) {
+      return res.status(404).json({
+        error: 'Location not found',
+        message: `Location '${locationName}' does not exist in configuration`,
+        availableLocations: getAllLocationNames(regionHash)
+      });
+    }
+
+    // Find region for this location
+    let region: Region | null = null;
+    for (const regionKey in regionHash) {
+      // eslint-disable-next-line security/detect-object-injection
+      const r = regionHash[regionKey];
+      if (r.locations.some((loc) => loc.name === locationName)) {
+        region = r;
+        break;
+      }
+    }
+
+    if (!region) {
+      return res.status(500).json({
+        error: 'Internal server error',
+        message: `Could not find region for location: ${locationName}`
+      });
+    }
+
+    // Fetch forecast (from cache or API)
+    const result: LocationForecastResponse = await getForecastForLocation(
+      location,
+      region,
+      VisualCrossingApi.getForecast,
+      'real'
+    );
+
+    // Set cache headers
+    res.set({
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      Vary: 'Accept-Encoding'
+    });
+
+    res.status(200).json({ data: result });
+  } catch (err) {
+    console.error('Error in /forecasts/location/:locationName/real:', err);
     res.status(500).json({
       error: 'Internal server error',
       message: err instanceof Error ? err.message : String(err)
