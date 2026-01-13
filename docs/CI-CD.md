@@ -153,7 +153,7 @@ Navigate to your repository's **Settings → Secrets and variables → Actions**
 - `AWSLambda_FullAccess`
 - `AmazonAPIGatewayAdministrator`
 - `IAMFullAccess`
-- S3 permissions for `aws-sam-cli-managed-*` buckets
+- S3 Full Access (for `gadzooks-sam-artifacts` bucket and `aws-sam-cli-managed-*` buckets)
 
 ---
 
@@ -276,6 +276,133 @@ yarn sam:deploy
 ```
 
 See [CLAUDE.md](../CLAUDE.md) for more details on manual deployment commands.
+
+---
+
+## S3 Storage Optimization
+
+Deployment artifacts are stored in a custom S3 bucket with aggressive cost optimization to minimize storage costs.
+
+### Bucket Configuration
+
+**Bucket Name:** `gadzooks-sam-artifacts`
+
+**Management:** The S3 bucket is managed **independently** via the `scripts/create-s3-bucket.sh` script, NOT as part of the CloudFormation stack. This design ensures:
+- The bucket persists even if CloudFormation stacks are deleted
+- Multiple projects can share the same bucket with different prefixes
+- Lifecycle policies apply consistently across all projects
+
+**Directory Structure:**
+```
+gadzooks-sam-artifacts/
+├── weather-expressjs/
+│   ├── dev/        # Dev environment deployment packages
+│   ├── qa/         # QA environment deployment packages
+│   └── prod/       # Production environment deployment packages
+└── <future-projects>/
+```
+
+### Cost Optimization Strategy
+
+The bucket is configured to keep **only 1 version** of Lambda deployment artifacts per environment:
+
+1. **Versioning Disabled**
+   - S3 versioning is suspended (not enabled)
+   - New deployments **overwrite** previous deployment packages
+   - Guarantees only the current version exists
+
+2. **1-Day Lifecycle Policy**
+   - Automatically deletes objects older than 1 day
+   - Cleans up any temporary build artifacts
+   - Runs daily at midnight UTC
+
+3. **Security Best Practices**
+   - Public access completely blocked
+   - All objects are private
+   - IAM-based access control only
+
+### Cost Impact
+
+**Estimated Monthly Cost:** < $0.01/month
+- Deployment package size: ~5-10 MB per environment
+- 3 environments × 1 version = 15-30 MB total storage
+- S3 Standard pricing: $0.023/GB/month
+
+**Savings:** 90%+ reduction compared to indefinite artifact retention
+
+### Initial Setup
+
+The S3 bucket must be created once before first deployment:
+
+```bash
+# Run the initialization script
+bash scripts/create-s3-bucket.sh
+
+# Verify bucket exists
+aws s3 ls s3://gadzooks-sam-artifacts --profile claudia
+```
+
+This script:
+- Creates the `gadzooks-sam-artifacts` bucket in `us-west-1`
+- Disables versioning (ensures 1 version only)
+- Applies 1-day lifecycle policy
+- Blocks all public access
+- Adds resource tags
+
+### Monitoring Storage
+
+Check bucket contents and size:
+
+```bash
+# List all objects in the bucket
+aws s3 ls s3://gadzooks-sam-artifacts --recursive --profile claudia
+
+# Get bucket size and object count
+aws s3 ls s3://gadzooks-sam-artifacts --recursive --summarize --profile claudia
+
+# Expected result: 3-6 objects total (one per environment)
+```
+
+### Rollback Considerations
+
+**Important:** Since only 1 version is retained per environment, instant rollback to a previous Lambda version is **not possible** via S3.
+
+**Rollback Strategy:**
+To rollback to a previous version, redeploy from git history:
+
+```bash
+# Find the commit with the working version
+git log --oneline
+
+# Checkout that commit
+git checkout <commit-hash>
+
+# Deploy to the affected environment
+yarn sam:deploy         # Production
+yarn sam:deploy:qa      # QA
+yarn sam:deploy:dev     # Dev
+
+# Return to latest code
+git checkout master
+```
+
+**Alternative:** If you need frequent rollbacks, consider:
+- Enabling S3 versioning (increases storage costs)
+- Increasing lifecycle policy retention (e.g., 7 days instead of 1 day)
+- Using Lambda versioning/aliases (deployed via CloudFormation)
+
+### CI/CD Integration
+
+GitHub Actions workflows automatically use the custom S3 bucket:
+- `.github/workflows/deploy-pr.yml` - Uses `--resolve-s3` (GitHub manages bucket)
+- `.github/workflows/deploy-master.yml` - Uses `--resolve-s3` (GitHub manages bucket)
+
+**Note:** GitHub Actions still use SAM's `--resolve-s3` flag, which creates auto-managed buckets. The custom `gadzooks-sam-artifacts` bucket is used for **local deployments only** via the `--profile claudia` flag.
+
+For full CI/CD integration with the custom bucket, update the workflow files to use:
+```yaml
+--s3-bucket gadzooks-sam-artifacts --s3-prefix weather-expressjs/${{ env.ENVIRONMENT }}
+```
 
 ---
 
