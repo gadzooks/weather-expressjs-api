@@ -16,7 +16,6 @@ region = "us-west-1"
 profile = "claudia"
 
 [default.package.parameters]
-s3_bucket = "gadzooks-sam-artifacts"
 
 [default.sync.parameters]
 watch = true
