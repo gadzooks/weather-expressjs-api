@@ -287,6 +287,11 @@ Deployment artifacts are stored in a custom S3 bucket with aggressive cost optim
 
 **Bucket Name:** `gadzooks-sam-artifacts`
 
+**Management:** The S3 bucket is managed **independently** via the `scripts/create-s3-bucket.sh` script, NOT as part of the CloudFormation stack. This design ensures:
+- The bucket persists even if CloudFormation stacks are deleted
+- Multiple projects can share the same bucket with different prefixes
+- Lifecycle policies apply consistently across all projects
+
 **Directory Structure:**
 ```
 gadzooks-sam-artifacts/

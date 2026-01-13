@@ -178,7 +178,8 @@ yarn sam:local           # Start local API server at http://localhost:3000
 
 Deployment artifacts are stored in a custom S3 bucket with aggressive cost optimization:
 
-**Bucket:** `gadzooks-sam-artifacts`
+**Bucket:** `gadzooks-sam-artifacts` (managed independently, not part of CloudFormation stack)
+
 **Structure:**
 ```
 gadzooks-sam-artifacts/
@@ -195,13 +196,16 @@ gadzooks-sam-artifacts/
 - **Estimated cost:** < $0.01/month for all environments
 - **Public access blocked** - All security best practices enabled
 
+**Important:** The S3 bucket is managed **independently** via the creation script, NOT as part of the CloudFormation stack. This ensures the bucket persists across stack deletions and can be shared by multiple projects.
+
 **Initial Setup (One-time):**
 ```bash
 # Create the S3 bucket with lifecycle policies
 bash scripts/create-s3-bucket.sh
 
-# Verify bucket exists
+# Verify bucket exists and configuration
 aws s3 ls s3://gadzooks-sam-artifacts --profile claudia
+aws s3api get-bucket-lifecycle-configuration --bucket gadzooks-sam-artifacts --profile claudia
 ```
 
 **Monitoring Storage:**
