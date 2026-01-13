@@ -136,3 +136,6 @@ samconfig.toml.bak
 .claude/
 
 .idea
+
+# Generated git properties for actuator
+git.properties

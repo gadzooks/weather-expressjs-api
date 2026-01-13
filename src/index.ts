@@ -5,21 +5,94 @@ import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import actuator from 'express-actuator';
+import swaggerUi from 'swagger-ui-express';
+import * as yaml from 'js-yaml';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import forecasts from './routes/forecasts';
 import geo from './routes/geo';
 import wta from './routes/wta';
 import { corsOptions } from './config/corsConfig';
+import { checkAllDependencies } from './utils/health/healthChecks';
 
 dotenv.config();
 
 const app: Express = express();
 
-
 app.use(cors(corsOptions));
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Swagger API documentation (non-prod only)
+const envType =
+  process.env.ENVIRONMENT_TYPE || process.env.NODE_ENV || 'development';
+const isProduction = envType === 'prod' || envType === 'production';
+
+if (!isProduction) {
+  try {
+    const swaggerPath = path.join(__dirname, 'config', 'swagger.yml');
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    const swaggerDocument = yaml.load(
+      fs.readFileSync(swaggerPath, 'utf8')
+    ) as object;
+
+    // Serve the OpenAPI spec as JSON at /api-docs.json
+    app.get('/api-docs.json', (_req: Request, res: Response) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(swaggerDocument);
+    });
+
+    // Serve Swagger UI
+    app.use('/api-docs', swaggerUi.serve);
+    app.get(
+      '/api-docs',
+      swaggerUi.setup(swaggerDocument, {
+        customCss: '.swagger-ui .topbar { display: none }',
+        customSiteTitle: 'Weather API Documentation',
+        swaggerOptions: {
+          url: '/api-docs.json',
+          persistAuthorization: true
+        }
+      })
+    );
+
+    console.log(`Swagger UI available at /api-docs (environment: ${envType})`);
+  } catch (error) {
+    console.error('Failed to load Swagger documentation:', error);
+  }
+} else {
+  console.log('Swagger UI disabled in production environment');
+}
+
+// Actuator endpoints for health monitoring
+app.use(
+  actuator({
+    infoGitMode: 'full', // Include full git information in /info endpoint
+    customEndpoints: [
+      {
+        id: 'dependencies', // Creates /dependencies endpoint
+        controller: async (_req: Request, res: Response) => {
+          try {
+            const healthStatus = await checkAllDependencies();
+            res
+              .status(healthStatus.status === 'UP' ? 200 : 503)
+              .json(healthStatus);
+          } catch (error) {
+            const errorMessage =
+              error instanceof Error ? error.message : 'Unknown error';
+            res.status(503).json({
+              status: 'DOWN',
+              error: errorMessage
+            });
+          }
+        }
+      }
+    ]
+  })
+);
 
 app.get('/', (_req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
@@ -28,7 +101,6 @@ app.get('/', (_req: Request, res: Response) => {
 app.use('/forecasts', forecasts);
 app.use('/geo', geo);
 app.use('/api/wta', wta);
-
 
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV === 'development') {
