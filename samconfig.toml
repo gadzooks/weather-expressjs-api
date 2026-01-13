@@ -11,7 +11,6 @@ parallel = true
 [default.deploy.parameters]
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
-s3_bucket = "gadzooks-sam-artifacts"
 region = "us-west-1"
 profile = "claudia"
 
