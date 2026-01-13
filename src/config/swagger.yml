@@ -1,0 +1,549 @@
+openapi: 3.0.0
+info:
+  title: Weather Express API
+  version: 0.0.1
+  description: |
+    Weather REST API built with Express.js and TypeScript that fetches weather forecasts
+    from the Visual Crossing API. The application is organized around geographic regions
+    and locations, with forecast data normalized into a Redux-like structure.
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://dev-weather-expressjs.onrender.com
+    description: Development environment
+  - url: https://qa-weather-expressjs.onrender.com
+    description: QA environment
+
+tags:
+  - name: Health
+    description: Health check and monitoring endpoints
+  - name: Forecasts
+    description: Weather forecast endpoints for regions and locations
+  - name: Geo
+    description: Geographic locations and regions
+  - name: WTA
+    description: Washington Trails Association trip reports
+
+paths:
+  /:
+    get:
+      summary: Home page
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Welcome message
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /health:
+    get:
+      summary: Health check endpoint
+      tags:
+        - Health
+      description: Returns the health status of the application
+      responses:
+        '200':
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: UP
+
+  /info:
+    get:
+      summary: Application info
+      tags:
+        - Health
+      description: Returns application information including git details
+      responses:
+        '200':
+          description: Application information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  git:
+                    type: object
+                    description: Git repository information
+
+  /dependencies:
+    get:
+      summary: Dependency health check
+      tags:
+        - Health
+      description: Checks health of all external dependencies
+      responses:
+        '200':
+          description: All dependencies are healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: UP
+        '503':
+          description: One or more dependencies are down
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: DOWN
+                  error:
+                    type: string
+
+  /forecasts/mock:
+    get:
+      summary: Get mock forecasts for all regions
+      tags:
+        - Forecasts
+      description: Returns mock weather forecasts for all configured regions and locations
+      responses:
+        '200':
+          description: Successful response with mock forecast data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /forecasts/real:
+    get:
+      summary: Get real forecasts for all regions
+      tags:
+        - Forecasts
+      description: Returns live weather forecasts from Visual Crossing API for all configured regions
+      responses:
+        '200':
+          description: Successful response with real forecast data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /forecasts/clear:
+    post:
+      summary: Clear forecast cache
+      tags:
+        - Forecasts
+      description: Clears the forecast cache for all endpoints or a specific endpoint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  description: Optional specific endpoint to clear (e.g., 'mock', 'real')
+      responses:
+        '200':
+          description: Cache cleared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  stats:
+                    type: object
+                    properties:
+                      keysCleared:
+                        type: number
+                      endpoint:
+                        type: string
+                      timestamp:
+                        type: string
+        '500':
+          description: Failed to clear cache
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /forecasts/hourly/mock:
+    get:
+      summary: Get mock hourly forecast for a location
+      tags:
+        - Forecasts
+      description: Returns mock hourly weather forecast for a specific location
+      parameters:
+        - name: location
+          in: query
+          required: true
+          description: Location name (e.g., 'san_juan')
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          required: false
+          description: Start date in ISO format (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: End date in ISO format (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Successful response with hourly forecast data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HourlyForecastResponse'
+        '400':
+          description: Bad request - missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationNotFoundError'
+
+  /forecasts/hourly/real:
+    get:
+      summary: Get real hourly forecast for a location
+      tags:
+        - Forecasts
+      description: Returns live hourly weather forecast from Visual Crossing API for a specific location
+      parameters:
+        - name: location
+          in: query
+          required: true
+          description: Location name (e.g., 'san_juan')
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          required: false
+          description: Start date in ISO format (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: End date in ISO format (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Successful response with hourly forecast data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HourlyForecastResponse'
+        '400':
+          description: Bad request - missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationNotFoundError'
+
+  /forecasts/location/{locationName}/mock:
+    get:
+      summary: Get mock forecast for a single location
+      tags:
+        - Forecasts
+      description: Returns mock weather forecast for a specific location
+      parameters:
+        - name: locationName
+          in: path
+          required: true
+          description: Location name (e.g., 'san_juan')
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response with location forecast data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationForecastResponse'
+        '404':
+          description: Location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /forecasts/location/{locationName}/real:
+    get:
+      summary: Get real forecast for a single location
+      tags:
+        - Forecasts
+      description: Returns live weather forecast from Visual Crossing API for a specific location
+      parameters:
+        - name: locationName
+          in: path
+          required: true
+          description: Location name (e.g., 'san_juan')
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response with location forecast data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationForecastResponse'
+        '404':
+          description: Location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /geo:
+    get:
+      summary: Get all locations
+      tags:
+        - Geo
+      description: Returns all configured geographic locations across all regions
+      responses:
+        '200':
+          description: List of all locations
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /geo/{regionId}:
+    get:
+      summary: Get locations by region
+      tags:
+        - Geo
+      description: Returns all locations for a specific region
+      parameters:
+        - name: regionId
+          in: path
+          required: true
+          description: Region identifier (e.g., 'central_cascades', 'olympic_np')
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of locations for the specified region
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/wta/reports:
+    get:
+      summary: Get WTA trip reports
+      tags:
+        - WTA
+      description: Returns Washington Trails Association trip reports for a given region/subregion
+      parameters:
+        - name: region
+          in: query
+          required: true
+          description: WTA region name
+          schema:
+            type: string
+        - name: subregion
+          in: query
+          required: false
+          description: WTA subregion name
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Successful response with trip reports
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '400':
+          description: Bad request - missing required parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Failed to fetch trip reports
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/wta/clear:
+    get:
+      summary: Clear WTA cache
+      tags:
+        - WTA
+      description: Clears the WTA trip reports cache
+      responses:
+        '200':
+          description: Cache cleared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  keysCleared:
+                    type: number
+        '500':
+          description: Failed to clear cache
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    ForecastResponse:
+      type: object
+      description: Normalized forecast response using Redux pattern (byId/allIds)
+      properties:
+        data:
+          type: object
+          properties:
+            dates:
+              type: array
+              items:
+                type: string
+              description: Array of forecast dates
+            locations:
+              type: object
+              properties:
+                byId:
+                  type: object
+                  description: Location objects keyed by ID
+                allIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of all location IDs
+            regions:
+              type: object
+              properties:
+                byId:
+                  type: object
+                  description: Region objects keyed by ID
+                allIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of all region IDs
+            forecasts:
+              type: object
+              properties:
+                byId:
+                  type: object
+                  description: Forecast objects keyed by location-date combination
+            alertsById:
+              type: object
+              description: Weather alert objects keyed by alert ID
+            allAlertIds:
+              type: array
+              items:
+                type: string
+              description: Array of all alert IDs
+
+    HourlyForecastResponse:
+      type: object
+      description: Hourly forecast response for a single location
+      properties:
+        data:
+          type: object
+
+    LocationForecastResponse:
+      type: object
+      description: Daily forecast response for a single location
+      properties:
+        data:
+          type: object
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+    LocationNotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Location not found
+        message:
+          type: string
+          example: "Location 'xyz' does not exist in configuration"
+        availableLocations:
+          type: array
+          items:
+            type: string
+          description: List of all available location names
