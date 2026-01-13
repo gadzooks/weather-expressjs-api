@@ -12,7 +12,7 @@ yarn
 echo VC_API_KEY='your-visual-crossing-api-key' >> .env
 echo CACHE_TTL_HOURS=3 >> .env  # Optional: Cache duration in hours (default: 3)
 
-# Run locally
+# Run locally with
 yarn start
 ```
 
