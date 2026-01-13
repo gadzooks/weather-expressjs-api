@@ -174,26 +174,81 @@ yarn sam:local           # Start local API server at http://localhost:3000
 5. CloudFormation creates/updates the Lambda function and API Gateway
 6. Environment variables are injected via SAM parameters
 
+### S3 Storage and Cost Optimization
+
+Deployment artifacts are stored in a custom S3 bucket with aggressive cost optimization:
+
+**Bucket:** `gadzooks-sam-artifacts`
+**Structure:**
+```
+gadzooks-sam-artifacts/
+├── weather-expressjs/
+│   ├── dev/
+│   ├── qa/
+│   └── prod/
+└── <future-projects>/
+```
+
+**Cost Optimization Features:**
+- **Versioning disabled** - Only 1 version stored per environment (new deploys overwrite old artifacts)
+- **1-day lifecycle policy** - Auto-deletes objects older than 1 day
+- **Estimated cost:** < $0.01/month for all environments
+- **Public access blocked** - All security best practices enabled
+
+**Initial Setup (One-time):**
+```bash
+# Create the S3 bucket with lifecycle policies
+bash scripts/create-s3-bucket.sh
+
+# Verify bucket exists
+aws s3 ls s3://gadzooks-sam-artifacts --profile claudia
+```
+
+**Monitoring Storage:**
+```bash
+# Check bucket size and object count
+aws s3 ls s3://gadzooks-sam-artifacts --recursive --summarize --profile claudia
+
+# Expected: 3-6 objects total (one deployment package per environment)
+```
+
+**Rollback Strategy:**
+Since only 1 version is retained, rollback requires redeploying from git history:
+```bash
+git checkout <previous-commit>
+yarn sam:deploy         # or sam:deploy:qa, sam:deploy:dev
+git checkout master
+```
+
 ### Prerequisites
 
 1. Install AWS SAM CLI: `brew install aws-sam-cli`
-2. Configure AWS credentials via environment variables:
+
+2. Configure AWS credentials using the `claudia` profile:
+
    ```bash
-   export AWS_ACCESS_KEY_ID=your-access-key
-   export AWS_SECRET_ACCESS_KEY=your-secret-key
-   export AWS_REGION=us-west-1
+   aws configure --profile claudia
+   # Enter your AWS Access Key ID, Secret Access Key, and default region (us-west-1)
    ```
-   Or use the default AWS CLI profile: `aws configure`
+
+   Or set profile-specific environment variables:
+
+   ```bash
+   export AWS_PROFILE=claudia
+   ```
+
 3. Ensure the IAM user has these managed policies:
+
    - AWSCloudFormationFullAccess
    - AWSLambda_FullAccess
    - AmazonAPIGatewayAdministrator
    - IAMFullAccess
-   - S3 permissions for `aws-sam-cli-managed-*` buckets
+   - S3 Full Access (for `gadzooks-sam-artifacts` bucket)
 
 ### Multiple Environments
 
 SAM supports multiple environments through the `samconfig.toml` file:
+
 - **prod**: Production environment (`weather-expressjs-prod` stack)
 - **qa**: QA environment (`weather-expressjs-qa` stack)
 - **dev**: Development environment (`weather-expressjs-dev` stack)
@@ -209,11 +264,13 @@ The forecast cache duration is configurable per environment via the `CACHE_TTL_H
 - **prod**: 3 hours - Fresher data for production users
 
 This is configured in three places:
+
 1. **template.yaml**: Defines the `CacheTTLHours` parameter (default: 3)
 2. **package.json**: Deployment scripts pass environment-specific values via `--parameter-overrides`
 3. **samconfig.toml**: Each environment section includes the `CacheTTLHours` parameter
 
 The cache is managed by:
+
 - **cacheManager.ts**: NodeCache instance with `stdTTL` set from `CACHE_TTL_HOURS` env var
 - **forecastCacheService.ts**: Per-location forecast caching with `expiresAt` timestamps
 
@@ -230,6 +287,7 @@ For local development, set `CACHE_TTL_HOURS=3` in your `.env` file (or any value
 ### Migration from Claudia.js
 
 If you were previously using Claudia.js:
+
 1. The old `claudia.json` configuration is no longer used
 2. Old Claudia commands are renamed with `claudia:` prefix
 3. SAM provides better multi-environment support and is actively maintained

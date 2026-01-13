@@ -38,6 +38,31 @@ Parameters:
     Description: Comma-separated list of allowed CORS origins
 
 Resources:
+  # S3 bucket for SAM deployment artifacts
+  # Shared across all projects with per-project prefixes (e.g., weather-expressjs/dev)
+  DeploymentArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: gadzooks-sam-artifacts
+      VersioningConfiguration:
+        Status: Suspended
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldArtifacts
+            Status: Enabled
+            ExpirationInDays: 1
+            NoncurrentVersionExpirationInDays: 1
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Purpose
+          Value: SAM-Deployment-Artifacts
+        - Key: ManagedBy
+          Value: CloudFormation
+
   WeatherApiFunction:
     Type: AWS::Serverless::Function
     Properties:
