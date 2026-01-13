@@ -63,7 +63,6 @@ jobs:
             --parameter-overrides "EnvironmentType=dev VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://dev-weather-react.onrender.com,http://localhost:3000,http://localhost:5173,http://localhost:5174'" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
-            --resolve-s3 \
             --capabilities CAPABILITY_IAM
 
           # Get the API URL from CloudFormation outputs

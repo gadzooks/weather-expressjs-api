@@ -60,7 +60,6 @@ jobs:
             --parameter-overrides "EnvironmentType=qa VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://qa-weather-react.onrender.com'" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
-            --resolve-s3 \
             --capabilities CAPABILITY_IAM
 
           # Get the API URL from CloudFormation outputs
@@ -144,7 +143,6 @@ jobs:
             --parameter-overrides "EnvironmentType=prod VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://weather.weekendwanderings.com'" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
-            --resolve-s3 \
             --capabilities CAPABILITY_IAM
 
           # Get the API URL from CloudFormation outputs
