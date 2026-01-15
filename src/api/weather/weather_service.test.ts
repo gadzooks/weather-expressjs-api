@@ -88,6 +88,44 @@ describe('parse forecast response', () => {
     const allAlertIds = results.allAlertIds;
     expect(allAlertIds).toEqual([alertId]);
   });
+
+  it('should include hours in daily forecast response', async () => {
+    const region = REGIONS['cities'];
+    const location = region.locations[0]; // Seattle
+    const apiResponse = await mockVisualCrossingForecast(location);
+
+    parseResponse(apiResponse, results, region, location);
+
+    const forecast = results.forecasts.byId[location.name];
+    const dayWithHours = forecast[0] as DailyForecastWithHours;
+
+    expect(dayWithHours.hours).toBeDefined();
+    expect(Array.isArray(dayWithHours.hours)).toBe(true);
+  });
+
+  it('should have 24 hours per day in daily forecast', async () => {
+    const region = REGIONS['cities'];
+    const location = region.locations[0]; // Seattle
+    const apiResponse = await mockVisualCrossingForecast(location);
+
+    parseResponse(apiResponse, results, region, location);
+
+    const forecast = results.forecasts.byId[location.name];
+
+    // Check all days have 24 hours
+    forecast.forEach((day: DailyForecastWithHours) => {
+      expect(day.hours).toBeDefined();
+      expect(day.hours?.length).toBe(24);
+
+      // Check first hour has required fields
+      if (day.hours && day.hours.length > 0) {
+        const firstHour = day.hours[0];
+        expect(firstHour.datetime).toBeTruthy();
+        expect(firstHour.temp).toBeDefined();
+        expect(firstHour.datetimeEpoch).toBeDefined();
+      }
+    });
+  });
 });
 
 describe('getHourlyForecastForLocation', () => {
@@ -335,5 +373,52 @@ describe('getHourlyForecastForLocation', () => {
     );
 
     expect(result.totalHours).toBe(0);
+  });
+
+  it('should read hourly data from daily cache', async () => {
+    // Pre-populate cache with daily forecast (using 'mock' endpoint key)
+    forecastCacheService.set(mockLocation, mockForecast, 'mock');
+
+    // Mock callback should not be called since data is cached
+    const callback = jest.fn().mockResolvedValue(mockForecast);
+
+    // Call hourly endpoint with 'mock' endpoint key (daily cache)
+    const result = await getHourlyForecastForLocation(
+      mockLocation,
+      callback,
+      'mock'
+    );
+
+    // Verify callback was not called (cache hit)
+    expect(callback).not.toHaveBeenCalled();
+
+    // Verify result has data
+    expect(result.location.name).toBe('test_location');
+    expect(result.days.length).toBeGreaterThan(0);
+  });
+
+  it('should call API on cache miss and store in daily cache', async () => {
+    // Clear cache to ensure miss
+    forecastCacheService.clearAll();
+
+    const callback = jest.fn().mockResolvedValue(mockForecast);
+
+    // Call hourly endpoint with 'real' endpoint key
+    const result = await getHourlyForecastForLocation(
+      mockLocation,
+      callback,
+      'real'
+    );
+
+    // Verify callback was called (cache miss)
+    expect(callback).toHaveBeenCalledWith(mockLocation);
+
+    // Verify result has data
+    expect(result.location.name).toBe('test_location');
+
+    // Verify data is now in cache with 'real' key
+    const cached = forecastCacheService.get(mockLocation, 'real');
+    expect(cached).toBeDefined();
+    expect(cached?.days.length).toBe(2);
   });
 });

@@ -8,8 +8,7 @@ import { Location } from '../../interfaces/geo/Location';
 
 const VC_URL =
   'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/';
-const OPTIONS = '&include=obs,fcst,alerts&alertLevel=detail';
-const OPTIONS_WITH_HOURS = '&include=days,hours,current&alertLevel=detail';
+const OPTIONS = '&include=obs,fcst,alerts,hours&alertLevel=detail';
 const VC_API_KEY = process.env.VC_API_KEY || 'USE_VC_API_KEY';
 
 if (VC_API_KEY !== 'USE_VC_API_KEY') {
@@ -35,19 +34,6 @@ export const VisualCrossingApi = {
       location.longitude +
       `?key=${VC_API_KEY}` +
       OPTIONS;
-    console.log(
-      `calling : ${VC_URL}${urlParams.replace(VC_API_KEY, 'VC_API_KEY')}`
-    );
-    return requests.get(urlParams);
-  },
-
-  getHourlyForecast: (location: Location): Promise<Forecast | null> => {
-    const urlParams =
-      location.latitude +
-      ',' +
-      location.longitude +
-      `?key=${VC_API_KEY}` +
-      OPTIONS_WITH_HOURS;
     console.log(
       `calling : ${VC_URL}${urlParams.replace(VC_API_KEY, 'VC_API_KEY')}`
     );

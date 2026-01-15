@@ -1,11 +1,11 @@
 import Alert from './Alert';
-import DailyForecast from './DailyForecast';
+import DailyForecastWithHours from './DailyForecastWithHours';
 
 interface Forecast {
   latitude: number;
   longitude: number;
   description: string;
-  days: DailyForecast[];
+  days: DailyForecastWithHours[];
   alerts: Alert[];
 }
 

@@ -165,11 +165,11 @@ router.get('/hourly/mock', async function (req, res) {
     }
 
     // FIXME: generate mock data dynamically based on date range
-    // Fetch hourly forecast
+    // Fetch hourly forecast from daily cache
     const result: HourlyForecastResponse = await getHourlyForecastForLocation(
       location,
       mockVisualCrossingForecast,
-      'hourly-mock',
+      'mock',
       { startDate, endDate }
     );
 
@@ -239,8 +239,8 @@ router.get('/hourly/real', async function (req, res) {
 
     const result: HourlyForecastResponse = await getHourlyForecastForLocation(
       location,
-      VisualCrossingApi.getHourlyForecast,
-      'hourly-real',
+      VisualCrossingApi.getForecast,
+      'real',
       { startDate, endDate }
     );
 
