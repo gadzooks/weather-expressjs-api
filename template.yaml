@@ -40,6 +40,8 @@ Parameters:
 Resources:
   WeatherApiFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       FunctionName: !Sub 'weather-expressjs-${EnvironmentType}'
       CodeUri: ./
