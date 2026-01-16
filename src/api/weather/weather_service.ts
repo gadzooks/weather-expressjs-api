@@ -219,16 +219,17 @@ export async function getHourlyForecastForLocation(
 
   if (cached) {
     console.log(
-      `Cache hit for location: ${location.name}, endpoint: ${endpoint}`
+      `Cache hit for hourly from daily cache: ${location.name}, endpoint: ${endpoint}`
     );
     forecast = cached;
   } else {
     console.log(
-      `Cache miss for location: ${location.name}, endpoint: ${endpoint}`
+      `Cache miss for hourly, fetching daily: ${location.name}, endpoint: ${endpoint}`
     );
     forecast = await callback(location);
 
     if (forecast) {
+      // Store in daily cache
       forecastCacheService.set(location, forecast, endpoint);
     }
   }

@@ -1,0 +1,58 @@
+# Test files and data
+tests/
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+
+# Source files (we deploy dist/ only)
+src/
+
+# TypeScript configuration
+tsconfig.json
+tsconfig.build.json
+
+# Development files
+.env
+.env.*
+
+# Documentation
+*.md
+docs/
+
+# Git files
+.git/
+.gitignore
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# CI/CD
+.github/
+.circleci/
+
+# Logs
+*.log
+logs/
+
+# SAM build artifacts
+.aws-sam/
+
+# Yarn
+yarn-error.log
+.yarn/
+.yarnrc.yml
+
+# Other config files
+.eslintrc.json
+.eslintignore
+.prettierrc
+.prettierignore
+jest.config.js
+claudia.json
+
+# Scripts
+scripts/

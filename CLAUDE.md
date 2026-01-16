@@ -66,13 +66,17 @@ yarn prettier-format        # Format code with Prettier (single quotes, 80 char 
 2. **Weather Service** (`src/api/weather/weather_service.ts`)
    - `getForecastForAllRegions(regionHash, callback)` iterates through all regions and their locations
    - Calls the provided callback (either real Visual Crossing API or mock service) for each location
+   - Daily forecasts now include hourly data (`hours?: HourlyForecast[]` array with 24 hourly entries per day)
    - `parseResponse()` normalizes each API response into the Redux-style ForecastResponse structure
    - Handles errors gracefully (logs but continues processing other locations)
+   - Cache stores forecasts with endpoint keys (`mock`, `real`) - unified cache for both daily and hourly data
 
 3. **API Routes** (`src/routes/forecasts.ts`)
-   - `GET /forecasts/mock` - Returns mock data for testing without hitting the API
-   - `GET /forecasts/real` - Fetches live data from Visual Crossing API
-   - Both routes return the same normalized `ForecastResponse` structure
+   - `GET /forecasts/mock` - Returns mock data with embedded hourly forecasts
+   - `GET /forecasts/real` - Fetches live data from Visual Crossing API with embedded hourly forecasts
+   - `GET /forecasts/hourly/mock` - Extracts hourly data from cached daily forecasts (no separate API call)
+   - `GET /forecasts/hourly/real` - Extracts hourly data from cached daily forecasts (no separate API call)
+   - All routes share the same unified cache, reducing API calls by 50%
 
 ### Data Normalization Pattern
 
@@ -98,9 +102,9 @@ This pattern:
 
 The `VisualCrossingApi` (`src/api/weather/visual_crossing.ts`):
 - Constructs URLs using coordinates (latitude/longitude) from Location objects
-- URL format: `{latitude},{longitude}?key={API_KEY}&include=obs,fcst,alerts&alertLevel=detail`
+- URL format: `{latitude},{longitude}?key={API_KEY}&include=obs,fcst,alerts,hours&alertLevel=detail`
 - Uses axios with 1-second timeout
-- Returns raw `Forecast` objects (containing `days: DailyForecast[]` and optional `alerts: Alert[]`)
+- Returns raw `Forecast` objects (containing `days: DailyForecastWithHours[]` with hourly data and optional `alerts: Alert[]`)
 
 ### Weather Alerts Flow
 

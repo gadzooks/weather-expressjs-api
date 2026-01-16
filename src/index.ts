@@ -6,7 +6,6 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import actuator from 'express-actuator';
-import swaggerUi from 'swagger-ui-express';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -32,37 +31,48 @@ const envType =
 const isProduction = envType === 'prod' || envType === 'production';
 
 if (!isProduction) {
-  try {
-    const swaggerPath = path.join(__dirname, 'config', 'swagger.yml');
-    // eslint-disable-next-line security/detect-non-literal-fs-filename
-    const swaggerDocument = yaml.load(
-      fs.readFileSync(swaggerPath, 'utf8')
-    ) as object;
+  // Dynamic import to avoid requiring swagger-ui-express in production
+  import('swagger-ui-express')
+    .then((swaggerUi) => {
+      try {
+        const swaggerPath = path.join(__dirname, 'config', 'swagger.yml');
+        // eslint-disable-next-line security/detect-non-literal-fs-filename
+        const swaggerDocument = yaml.load(
+          fs.readFileSync(swaggerPath, 'utf8')
+        ) as object;
 
-    // Serve the OpenAPI spec as JSON at /api-docs.json
-    app.get('/api-docs.json', (_req: Request, res: Response) => {
-      res.setHeader('Content-Type', 'application/json');
-      res.send(swaggerDocument);
+        // Serve the OpenAPI spec as JSON at /api-docs.json
+        app.get('/api-docs.json', (_req: Request, res: Response) => {
+          res.setHeader('Content-Type', 'application/json');
+          res.send(swaggerDocument);
+        });
+
+        // Serve Swagger UI
+        app.use('/api-docs', swaggerUi.default.serve);
+        app.get(
+          '/api-docs',
+          swaggerUi.default.setup(swaggerDocument, {
+            customCss: '.swagger-ui .topbar { display: none }',
+            customSiteTitle: 'Weather API Documentation',
+            swaggerOptions: {
+              url: '/api-docs.json',
+              persistAuthorization: true
+            }
+          })
+        );
+
+        console.log(
+          `Swagger UI available at /api-docs (environment: ${envType})`
+        );
+      } catch (error) {
+        console.error('Failed to load Swagger documentation:', error);
+      }
+    })
+    .catch(() => {
+      console.log(
+        'Swagger UI not available (swagger-ui-express not installed)'
+      );
     });
-
-    // Serve Swagger UI
-    app.use('/api-docs', swaggerUi.serve);
-    app.get(
-      '/api-docs',
-      swaggerUi.setup(swaggerDocument, {
-        customCss: '.swagger-ui .topbar { display: none }',
-        customSiteTitle: 'Weather API Documentation',
-        swaggerOptions: {
-          url: '/api-docs.json',
-          persistAuthorization: true
-        }
-      })
-    );
-
-    console.log(`Swagger UI available at /api-docs (environment: ${envType})`);
-  } catch (error) {
-    console.error('Failed to load Swagger documentation:', error);
-  }
 } else {
   console.log('Swagger UI disabled in production environment');
 }

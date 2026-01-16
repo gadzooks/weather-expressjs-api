@@ -5,9 +5,9 @@ This document describes the Continuous Integration and Continuous Deployment wor
 ## Overview
 
 The project uses GitHub Actions for automated testing and deployment across three environments:
-- **Dev**: Deployed automatically on every pull request
+- **Dev**: Deployed automatically on every pull request (required check - blocks merge if fails)
 - **QA**: Deployed automatically on merge to master
-- **Prod**: Deployed manually after QA deployment (requires approval)
+- **Prod**: Deployed via semantic version tags (e.g., `v1.2.3`) with manual approval required
 
 ## Pre-commit Hooks
 
@@ -41,20 +41,33 @@ This project uses **Husky** and **lint-staged** to automatically run linting and
 - On pull request to `master` or `main` branches
 - On push to `master` or `main` branches
 
-**Purpose:** Validates code quality and ensures tests pass before deployment
+**Purpose:** Validates code quality, runs tests, and deploys to dev environment for PRs
 
-**Steps:**
+**Jobs:**
+
+#### Job 1: `test` (runs on all triggers)
 1. Checkout code
 2. Setup Node.js 24
 3. Install dependencies (`yarn install --frozen-lockfile`)
 4. Run ESLint (`yarn lint`)
-5. Run tests (`yarn test`)
-6. Run tests with coverage (`yarn test:coverage`)
-7. Build the project (`yarn build`)
-8. Run security audit (`yarn audit`)
-9. Run Trivy security scanner
+5. Build the project (`yarn build`)
+6. Run tests (`yarn test:all`)
+7. Run tests with coverage (`yarn test:coverage`)
 
-**Status:** This workflow should be marked as **required** in branch protection rules to prevent merging PRs with failing tests.
+#### Job 2: `security` (runs in parallel with test)
+1. Run security audit (`yarn audit`)
+2. Run Trivy security scanner
+
+Both security checks use `continue-on-error: true`, so they report issues but don't block PRs.
+
+#### Job 3: `deploy-dev` (only runs on PRs, after tests pass)
+1. Install dependencies and build
+2. Setup AWS SAM CLI
+3. Deploy to dev environment
+4. Run smoke tests
+5. Comment on PR with deployment status and API URL
+
+**Status:** The `test` and `deploy-dev` jobs should be marked as **required** in branch protection rules to prevent merging PRs with failing tests or deployments.
 
 #### Security Job (runs in parallel with tests)
 
@@ -76,38 +89,12 @@ The lint step now includes:
 
 ---
 
-### 2. PR Deployment (`.github/workflows/deploy-pr.yml`)
-
-**Triggers:**
-- On pull request opened, synchronized, or reopened
-
-**Purpose:** Automatically deploy PR changes to the dev environment for testing
-
-**Steps:**
-1. Checkout code
-2. Setup Node.js 24
-3. Install dependencies
-4. Build the project
-5. Setup AWS SAM CLI
-6. Configure AWS credentials
-7. Deploy to dev environment using SAM
-8. Comment on PR with deployment status (success/failure)
-
-**Environment:** `weather-expressjs-dev` Lambda function
-
----
-
-### 3. Master Deployment (`.github/workflows/deploy-master.yml`)
+### 2. QA Deployment (`.github/workflows/deploy-qa.yml`)
 
 **Triggers:**
 - On push to `master` or `main` branches (after PR merge)
 
-**Purpose:** Deploy to QA automatically, then to production with manual approval
-
-**Jobs:**
-
-#### Job 1: `deploy-qa`
-Runs automatically after merge to master.
+**Purpose:** Automatically deploy to QA environment after code is merged to master
 
 **Steps:**
 1. Checkout code
@@ -117,22 +104,44 @@ Runs automatically after merge to master.
 5. Setup AWS SAM CLI
 6. Configure AWS credentials
 7. Deploy to QA environment using SAM
+8. Run smoke tests
 
 **Environment:** `weather-expressjs-qa` Lambda function
 
-#### Job 2: `deploy-prod`
-Runs after `deploy-qa` completes successfully, but requires manual approval.
+---
+
+### 3. Production Deployment (`.github/workflows/deploy-prod.yml`)
+
+**Triggers:**
+- On push of semantic version tags (e.g., `v1.2.3`, `v2.0.0`)
+
+**Purpose:** Deploy to production with manual approval gate
 
 **Steps:**
-1. Checkout code
-2. Setup Node.js 24
-3. Install dependencies
-4. Build the project
-5. Setup AWS SAM CLI
-6. Configure AWS credentials
-7. Deploy to production environment using SAM
+1. Checkout tagged commit
+2. Extract version from tag
+3. Setup Node.js 24
+4. Install dependencies
+5. Build the project
+6. Setup AWS SAM CLI
+7. Configure AWS credentials
+8. Deploy to production environment using SAM
+9. Run smoke tests
+10. Create GitHub release with deployment details
 
-**Environment:** `weather-expressjs-prod` Lambda function (requires approval)
+**Environment:** `weather-expressjs-prod` Lambda function (requires manual approval via GitHub Environment protection rules)
+
+**How to deploy to production:**
+```bash
+# 1. Ensure your code is merged to master and QA deployment succeeded
+# 2. Create and push a semantic version tag
+git tag v1.2.3
+git push origin v1.2.3
+
+# 3. GitHub Actions will start the production deployment workflow
+# 4. A reviewer must approve the deployment in the GitHub Actions UI
+# 5. After approval, the deployment proceeds automatically
+```
 
 ---
 
@@ -173,9 +182,9 @@ To enable the manual approval gate for production deployments:
 
 ---
 
-### 3. Enable Branch Protection (Make CI Required)
+### 3. Enable Branch Protection (Make CI and Dev Deployment Required)
 
-To ensure all PRs pass tests, build, and lint before merging:
+To ensure all PRs pass tests and successfully deploy to dev before merging:
 
 1. Go to **Settings → Branches**
 2. Click **Add branch protection rule**
@@ -183,14 +192,19 @@ To ensure all PRs pass tests, build, and lint before merging:
 4. Check the following options:
    - ✅ **Require a pull request before merging**
    - ✅ **Require status checks to pass before merging**
-   - Select the **`test`** status check (from the CI workflow) - this is REQUIRED
+   - Select the **`test`** status check (from the CI workflow) - REQUIRED
+   - Select the **`deploy-dev`** status check (from the CI workflow) - REQUIRED
    - Optionally select the **`security`** status check for additional security validation
    - ✅ **Require branches to be up to date before merging**
    - ✅ **Do not allow bypassing the above settings** (to prevent merging failed PRs even by admins)
    - Alternatively: ✅ **Allow specified actors to bypass required pull requests** and add specific admin users who can override in emergency situations
 5. Click **Create** or **Save changes**
 
-**Result:** PRs cannot be merged unless the CI workflow's `test` job passes (which includes lint, build, and tests). Only designated admins can bypass these checks if configured.
+**Result:** PRs cannot be merged unless:
+- The `test` job passes (lint, build, all tests)
+- The `deploy-dev` job passes (successful deployment to dev environment + smoke tests)
+
+This ensures every merge to master has been tested in a real deployment environment.
 
 **Note:** The `security` job runs `yarn audit` and Trivy scanner with `continue-on-error: true`, so it won't block PRs but will show warnings for security issues.
 
@@ -203,19 +217,26 @@ To ensure all PRs pass tests, build, and lint before merging:
 │                      Pull Request Created                    │
 └───────────────────────┬─────────────────────────────────────┘
                         │
-                        ├─────────────────────────────┐
-                        │                             │
-                        ▼                             ▼
-              ┌─────────────────┐         ┌──────────────────┐
-              │   CI Workflow   │         │  Deploy to Dev   │
-              │                 │         │    (PR Deploy)   │
-              │ - Lint          │         │                  │
-              │ - Test          │         │ Auto-deploys to  │
-              │ - Coverage      │         │ dev environment  │
-              │ - Build         │         │                  │
-              └─────────────────┘         └──────────────────┘
+                        ▼
+              ┌─────────────────┐
+              │   CI Workflow   │
+              │                 │
+              │ ┌─────────────┐ │
+              │ │    test     │ │  (Required Check)
+              │ │ - Lint      │ │
+              │ │ - Build     │ │
+              │ │ - Tests     │ │
+              │ └──────┬──────┘ │
+              │        │        │
+              │        ▼        │
+              │ ┌─────────────┐ │
+              │ │ deploy-dev  │ │  (Required Check)
+              │ │ - Deploy    │ │
+              │ │ - Smoke test│ │
+              │ └─────────────┘ │
+              └─────────────────┘
                         │
-                        │ (Must Pass - Required)
+                        │ (Both Must Pass)
                         │
                         ▼
               ┌─────────────────┐
@@ -223,24 +244,38 @@ To ensure all PRs pass tests, build, and lint before merging:
               │     Master      │
               └────────┬────────┘
                        │
-                       ├─────────────────────────────┐
-                       │                             │
-                       ▼                             ▼
-             ┌─────────────────┐         ┌──────────────────┐
-             │   CI Workflow   │         │  Deploy to QA    │
-             │                 │         │   (Automatic)    │
-             │ - Lint          │         │                  │
-             │ - Test          │         └────────┬─────────┘
-             │ - Coverage      │                  │
-             │ - Build         │                  │
-             └─────────────────┘                  ▼
-                                        ┌──────────────────┐
-                                        │  Deploy to Prod  │
-                                        │                  │
-                                        │ ⏸ REQUIRES      │
-                                        │ MANUAL APPROVAL  │
-                                        │                  │
-                                        └──────────────────┘
+                       │ (Automatic)
+                       │
+                       ▼
+             ┌──────────────────┐
+             │  Deploy to QA    │
+             │   (Automatic)    │
+             │                  │
+             │ - Deploy         │
+             │ - Smoke test     │
+             └──────────────────┘
+                       │
+                       │ (Manual - when ready for prod)
+                       │
+                       ▼
+             ┌──────────────────┐
+             │  Create Git Tag  │
+             │   (v1.2.3)       │
+             └────────┬─────────┘
+                      │
+                      │ (Tag Push Triggers)
+                      │
+                      ▼
+            ┌──────────────────┐
+            │  Deploy to Prod  │
+            │                  │
+            │ ⏸ REQUIRES      │
+            │ MANUAL APPROVAL  │
+            │                  │
+            │ - Deploy         │
+            │ - Smoke test     │
+            │ - Create Release │
+            └──────────────────┘
 ```
 
 ---
@@ -406,18 +441,58 @@ For full CI/CD integration with the custom bucket, update the workflow files to 
 
 ---
 
-## Approving Production Deployments
+## Deploying to Production
 
-When a merge to master triggers the deployment workflow:
+Production deployments are triggered by creating and pushing semantic version tags.
 
-1. The QA deployment will run automatically
-2. The production deployment job will start but pause, waiting for approval
-3. You'll receive a notification (if configured)
-4. Go to **Actions** tab → Click the running workflow → Click **Review deployments**
-5. Select **production** environment
-6. Add a comment (optional) and click **Approve and deploy**
+### Step-by-Step Process
 
-The production deployment will then proceed.
+1. **Ensure QA is stable**
+   - Merge your PR to master
+   - Wait for automatic QA deployment to complete successfully
+   - Test the QA environment thoroughly
+
+2. **Create a version tag**
+   ```bash
+   # Create a semantic version tag
+   git tag v1.2.3
+
+   # Push the tag to trigger production deployment
+   git push origin v1.2.3
+   ```
+
+3. **Approve the deployment**
+   - Go to **Actions** tab in GitHub
+   - Click the running "Deploy to Production" workflow
+   - Click **Review deployments**
+   - Select **production** environment
+   - Add a comment (optional) and click **Approve and deploy**
+
+4. **Verify deployment**
+   - The workflow will deploy to production
+   - Smoke tests will run automatically
+   - A GitHub Release will be created with deployment details
+   - Check the production URL to verify
+
+### Version Naming Convention
+
+Use semantic versioning (SemVer):
+- **Major version** (`v2.0.0`): Breaking changes
+- **Minor version** (`v1.2.0`): New features, backwards compatible
+- **Patch version** (`v1.0.1`): Bug fixes, backwards compatible
+
+### Rollback Strategy
+
+To rollback to a previous version:
+```bash
+# Find the previous working version
+git tag
+
+# Redeploy that version
+git push origin v1.2.2
+```
+
+The workflow will trigger again, and after approval, will deploy the previous version.
 
 ---
 
@@ -458,19 +533,21 @@ The production deployment will then proceed.
 
 1. **Always create a PR** - Never push directly to master
 2. **Let pre-commit hooks run** - They catch issues before they reach CI (lint errors, formatting)
-3. **Wait for CI to pass** - Don't merge failing PRs (CI checks build, lint, and all tests)
-4. **Test in dev** - Verify your changes work in the dev deployment before merging
-5. **Review QA deployment** - Check the QA environment before approving production
-6. **Monitor deployments** - Watch CloudWatch logs after production deployments
-7. **Use semantic commit messages** - Helps track changes in deployment history
+3. **Wait for CI and dev deployment** - Both must pass before merging (required checks)
+4. **Test in dev** - Verify your changes work in the dev deployment URL provided in PR comments
+5. **Review QA deployment** - After merge, check the QA environment before creating a production tag
+6. **Use semantic versioning** - Tag releases with semantic versions (v1.2.3) for clear version history
+7. **Test QA thoroughly** - Production deploys from tags, so ensure QA is stable first
+8. **Monitor deployments** - Watch CloudWatch logs after production deployments
+9. **Document releases** - Use meaningful tag messages: `git tag -a v1.2.3 -m "Add user authentication"`
 
 ---
 
 ## Workflow Files
 
-- [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) - CI testing workflow
-- [`.github/workflows/deploy-pr.yml`](../.github/workflows/deploy-pr.yml) - PR dev deployment
-- [`.github/workflows/deploy-master.yml`](../.github/workflows/deploy-master.yml) - QA/Prod deployment
+- [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) - CI testing and dev deployment (runs on PRs)
+- [`.github/workflows/deploy-qa.yml`](../.github/workflows/deploy-qa.yml) - QA deployment (runs on merge to master)
+- [`.github/workflows/deploy-prod.yml`](../.github/workflows/deploy-prod.yml) - Production deployment (runs on version tags)
 
 ---
 

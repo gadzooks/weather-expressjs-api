@@ -1,0 +1,92 @@
+name: Deploy to QA
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  deploy-qa:
+    runs-on: ubuntu-latest
+    environment: qa
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: |
+          sudo rm -f /usr/local/bin/yarn /usr/local/bin/yarnpkg
+          corepack enable
+          corepack prepare yarn@4.12.0 --activate
+          yarn --version
+          yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Setup AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Clean SAM build cache
+        run: rm -rf .aws-sam
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+
+      - name: Build SAM application
+        run: sam build
+
+      - name: Deploy to QA
+        id: deploy
+        run: |
+          sam deploy --region us-west-1 \
+            --config-env qa \
+            --parameter-overrides "EnvironmentType=qa VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://qa-weather-react.onrender.com'" \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --capabilities CAPABILITY_IAM
+
+          # Get the API URL from CloudFormation outputs
+          API_URL=$(aws cloudformation describe-stacks \
+            --stack-name weather-expressjs-qa \
+            --region us-west-1 \
+            --query 'Stacks[0].Outputs[?OutputKey==`WeatherApiUrl`].OutputValue' \
+            --output text)
+          echo "api_url=$API_URL" >> $GITHUB_OUTPUT
+          echo "QA API URL: $API_URL"
+
+      - name: Smoke Test - QA Deployment
+        run: |
+          API_URL="${{ steps.deploy.outputs.api_url }}"
+          ENDPOINT="${API_URL}forecasts/mock"
+
+          echo "Testing endpoint: $ENDPOINT"
+
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" "$ENDPOINT")
+
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            if jq -e '.data.locations.allIds | length > 0' response.json > /dev/null; then
+              echo "✅ QA smoke test passed"
+            else
+              echo "❌ QA smoke test failed: Invalid response structure"
+              cat response.json
+              exit 1
+            fi
+          else
+            echo "❌ QA smoke test failed: HTTP $HTTP_STATUS"
+            cat response.json
+            exit 1
+          fi

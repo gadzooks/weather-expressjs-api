@@ -1,4 +1,3 @@
-import axios, { AxiosResponse } from 'axios';
 import Forecast from '../../interfaces/forecast/Forecast';
 import { Location } from '../../interfaces/geo/Location';
 
@@ -8,23 +7,28 @@ import { Location } from '../../interfaces/geo/Location';
 
 const VC_URL =
   'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/';
-const OPTIONS = '&include=obs,fcst,alerts&alertLevel=detail';
-const OPTIONS_WITH_HOURS = '&include=days,hours,current&alertLevel=detail';
+const OPTIONS = '&include=obs,fcst,alerts,hours&alertLevel=detail';
 const VC_API_KEY = process.env.VC_API_KEY || 'USE_VC_API_KEY';
 
 if (VC_API_KEY !== 'USE_VC_API_KEY') {
   console.log('VC_API_KEY has been set to some value other than the default');
 }
 
-const instance = axios.create({
-  baseURL: VC_URL,
-  timeout: 1_000
-});
-
-const responseBody = (response: AxiosResponse) => response.data;
-
 const requests = {
-  get: (urlParams: string) => instance.get(urlParams).then(responseBody)
+  get: async (urlParams: string): Promise<Forecast> => {
+    const url = `${VC_URL}${urlParams}`;
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(1_000)
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error! status: ${response.status} ${response.statusText}`
+      );
+    }
+
+    return response.json();
+  }
 };
 
 export const VisualCrossingApi = {
@@ -35,19 +39,6 @@ export const VisualCrossingApi = {
       location.longitude +
       `?key=${VC_API_KEY}` +
       OPTIONS;
-    console.log(
-      `calling : ${VC_URL}${urlParams.replace(VC_API_KEY, 'VC_API_KEY')}`
-    );
-    return requests.get(urlParams);
-  },
-
-  getHourlyForecast: (location: Location): Promise<Forecast | null> => {
-    const urlParams =
-      location.latitude +
-      ',' +
-      location.longitude +
-      `?key=${VC_API_KEY}` +
-      OPTIONS_WITH_HOURS;
     console.log(
       `calling : ${VC_URL}${urlParams.replace(VC_API_KEY, 'VC_API_KEY')}`
     );

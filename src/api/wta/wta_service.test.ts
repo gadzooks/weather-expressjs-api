@@ -1,14 +1,12 @@
 // wta_service.test.ts
 // Unit tests for WTA Trip Report Service
 
-import axios from 'axios';
 import * as cacheManager from '../../utils/cache/cacheManager';
 import { getTripReports, clearWtaCache } from './wta_service';
 import { WtaQueryParams } from '../../interfaces/wta/TripReport';
 
-// Mock axios
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+// Mock global fetch
+global.fetch = jest.fn();
 
 // Mock cache manager
 jest.mock('../../utils/cache/cacheManager');
@@ -74,7 +72,10 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: mockHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => mockHtml
+      });
 
       const result = await getTripReports(params);
 
@@ -132,7 +133,7 @@ describe('WTA Service', () => {
       const result = await getTripReports(params);
 
       expect(result).toBe(cachedData);
-      expect(mockedAxios.get).not.toHaveBeenCalled();
+      expect(global.fetch).not.toHaveBeenCalled();
     });
 
     it('should cache the result after fetching', async () => {
@@ -142,7 +143,10 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: mockHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => mockHtml
+      });
 
       await getTripReports(params);
 
@@ -163,19 +167,22 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: mockHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => mockHtml
+      });
 
       await getTripReports(params);
 
-      expect(mockedAxios.get).toHaveBeenCalledWith(
+      expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('region=mt-rainier'),
         expect.any(Object)
       );
-      expect(mockedAxios.get).toHaveBeenCalledWith(
+      expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('b_size=50'),
         expect.any(Object)
       );
-      expect(mockedAxios.get).toHaveBeenCalledWith(
+      expect(global.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining('b_start'),
         expect.any(Object)
       );
@@ -189,11 +196,14 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: mockHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => mockHtml
+      });
 
       await getTripReports(params);
 
-      expect(mockedAxios.get).toHaveBeenCalledWith(
+      expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('subregion=snoqualmie'),
         expect.any(Object)
       );
@@ -206,12 +216,15 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: mockHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => mockHtml
+      });
 
       await getTripReports(params);
 
       // Page 3 should have b_start = (3-1) * 50 = 100
-      expect(mockedAxios.get).toHaveBeenCalledWith(
+      expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('b_start%3Aint=100'),
         expect.any(Object)
       );
@@ -233,7 +246,10 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: emptyHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => emptyHtml
+      });
 
       const result = await getTripReports(params);
 
@@ -248,7 +264,7 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockRejectedValue(new Error('Network error'));
+      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 
       await expect(getTripReports(params)).rejects.toThrow('Network error');
     });
@@ -262,7 +278,10 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: malformedHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => malformedHtml
+      });
 
       const result = await getTripReports(params);
 
@@ -336,7 +355,10 @@ describe('WTA Service', () => {
       };
 
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: minimalHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => minimalHtml
+      });
 
       const result = await getTripReports(params);
 
@@ -386,7 +408,10 @@ describe('WTA Service', () => {
 
       const params: WtaQueryParams = { region: 'test', page: 1 };
       mockedCache.get.mockReturnValue(null);
-      mockedAxios.get.mockResolvedValue({ data: photoVariationsHtml });
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        text: async () => photoVariationsHtml
+      });
 
       const result = await getTripReports(params);
 

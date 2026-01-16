@@ -7,12 +7,24 @@ export function mockVisualCrossingForecast(
   location: Location
 ): Promise<Forecast | null> {
   const fileName = location.name.replace(/\s+/g, '');
-  const dataDirectory = 'tests/mock_service_data/data';
-  const filePath = `${dataDirectory}/vc-${fileName}.json`;
+  // Use path that works in both test (src/) and production (dist/) environments
+  // In tests: __dirname = src/api/mock, so ../../../tests/mock_service_data/data
+  // In prod: __dirname = dist/api/mock, so ../../../dist/mock_service_data/data
+  const testPath = path.join(
+    __dirname,
+    '../../../tests/mock_service_data/data',
+    `vc-${fileName}.json`
+  );
+  const prodPath = path.join(
+    __dirname,
+    '../../../dist/mock_service_data/data',
+    `vc-${fileName}.json`
+  );
+  const filePath = fs.existsSync(testPath) ? testPath : prodPath;
   let fcst: Forecast | null = null;
 
   try {
-    const doc = fs.readFileSync(path.resolve(filePath), 'utf8');
+    const doc = fs.readFileSync(filePath, 'utf8');
     const docAny = doc as string;
     const parsedData = JSON.parse(docAny);
 
