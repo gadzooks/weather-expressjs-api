@@ -14,9 +14,28 @@ build-WeatherApiFunction:
 	cd $(ARTIFACTS_DIR) && npm install --production --ignore-scripts
 	cd $(ARTIFACTS_DIR) && npm prune --production
 
-	# Remove unnecessary files from node_modules to reduce package size
-	cd $(ARTIFACTS_DIR) && find node_modules -type d \( -name "test" -o -name "tests" -o -name "example" -o -name "examples" -o -name "docs" -o -name ".github" \) -exec rm -rf {} + 2>/dev/null || true
-	cd $(ARTIFACTS_DIR) && find node_modules -type f \( -name "*.map" -o -name "*.ts" -o -name "*.md" -o -name "LICENSE*" -o -name "README*" -o -name "CHANGELOG*" \) -delete 2>/dev/null || true
+	# Aggressively remove unnecessary files to reduce package size
+	@echo "Cleaning up node_modules..."
+	# Remove test directories
+	find $(ARTIFACTS_DIR)/node_modules -type d -name test -prune -exec rm -rf {} \; 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type d -name tests -prune -exec rm -rf {} \; 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type d -name __tests__ -prune -exec rm -rf {} \; 2>/dev/null || true
+	# Remove example/doc directories
+	find $(ARTIFACTS_DIR)/node_modules -type d -name example -prune -exec rm -rf {} \; 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type d -name examples -prune -exec rm -rf {} \; 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type d -name docs -prune -exec rm -rf {} \; 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type d -name documentation -prune -exec rm -rf {} \; 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type d -name .github -prune -exec rm -rf {} \; 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type d -name coverage -prune -exec rm -rf {} \; 2>/dev/null || true
+	# Remove unnecessary file types
+	find $(ARTIFACTS_DIR)/node_modules -type f -name "*.map" -delete 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type f -name "*.ts" ! -name "*.d.ts" -delete 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type f -name "*.md" -delete 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type f -name "*.markdown" -delete 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type f -name "LICENSE*" -delete 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type f -name "CHANGELOG*" -delete 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type f -name "*.spec.js" -delete 2>/dev/null || true
+	find $(ARTIFACTS_DIR)/node_modules -type f -name "*.test.js" -delete 2>/dev/null || true
 
 	# Copy only necessary files
 	cp lambda.js $(ARTIFACTS_DIR)/
@@ -27,3 +46,5 @@ build-WeatherApiFunction:
 	@du -sh $(ARTIFACTS_DIR)
 	@echo "Node modules size:"
 	@du -sh $(ARTIFACTS_DIR)/node_modules || true
+	@echo "Largest directories in node_modules:"
+	@du -sh $(ARTIFACTS_DIR)/node_modules/* 2>/dev/null | sort -hr | head -10 || true
