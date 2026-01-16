@@ -80,8 +80,9 @@ jobs:
         continue-on-error: true
 
   deploy-dev:
-    # Only deploy to dev on pull requests after tests pass
-    if: github.event_name == 'pull_request'
+    # Deploy to dev on pull requests after tests pass
+    # Also runs on push to PR branches (not master/main)
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main')
     needs: test
     runs-on: ubuntu-latest
     environment: dev
