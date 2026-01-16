@@ -4820,7 +4820,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.12.2, axios@npm:^1.13.2, axios@npm:^1.8.3, axios@npm:^1.9.0":
+"axios@npm:^1.12.2, axios@npm:^1.8.3, axios@npm:^1.9.0":
   version: 1.13.2
   resolution: "axios@npm:1.13.2"
   dependencies:
@@ -11806,7 +11806,6 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.51.0"
     "@usebruno/cli": "npm:^3.0.2"
     "@vendia/serverless-express": "npm:^4.12.6"
-    axios: "npm:^1.13.2"
     babel-jest: "npm:^30.2.0"
     body-parser: "npm:^2.2.1"
     cheerio: "npm:^1.1.2"

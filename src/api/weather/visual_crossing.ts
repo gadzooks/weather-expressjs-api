@@ -1,4 +1,3 @@
-import axios, { AxiosResponse } from 'axios';
 import Forecast from '../../interfaces/forecast/Forecast';
 import { Location } from '../../interfaces/geo/Location';
 
@@ -15,15 +14,21 @@ if (VC_API_KEY !== 'USE_VC_API_KEY') {
   console.log('VC_API_KEY has been set to some value other than the default');
 }
 
-const instance = axios.create({
-  baseURL: VC_URL,
-  timeout: 1_000
-});
-
-const responseBody = (response: AxiosResponse) => response.data;
-
 const requests = {
-  get: (urlParams: string) => instance.get(urlParams).then(responseBody)
+  get: async (urlParams: string): Promise<Forecast> => {
+    const url = `${VC_URL}${urlParams}`;
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(1_000)
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error! status: ${response.status} ${response.statusText}`
+      );
+    }
+
+    return response.json();
+  }
 };
 
 export const VisualCrossingApi = {

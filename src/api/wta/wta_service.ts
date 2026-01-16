@@ -1,7 +1,6 @@
 // WTA Trip Report Service
 // Fetches and parses trip reports from wta.org
 
-import axios from 'axios';
 import * as cheerio from 'cheerio';
 import * as cacheManager from '../../utils/cache/cacheManager';
 import {
@@ -174,16 +173,23 @@ export async function getTripReports(
 
   const url = buildWtaUrl(params);
 
-  const response = await axios.get(url, {
+  const response = await fetch(url, {
     headers: {
       'User-Agent':
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
       Accept: 'text/html'
     },
-    timeout: 15000
+    signal: AbortSignal.timeout(15000)
   });
 
-  const { reports, totalCount } = parseTripReports(response.data);
+  if (!response.ok) {
+    throw new Error(
+      `HTTP error! status: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const html = await response.text();
+  const { reports, totalCount } = parseTripReports(html);
 
   const result: TripReportResponse = {
     totalCount,

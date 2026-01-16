@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // healthChecks.ts
 
-import axios from 'axios';
 import { getStats } from '../cache/cacheManager';
 
 export interface HealthCheckResult {
@@ -33,16 +32,27 @@ export async function checkVisualCrossingApi(): Promise<HealthCheckResult> {
     // eslint-disable-next-line no-secrets/no-secrets
     const testUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/47.6062,-122.3321?key=${VC_API_KEY}&include=current`;
 
-    const response = await axios.get(testUrl, {
-      timeout: 3000, // 3 second timeout for health check
-      validateStatus: (status) => status === 200
+    const response = await fetch(testUrl, {
+      signal: AbortSignal.timeout(3000) // 3 second timeout for health check
     });
+
+    if (!response.ok) {
+      return {
+        status: 'DOWN',
+        details: {
+          error: `HTTP ${response.status}: ${response.statusText}`,
+          code: response.status
+        }
+      };
+    }
+
+    const data = await response.json();
 
     return {
       status: 'UP',
       details: {
-        responseTime: response.headers['x-response-time'] || 'N/A',
-        location: response.data?.resolvedAddress || 'Seattle, WA'
+        responseTime: response.headers.get('x-response-time') || 'N/A',
+        location: data?.resolvedAddress || 'Seattle, WA'
       }
     };
   } catch (error: any) {
@@ -50,7 +60,7 @@ export async function checkVisualCrossingApi(): Promise<HealthCheckResult> {
       status: 'DOWN',
       details: {
         error: error.message,
-        code: error.code || error.response?.status
+        code: error.name === 'TimeoutError' ? 'ETIMEDOUT' : error.code
       }
     };
   }

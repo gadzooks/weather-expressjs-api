@@ -46,6 +46,11 @@ jobs:
         with:
           use-installer: true
 
+      - name: Clean SAM build cache
+        run: |
+          rm -rf .aws-sam
+          rm -rf node_modules
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
