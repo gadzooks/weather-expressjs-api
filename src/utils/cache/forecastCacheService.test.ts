@@ -215,8 +215,7 @@ describe('forecastCacheService', () => {
     });
 
     it('should return 0 when clearing non-existent endpoint', () => {
-      const deletedCount =
-        forecastCacheService.clearByEndpoint('nonexistent');
+      const deletedCount = forecastCacheService.clearByEndpoint('nonexistent');
       expect(deletedCount).toBe(0);
     });
   });

@@ -32,7 +32,7 @@ describe('CORS Configuration', () => {
       expect(origins).toEqual([
         'http://localhost:3000',
         'https://example.com',
-        'https://app.example.com',
+        'https://app.example.com'
       ]);
     });
 
@@ -98,8 +98,7 @@ describe('CORS Configuration', () => {
     });
 
     it('should allow origin in whitelist', (done) => {
-      process.env.ALLOWED_ORIGINS =
-        'http://localhost:3000,https://example.com';
+      process.env.ALLOWED_ORIGINS = 'http://localhost:3000,https://example.com';
       const { getCorsOptions } = require('./corsConfig');
       const options = getCorsOptions();
 

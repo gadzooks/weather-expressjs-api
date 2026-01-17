@@ -56,10 +56,10 @@ export function getCorsOptions(): CorsOptions {
       'Authorization',
       'X-Amz-Date',
       'X-Api-Key',
-      'X-Amz-Security-Token',
+      'X-Amz-Security-Token'
     ],
     exposedHeaders: ['Cache-Control', 'Vary'], // Headers the client can access
-    maxAge: 86400, // Preflight cache for 24 hours (reduces OPTIONS requests)
+    maxAge: 86400 // Preflight cache for 24 hours (reduces OPTIONS requests)
   };
 }
 

@@ -1,9 +1,12 @@
 name: Deploy to Production
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'  # Triggers on semantic version tags like v1.0.0, v1.2.3, etc.
+  workflow_dispatch:  # Manual trigger - can be run anytime from Actions tab
+    inputs:
+      create_release:
+        description: 'Create a GitHub release? (yes/no)'
+        required: false
+        default: 'no'
 
 jobs:
   deploy-prod:
@@ -13,17 +16,8 @@ jobs:
       url: https://weather.weekendwanderings.com
 
     steps:
-      - name: Checkout tag
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-
-      - name: Extract version from tag
-        id: version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Deploying version: $VERSION"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -102,18 +96,30 @@ jobs:
           fi
 
       - name: Create GitHub Release
+        if: ${{ github.event.inputs.create_release == 'yes' }}
         uses: actions/github-script@v7
         with:
           script: |
-            const version = '${{ steps.version.outputs.version }}';
+            const sha = context.sha.substring(0, 7);
             const apiUrl = '${{ steps.deploy.outputs.api_url }}';
+            const timestamp = new Date().toISOString().split('T')[0];
+            const tagName = `prod-${timestamp}-${sha}`;
 
+            // Create tag first
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${tagName}`,
+              sha: context.sha
+            });
+
+            // Create release
             await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: version,
-              name: `Release ${version}`,
-              body: `## Production Deployment ${version}\n\n✅ Successfully deployed to production\n\n**API URL:** ${apiUrl}\n\n**Endpoints:**\n- [Mock Forecast](${apiUrl}forecasts/mock)\n- [Real Forecast](${apiUrl}forecasts/real)`,
+              tag_name: tagName,
+              name: `Production Release ${timestamp}`,
+              body: `## Production Deployment\n\n✅ Successfully deployed to production\n\n**Commit:** ${context.sha}\n**API URL:** ${apiUrl}\n\n**Endpoints:**\n- [Mock Forecast](${apiUrl}forecasts/mock)\n- [Real Forecast](${apiUrl}forecasts/real)`,
               draft: false,
               prerelease: false
             });

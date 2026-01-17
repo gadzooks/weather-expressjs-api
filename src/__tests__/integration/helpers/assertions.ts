@@ -102,9 +102,7 @@ export function expectValidDailyForecast(forecast: DailyForecast): void {
   expect(forecast).toHaveProperty('icon');
 }
 
-export function expectValidCacheClearResponse(
-  data: CacheClearResponse
-): void {
+export function expectValidCacheClearResponse(data: CacheClearResponse): void {
   expect(data).toHaveProperty('success');
   expect(data.success).toBe(true);
   expect(data).toHaveProperty('stats');
