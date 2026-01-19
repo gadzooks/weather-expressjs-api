@@ -145,7 +145,7 @@ To enable the manual approval gate for production:
 To ensure PRs pass tests and deploy to dev before merging:
 
 1. Go to **Settings → Branches**
-2. Click **Add branch protection rule**
+2. Click **Add branch protection rule** (or edit existing rule for `master`)
 3. Branch name pattern: `master` (or `main`)
 4. Check:
    - ✅ **Require a pull request before merging**
@@ -153,9 +153,18 @@ To ensure PRs pass tests and deploy to dev before merging:
    - Select **`test`** status check (REQUIRED)
    - Select **`deploy-dev`** status check (REQUIRED)
    - ✅ **Require branches to be up to date before merging**
-5. Click **Create**
+5. **Optional:** Uncheck **"Require approvals"** if you want to merge PRs without code review
+6. Click **Save changes**
 
-**Result:** PRs cannot be merged unless tests pass and dev deployment succeeds.
+**Result:** PRs cannot be merged unless tests pass and dev deployment succeeds. Code reviews are optional.
+
+**To Remove Code Review Requirement:**
+If your branch protection currently requires approvals:
+1. Go to **Settings → Branches** → Edit the `master` branch rule
+2. Uncheck **"Require approvals"** (or set "Required number of approvals" to 0)
+3. Click **Save changes**
+
+This allows you to merge your own PRs after CI passes without needing another reviewer.
 
 ---
 
@@ -267,20 +276,129 @@ Find URLs in:
 
 ---
 
-## Manual Deployment
+## Manual Deployment (Command Line)
 
-If needed, deploy manually bypassing CI/CD:
+You can deploy directly from your local machine using the AWS SAM CLI, bypassing the GitHub Actions CI/CD pipeline entirely. This is useful for:
+- Quick testing
+- Emergency hotfixes
+- Deploying from a local branch
+- Troubleshooting deployment issues
+
+### Prerequisites
+
+1. **AWS SAM CLI installed:** `brew install aws-sam-cli`
+2. **AWS credentials configured:**
+   ```bash
+   aws configure --profile claudia
+   # Enter AWS Access Key ID, Secret Access Key, region: us-west-1
+   ```
+3. **Environment variables in `.env` file:**
+   ```bash
+   VC_API_KEY=your-visual-crossing-api-key
+   ```
+
+### Deploy to Dev
 
 ```bash
-# Deploy to dev
+# Build and deploy to dev environment
 yarn sam:deploy:dev
+```
 
-# Deploy to QA
+**What this does:**
+- Builds TypeScript → JavaScript (dist/)
+- Runs SAM build (packages Lambda function)
+- Deploys to `weather-expressjs-dev` stack
+- Uses 24-hour cache TTL
+- Sets ALLOWED_ORIGINS for dev and localhost
+
+**Equivalent full command:**
+```bash
+sam build && sam deploy --region us-west-1 \
+  --config-env dev \
+  --parameter-overrides "EnvironmentType=dev VisualCrossingApiKey=$VC_API_KEY AllowedOrigins='https://dev-weather-react.onrender.com,http://localhost:3000,http://localhost:5173,http://localhost:5174'" \
+  --profile claudia
+```
+
+### Deploy to QA
+
+```bash
+# Build and deploy to QA environment
 yarn sam:deploy:qa
+```
 
-# Deploy to production
+**What this does:**
+- Builds TypeScript → JavaScript (dist/)
+- Runs SAM build (packages Lambda function)
+- Deploys to `weather-expressjs-qa` stack
+- Uses 12-hour cache TTL
+- Sets ALLOWED_ORIGINS for QA frontend
+
+**Equivalent full command:**
+```bash
+sam build && sam deploy --region us-west-1 \
+  --config-env qa \
+  --parameter-overrides "EnvironmentType=qa VisualCrossingApiKey=$VC_API_KEY AllowedOrigins='https://qa-weather-react.onrender.com'" \
+  --profile claudia
+```
+
+### Deploy to Production
+
+```bash
+# Build and deploy to production environment
 yarn sam:deploy
 ```
+
+**What this does:**
+- Builds TypeScript → JavaScript (dist/)
+- Runs SAM build (packages Lambda function)
+- Deploys to `weather-expressjs-prod` stack
+- Uses 3-hour cache TTL
+- Sets ALLOWED_ORIGINS for production domain
+
+**Equivalent full command:**
+```bash
+sam build && sam deploy --region us-west-1 \
+  --config-env prod \
+  --parameter-overrides "EnvironmentType=prod VisualCrossingApiKey=$VC_API_KEY AllowedOrigins='https://weather.weekendwanderings.com'" \
+  --profile claudia
+```
+
+### Verify Deployment
+
+After manual deployment, check the deployment:
+
+```bash
+# Get API URL from CloudFormation stack outputs
+aws cloudformation describe-stacks \
+  --stack-name weather-expressjs-dev \
+  --region us-west-1 \
+  --query 'Stacks[0].Outputs[?OutputKey==`WeatherApiUrl`].OutputValue' \
+  --output text \
+  --profile claudia
+
+# Test the endpoint
+curl https://[api-url]/forecasts/mock | jq '.data.locations.allIds | length'
+```
+
+### Troubleshooting Manual Deployments
+
+**"No such file or directory: '.aws-sam'"**
+```bash
+# Clean and rebuild
+rm -rf .aws-sam dist/
+yarn build
+sam build
+sam deploy --config-env dev --profile claudia
+```
+
+**"Parameter validation failed: Unknown parameter"**
+- Ensure you're using the correct `--config-env` flag (dev, qa, or prod)
+- Check that `samconfig.toml` contains the environment configuration
+
+**"Unable to upload artifact ... Access Denied"**
+- Verify AWS credentials: `aws s3 ls --profile claudia`
+- Check IAM permissions include S3 full access
+- Ensure S3 bucket exists: `aws s3 ls s3://gadzooks-sam-artifacts --profile claudia`
 
 ---
 
