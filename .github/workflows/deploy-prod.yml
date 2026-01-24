@@ -58,7 +58,7 @@ jobs:
         run: |
           sam deploy --region us-west-1 \
             --config-env prod \
-            --parameter-overrides "EnvironmentType=prod VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://weather.weekendwanderings.com'" \
+            --parameter-overrides "EnvironmentType=prod VisualCrossingApiKey=${{ secrets.VC_API_KEY }} CacheTTLHours=3 AllowedOrigins='https://weather.weekendwanderings.com' S3CacheBucket=gadzooks-sam-artifacts" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_IAM

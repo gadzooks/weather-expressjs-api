@@ -15,6 +15,10 @@ import geo from './routes/geo';
 import wta from './routes/wta';
 import { corsOptions } from './config/corsConfig';
 import { checkAllDependencies } from './utils/health/healthChecks';
+import {
+  globalRateLimiter,
+  forecastRateLimiter
+} from './middleware/rateLimiter';
 
 dotenv.config();
 
@@ -24,6 +28,9 @@ app.use(cors(corsOptions));
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Apply global rate limiting to all routes
+app.use(globalRateLimiter);
 
 // Swagger API documentation (non-prod only)
 const envType =
@@ -36,8 +43,8 @@ if (!isProduction) {
     .then((swaggerUi) => {
       try {
         const swaggerPath = path.join(__dirname, 'config', 'swagger.yml');
-        // eslint-disable-next-line security/detect-non-literal-fs-filename
         const swaggerDocument = yaml.load(
+          // eslint-disable-next-line security/detect-non-literal-fs-filename
           fs.readFileSync(swaggerPath, 'utf8')
         ) as object;
 
@@ -108,7 +115,8 @@ app.get('/', (_req: Request, res: Response) => {
   res.send(`<h1>Hello from the TypeScript world! : </h1>`);
 });
 
-app.use('/forecasts', forecasts);
+// Apply forecast-specific rate limiting (stricter than global)
+app.use('/forecasts', forecastRateLimiter, forecasts);
 app.use('/geo', geo);
 app.use('/api/wta', wta);
 
