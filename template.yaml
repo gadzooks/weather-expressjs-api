@@ -59,7 +59,6 @@ Resources:
           ALLOWED_ORIGINS: !Ref AllowedOrigins
           S3_CACHE_BUCKET: !Ref S3CacheBucket
           ENVIRONMENT: !Ref EnvironmentType
-          AWS_REGION: !Ref AWS::Region
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref S3CacheBucket
