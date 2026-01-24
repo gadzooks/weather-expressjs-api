@@ -32,18 +32,18 @@ warm_containers = "EAGER"
 stack_name = "weather-expressjs-prod"
 s3_bucket = "gadzooks-sam-artifacts"
 s3_prefix = "weather-expressjs/prod"
-parameter_overrides = "EnvironmentType=prod VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=3 AllowedOrigins='https://weather.weekendwanderings.com'"
+parameter_overrides = "EnvironmentType=prod VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=3 AllowedOrigins='https://weather.weekendwanderings.com' S3CacheBucket=gadzooks-sam-artifacts"
 
 [qa]
 [qa.deploy.parameters]
 stack_name = "weather-expressjs-qa"
 s3_bucket = "gadzooks-sam-artifacts"
 s3_prefix = "weather-expressjs/qa"
-parameter_overrides = "EnvironmentType=qa VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=12 AllowedOrigins='https://qa-weather-react.onrender.com'"
+parameter_overrides = "EnvironmentType=qa VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=12 AllowedOrigins='https://qa-weather-react.onrender.com' S3CacheBucket=gadzooks-sam-artifacts"
 
 [dev]
 [dev.deploy.parameters]
 stack_name = "weather-expressjs-dev"
 s3_bucket = "gadzooks-sam-artifacts"
 s3_prefix = "weather-expressjs/dev"
-parameter_overrides = "EnvironmentType=dev VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=24 AllowedOrigins='https://dev-weather-react.onrender.com,http://localhost:3000,http://localhost:5173,http://localhost:5174'"
+parameter_overrides = "EnvironmentType=dev VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=24 AllowedOrigins='https://dev-weather-react.onrender.com,http://localhost:3000,http://localhost:5173,http://localhost:5174' S3CacheBucket=gadzooks-sam-artifacts"

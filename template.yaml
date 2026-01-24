@@ -37,6 +37,11 @@ Parameters:
     Default: 'http://localhost:3000,http://localhost:5173'
     Description: Comma-separated list of allowed CORS origins
 
+  S3CacheBucket:
+    Type: String
+    Default: 'gadzooks-sam-artifacts'
+    Description: S3 bucket name for persistent caching
+
 Resources:
   WeatherApiFunction:
     Type: AWS::Serverless::Function
@@ -52,6 +57,11 @@ Resources:
           VC_API_KEY: !Ref VisualCrossingApiKey
           CACHE_TTL_HOURS: !Ref CacheTTLHours
           ALLOWED_ORIGINS: !Ref AllowedOrigins
+          S3_CACHE_BUCKET: !Ref S3CacheBucket
+          ENVIRONMENT: !Ref EnvironmentType
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref S3CacheBucket
       Events:
         RootApi:
           Type: Api

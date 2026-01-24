@@ -55,7 +55,7 @@ jobs:
         run: |
           sam deploy --region us-west-1 \
             --config-env qa \
-            --parameter-overrides "EnvironmentType=qa VisualCrossingApiKey=${{ secrets.VC_API_KEY }} AllowedOrigins='https://qa-weather-react.onrender.com'" \
+            --parameter-overrides "EnvironmentType=qa VisualCrossingApiKey=${{ secrets.VC_API_KEY }} CacheTTLHours=12 AllowedOrigins='https://qa-weather-react.onrender.com' S3CacheBucket=gadzooks-sam-artifacts" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --capabilities CAPABILITY_IAM
