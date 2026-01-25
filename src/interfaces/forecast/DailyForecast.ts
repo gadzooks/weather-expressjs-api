@@ -1,3 +1,5 @@
+// DailyForecast.ts
+
 interface DailyForecast {
   datetime: string;
   tempmax: number;
@@ -12,9 +14,6 @@ interface DailyForecast {
   conditions: string;
   description: string;
   icon: string;
-  source?: string;
-  pm2p5?: number;
-  aqius?: number;
 }
 
 export default DailyForecast;
