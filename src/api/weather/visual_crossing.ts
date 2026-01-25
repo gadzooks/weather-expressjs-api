@@ -7,7 +7,8 @@ import { Location } from '../../interfaces/geo/Location';
 
 const VC_URL =
   'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/';
-const OPTIONS = '&include=obs,fcst,alerts,hours&alertLevel=detail';
+const OPTIONS =
+  '&include=obs,fcst,alerts,hours&alertLevel=detail&elements=add%3Aaqius%2Cadd%3Apm2p5';
 const VC_API_KEY = process.env.VC_API_KEY || 'USE_VC_API_KEY';
 
 if (VC_API_KEY !== 'USE_VC_API_KEY') {
