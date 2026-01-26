@@ -1,3 +1,5 @@
+// DailyForecast.ts
+
 interface DailyForecast {
   datetime: string;
   tempmax: number;
