@@ -37,7 +37,8 @@
     "sam:deploy:qa": "yarn sam:build && sam deploy --region us-west-1 --config-env qa --parameter-overrides \"EnvironmentType=qa VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=12 AllowedOrigins=https://qa-weather-react.onrender.com S3CacheBucket=gadzooks-sam-artifacts\" --no-confirm-changeset --profile claudia --capabilities CAPABILITY_IAM",
     "sam:deploy:dev": "yarn sam:build && sam deploy --region us-west-1 --config-env dev --parameter-overrides \"EnvironmentType=dev VisualCrossingApiKey=$VC_API_KEY CacheTTLHours=24 AllowedOrigins=https://beta-weather-react.onrender.com,https://dev-weather-react.onrender.com,http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:5173,http://localhost:5174 S3CacheBucket=gadzooks-sam-artifacts\" --no-confirm-changeset --profile claudia --capabilities CAPABILITY_IAM",
     "tsc": "tsc",
-    "prepare": "husky"
+    "prepare": "husky",
+    "audit": "yarn npm audit --severity moderate"
   },
   "engines": {
     "node": ">=24.x"
@@ -63,13 +64,11 @@
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@types/body-parser": "^1.19.6",
-    "@types/cheerio": "^1.0.0",
     "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/express-actuator": "^1",
-    "@types/express-rate-limit": "^6.0.2",
     "@types/http-errors": "^2.0.5",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",

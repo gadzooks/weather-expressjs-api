@@ -67,7 +67,7 @@ jobs:
           yarn install --frozen-lockfile
 
       - name: Run yarn audit
-        run: yarn audit --level moderate
+        run: yarn audit
         continue-on-error: true
 
       - name: Run Trivy security scanner
