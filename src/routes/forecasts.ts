@@ -16,6 +16,7 @@ import * as s3CacheService from '../services/s3CacheService';
 import { HourlyForecastResponse } from '../interfaces/forecast/HourlyForecastResponse';
 import { LocationForecastResponse } from '../interfaces/forecast/LocationForecastResponse';
 import { ForecastResponse } from '../interfaces/forecast/ForecastResponse';
+import { serializeWithoutNulls } from '../utils/response/jsonSerializer';
 const router = Router();
 
 const regionHash: RegionHash = loadRegions();
@@ -44,9 +45,10 @@ router.get('/mock', async function (req, res) {
 
     res.set({
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Content-Type': 'application/json',
       Vary: 'Accept-Encoding'
     });
-    res.status(200).json({ data: result });
+    res.status(200).send(serializeWithoutNulls({ data: result }));
   } catch (err) {
     console.error('Error in /forecasts/mock:', err);
     res.status(500).json({
@@ -78,9 +80,10 @@ router.get('/real', async function (req, res) {
 
     res.set({
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Content-Type': 'application/json',
       Vary: 'Accept-Encoding'
     });
-    res.status(200).json({ data: result });
+    res.status(200).send(serializeWithoutNulls({ data: result }));
   } catch (err) {
     console.error('Error in /forecasts/real:', err);
     res.status(500).json({
@@ -224,10 +227,11 @@ router.get('/hourly/mock', async function (req, res) {
     // Set cache headers
     res.set({
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Content-Type': 'application/json',
       Vary: 'Accept-Encoding'
     });
 
-    res.status(200).json({ data: result });
+    res.status(200).send(serializeWithoutNulls({ data: result }));
   } catch (err) {
     console.error('Error in /forecasts/hourly/mock:', err);
     res.status(500).json({
@@ -295,10 +299,11 @@ router.get('/hourly/real', async function (req, res) {
     // FIXME: make this cache duration configurable and set it to 1 hour for hourly forecasts
     res.set({
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Content-Type': 'application/json',
       Vary: 'Accept-Encoding'
     });
 
-    res.status(200).json({ data: result });
+    res.status(200).send(serializeWithoutNulls({ data: result }));
   } catch (err) {
     console.error('Error in /forecasts/hourly/real:', err);
     res.status(500).json({
@@ -352,10 +357,11 @@ router.get('/location/:locationName/mock', async function (req, res) {
     // Set cache headers
     res.set({
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Content-Type': 'application/json',
       Vary: 'Accept-Encoding'
     });
 
-    res.status(200).json({ data: result });
+    res.status(200).send(serializeWithoutNulls({ data: result }));
   } catch (err) {
     console.error('Error in /forecasts/location/:locationName/mock:', err);
     res.status(500).json({
@@ -409,10 +415,11 @@ router.get('/location/:locationName/real', async function (req, res) {
     // Set cache headers
     res.set({
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Content-Type': 'application/json',
       Vary: 'Accept-Encoding'
     });
 
-    res.status(200).json({ data: result });
+    res.status(200).send(serializeWithoutNulls({ data: result }));
   } catch (err) {
     console.error('Error in /forecasts/location/:locationName/real:', err);
     res.status(500).json({

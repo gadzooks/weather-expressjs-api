@@ -83,6 +83,7 @@ Resources:
       StageName: !Ref EnvironmentType
       EndpointConfiguration:
         Type: REGIONAL
+      MinimumCompressionSize: 1024  # Enable API Gateway compression
       # CORS handled by Express middleware for dynamic origin checking
       # API Gateway CORS only supports single origin or '*', not multiple origins
 

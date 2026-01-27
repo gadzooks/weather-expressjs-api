@@ -19,6 +19,7 @@ import {
   globalRateLimiter,
   forecastRateLimiter
 } from './middleware/rateLimiter';
+import { compressionMiddleware } from './middleware/compression';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ const app: Express = express();
 
 app.use(cors(corsOptions));
 app.use(helmet());
+app.use(compressionMiddleware);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
