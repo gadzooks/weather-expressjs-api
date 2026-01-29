@@ -99,7 +99,7 @@ function loadLocationConfiguration(
   for (const property in config) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
     const locationObject = config[property] as any;
-    // eslint-disable-next-line security/detect-object-injection
+
     const region: Region = regionsHash[locationObject.region];
 
     const location: Location = {
