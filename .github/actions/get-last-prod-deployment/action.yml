@@ -1,0 +1,53 @@
+name: Get Last Production Deployment
+description: Query GitHub API for last successful production deployment
+outputs:
+  sha:
+    description: Commit SHA of last prod deployment
+    value: ${{ steps.get_deployment.outputs.sha }}
+  timestamp:
+    description: Timestamp of last deployment
+    value: ${{ steps.get_deployment.outputs.timestamp }}
+  days_since:
+    description: Days since last deployment
+    value: ${{ steps.get_deployment.outputs.days_since }}
+  found:
+    description: Whether a deployment was found
+    value: ${{ steps.get_deployment.outputs.found }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get Last Deployment
+      id: get_deployment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: deployments } = await github.rest.repos.listDeployments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            environment: 'production',
+            per_page: 100
+          });
+
+          // Find first successful deployment
+          for (const deployment of deployments) {
+            const { data: statuses } = await github.rest.repos.listDeploymentStatuses({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.id
+            });
+
+            const successful = statuses.find(s => s.state === 'success');
+            if (successful) {
+              const timestamp = successful.created_at;
+              const daysSince = Math.floor((Date.now() - new Date(timestamp)) / (1000 * 60 * 60 * 24));
+
+              core.setOutput('sha', deployment.sha);
+              core.setOutput('timestamp', timestamp);
+              core.setOutput('days_since', daysSince.toString());
+              core.setOutput('found', 'true');
+              return;
+            }
+          }
+
+          core.setOutput('found', 'false');

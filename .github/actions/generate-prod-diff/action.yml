@@ -1,0 +1,91 @@
+name: Generate Production Diff
+description: Generate diff between last prod deployment and current commit
+inputs:
+  last_prod_sha:
+    description: SHA of last production deployment
+    required: true
+  current_sha:
+    description: Current commit SHA
+    required: true
+
+outputs:
+  summary:
+    description: Short diff summary
+    value: ${{ steps.generate.outputs.summary }}
+  commit_list:
+    description: List of commit messages
+    value: ${{ steps.generate.outputs.commit_list }}
+  file_stats:
+    description: File change statistics
+    value: ${{ steps.generate.outputs.file_stats }}
+  slack_message:
+    description: Formatted message for Slack
+    value: ${{ steps.generate.outputs.slack_message }}
+  github_message:
+    description: Formatted message for GitHub
+    value: ${{ steps.generate.outputs.github_message }}
+
+runs:
+  using: composite
+  steps:
+    - name: Generate Diff
+      id: generate
+      shell: bash
+      run: |
+        LAST_SHA="${{ inputs.last_prod_sha }}"
+        CURRENT_SHA="${{ inputs.current_sha }}"
+
+        # Get commit count and file stats
+        COMMIT_COUNT=$(git rev-list --count ${LAST_SHA}..${CURRENT_SHA})
+        FILE_STATS=$(git diff --shortstat ${LAST_SHA} ${CURRENT_SHA})
+
+        # Get commit list (limit to 50)
+        COMMITS=$(git log --oneline --max-count=50 ${LAST_SHA}..${CURRENT_SHA})
+
+        # Get detailed file stats (limit to 100 files)
+        DETAILED_STATS=$(git diff --stat --stat-width=80 ${LAST_SHA} ${CURRENT_SHA} | head -100)
+
+        # Create summary
+        SUMMARY="${COMMIT_COUNT} commits, ${FILE_STATS}"
+
+        # Format for GitHub (supports multiline output)
+        {
+          echo 'summary<<EOF'
+          echo "$SUMMARY"
+          echo 'EOF'
+
+          echo 'commit_list<<EOF'
+          echo "$COMMITS"
+          echo 'EOF'
+
+          echo 'file_stats<<EOF'
+          echo "$DETAILED_STATS"
+          echo 'EOF'
+
+          echo 'github_message<<EOF'
+          echo "## Production Deployment Diff"
+          echo ""
+          echo "**Summary:** $SUMMARY"
+          echo ""
+          echo "### Commits (${COMMIT_COUNT} total, showing recent 50)"
+          echo '```'
+          echo "$COMMITS"
+          echo '```'
+          echo ""
+          echo "### Changed Files"
+          echo '```'
+          echo "$DETAILED_STATS"
+          echo '```'
+          echo 'EOF'
+
+          echo 'slack_message<<EOF'
+          echo "*Production Deployment Diff*"
+          echo ""
+          echo "*Summary:* $SUMMARY"
+          echo ""
+          echo "*Commits:* ${COMMIT_COUNT} (showing recent 50)"
+          echo '```'
+          echo "$COMMITS"
+          echo '```'
+          echo 'EOF'
+        } >> $GITHUB_OUTPUT

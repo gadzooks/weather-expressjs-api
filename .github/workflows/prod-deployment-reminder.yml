@@ -1,0 +1,95 @@
+name: Production Deployment Reminder
+
+on:
+  schedule:
+    # Every Monday at 9 AM UTC (1 AM PST)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:  # Allow manual testing
+
+jobs:
+  check-prod-staleness:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get Last Production Deployment
+        id: last_prod
+        uses: ./.github/actions/get-last-prod-deployment
+
+      - name: Check Staleness
+        id: check
+        run: |
+          FOUND="${{ steps.last_prod.outputs.found }}"
+          DAYS="${{ steps.last_prod.outputs.days_since }}"
+
+          if [ "$FOUND" = "false" ]; then
+            echo "needs_reminder=true" >> $GITHUB_OUTPUT
+            echo "message=No production deployments found" >> $GITHUB_OUTPUT
+          elif [ "$DAYS" -ge 7 ]; then
+            echo "needs_reminder=true" >> $GITHUB_OUTPUT
+            echo "message=Production is ${DAYS} days behind master" >> $GITHUB_OUTPUT
+          else
+            echo "needs_reminder=false" >> $GITHUB_OUTPUT
+            echo "Production is ${DAYS} days old - no reminder needed"
+          fi
+
+      - name: Create Reminder Issue
+        if: steps.check.outputs.needs_reminder == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const daysSince = '${{ steps.last_prod.outputs.days_since }}';
+            const lastSha = '${{ steps.last_prod.outputs.sha }}';
+            const timestamp = '${{ steps.last_prod.outputs.timestamp }}';
+            const deployUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/workflows/deploy-prod.yml`;
+
+            const title = `⏰ Production Deployment Overdue (${daysSince} days)`;
+
+            let body = `## 🚨 Production Deployment Reminder\n\n`;
+            body += `Production has not been deployed in **${daysSince} days**.\n\n`;
+
+            if (lastSha) {
+              body += `**Last Production Deployment:**\n`;
+              body += `- Commit: ${lastSha}\n`;
+              body += `- Deployed: ${timestamp}\n\n`;
+            }
+
+            body += `**Action Required:**\n`;
+            body += `1. Review changes on master branch\n`;
+            body += `2. Trigger [production deployment](${deployUrl})\n`;
+            body += `3. Close this issue after deployment\n\n`;
+            body += `---\n`;
+            body += `*This is an automated reminder. Configure threshold in .github/workflows/prod-deployment-reminder.yml*`;
+
+            // Check if similar issue already exists
+            const { data: existingIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'deployment-reminder'
+            });
+
+            if (existingIssues.length > 0) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssues[0].number,
+                title: title,
+                body: body
+              });
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['deployment-reminder', 'production']
+              });
+            }

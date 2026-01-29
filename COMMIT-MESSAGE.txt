@@ -1,0 +1,32 @@
+Add Slack notifications and deployment tracking to CI/CD pipeline
+
+Implement comprehensive deployment monitoring with Slack integration:
+
+- Add deployment summary notifications for all environments (dev, qa, prod)
+- Generate production deployment diffs showing commits and file changes
+- Add weekly reminder if production hasn't been deployed in 7+ days
+- Create reusable composite actions for deployment tracking
+
+New reusable actions:
+- get-last-prod-deployment: Query GitHub Deployments API
+- generate-prod-diff: Generate git diff with Slack/GitHub formatting
+- post-deployment-summary: Post commit comments (visible in Slack)
+
+Workflow modifications:
+- ci.yml: Add deployment summary for dev deployments
+- deploy-qa.yml: Add deployment summary for qa deployments
+- deploy-prod.yml: Add diff generation, history fetch, and summary
+- prod-deployment-reminder.yml: New weekly staleness check workflow
+
+Documentation:
+- docs/SLACK-SETUP.md: Complete Slack integration guide
+- docs/CI-CD.md: Updated with Slack notifications section
+- IMPLEMENTATION-SUMMARY.md: Implementation details and architecture
+- TESTING-CHECKLIST.md: Comprehensive testing guide
+
+All notifications use GitHub Slack app (no webhooks required).
+No additional secrets needed - uses built-in GITHUB_TOKEN.
+
+Fixes requirements 4-6 from CI/CD enhancement plan.
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
