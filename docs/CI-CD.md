@@ -51,7 +51,7 @@ Runs after `test` job passes.
 3. Run smoke tests
 4. Comment on PR with deployment status and API URL
 
-**Branch Protection:** Both `test` and `deploy-dev` should be marked as required checks to prevent merging failed PRs.
+**Branch Protection:** All three jobs (`test`, `security`, and `deploy-dev`) should be marked as required checks to prevent merging failed PRs.
 
 ---
 
@@ -142,7 +142,7 @@ To enable the manual approval gate for production:
 
 ### 3. Enable Branch Protection (Make CI Required)
 
-To ensure PRs pass tests and deploy to dev before merging:
+To ensure PRs pass all checks before merging:
 
 1. Go to **Settings → Branches**
 2. Click **Add branch protection rule** (or edit existing rule for `master`)
@@ -151,12 +151,15 @@ To ensure PRs pass tests and deploy to dev before merging:
    - ✅ **Require a pull request before merging**
    - ✅ **Require status checks to pass before merging**
    - Select **`test`** status check (REQUIRED)
+   - Select **`security`** status check (REQUIRED)
    - Select **`deploy-dev`** status check (REQUIRED)
    - ✅ **Require branches to be up to date before merging**
 5. **Optional:** Uncheck **"Require approvals"** if you want to merge PRs without code review
 6. Click **Save changes**
 
-**Result:** PRs cannot be merged unless tests pass and dev deployment succeeds. Code reviews are optional.
+**Result:** PRs cannot be merged unless all three checks pass: tests, security scan, and dev deployment. Code reviews are optional.
+
+**Note on Security Check:** The security job uses `continue-on-error: true` on its steps, meaning vulnerabilities will be reported but won't block the merge. The job itself must complete successfully to pass the status check.
 
 **To Remove Code Review Requirement:**
 If your branch protection currently requires approvals:
@@ -186,12 +189,19 @@ This allows you to merge your own PRs after CI passes without needing another re
             │
             ▼
      ┌──────────────┐
+     │  Security    │ ← Required Check
+     │  - Audit     │
+     │  - Trivy Scan│
+     └──────┬───────┘
+            │
+            ▼
+     ┌──────────────┐
      │  Deploy Dev  │ ← Required Check
      │  - Deploy    │
      │  - Smoke Test│
      └──────┬───────┘
             │
-            │ (Both Must Pass)
+            │ (All Three Must Pass)
             │
             ▼
       ┌─────────────┐
