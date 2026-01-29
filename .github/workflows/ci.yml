@@ -5,10 +5,6 @@ on:
     branches:
       - master
       - main
-  push:
-    branches:
-      - master
-      - main
 
 jobs:
   test:
@@ -81,8 +77,7 @@ jobs:
 
   deploy-dev:
     # Deploy to dev on pull requests after tests pass
-    # Also runs on push to PR branches (not master/main)
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main')
+    if: github.event_name == 'pull_request'
     needs: test
     runs-on: ubuntu-latest
     environment: dev
