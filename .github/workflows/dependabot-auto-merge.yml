@@ -10,6 +10,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: read
 
 jobs:
   auto-approve:
@@ -21,7 +22,9 @@ jobs:
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use PAT_TOKEN if available (required for PRs that modify workflows)
+          # Falls back to GITHUB_TOKEN for regular dependency updates
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
 
   auto-merge:
     runs-on: ubuntu-latest
@@ -48,16 +51,39 @@ jobs:
           gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use PAT_TOKEN if available (required for PRs that modify workflows)
+          # Falls back to GITHUB_TOKEN for regular dependency updates
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+        continue-on-error: true
 
       - name: Comment on PR
         if: steps.check.outputs.ready == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
+          github-token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
+            const hasPAT = '${{ secrets.PAT_TOKEN }}' !== '';
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            const touchesWorkflows = files.data.some(f => f.filename.startsWith('.github/workflows/'));
+
+            let message = '🤖 **Auto-merge enabled** - This PR will merge automatically when all required checks pass.\n\n';
+            message += '**Next steps:**\n';
+            message += '1. ✅ CI tests must pass\n';
+            message += '2. ✅ Dev deployment must succeed\n';
+            message += '3. 🔀 PR will auto-merge to master\n';
+            message += '4. 🧪 QA deployment will trigger automatically\n';
+
+            if (touchesWorkflows && !hasPAT) {
+              message += '\n⚠️ **Note:** This PR modifies workflow files. Auto-merge requires a PAT_TOKEN secret to be configured. See [DEPENDABOT.md](docs/DEPENDABOT.md#github-actions-updates) for setup instructions, or merge manually after checks pass.';
+            }
+
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '🤖 **Auto-merge enabled** - This PR will merge automatically when all required checks pass.\n\n**Next steps:**\n1. ✅ CI tests must pass\n2. ✅ Dev deployment must succeed\n3. 🔀 PR will auto-merge to master\n4. 🧪 QA deployment will trigger automatically'
+              body: message
             });
