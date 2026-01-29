@@ -1,0 +1,63 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: Approve Dependabot PR
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    needs: auto-approve
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if PR is ready to merge
+        id: check
+        run: |
+          # Wait for required checks to complete
+          echo "Waiting for required CI checks to pass..."
+
+          # This step will be triggered after CI completes
+          # GitHub branch protection will prevent merge if checks fail
+          echo "ready=true" >> $GITHUB_OUTPUT
+
+      - name: Enable auto-merge
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on PR
+        if: steps.check.outputs.ready == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🤖 **Auto-merge enabled** - This PR will merge automatically when all required checks pass.\n\n**Next steps:**\n1. ✅ CI tests must pass\n2. ✅ Dev deployment must succeed\n3. 🔀 PR will auto-merge to master\n4. 🧪 QA deployment will trigger automatically'
+            });

@@ -16,6 +16,17 @@ This document describes the Continuous Integration and Continuous Deployment wor
 - **QA** (`weather-expressjs-qa`): Staging environment, auto-deployed from master
 - **Prod** (`weather-expressjs-prod`): Production environment, manually triggered
 
+### Automated Dependency Updates
+
+**Dependabot** automatically handles dependency updates:
+- Creates PRs weekly (Mondays at 9 AM PT)
+- Groups minor/patch updates together
+- Auto-approves and auto-merges when tests pass
+- Triggers dev deployment → QA deployment automatically
+- Major version updates require manual review
+
+See [DEPENDABOT.md](DEPENDABOT.md) for complete automation setup and configuration.
+
 ---
 
 ## Workflows
@@ -522,11 +533,14 @@ Set via `CACHE_TTL_HOURS` environment variable in `template.yaml` and deployment
 - [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) - CI testing and dev deployment
 - [`.github/workflows/deploy-qa.yml`](../.github/workflows/deploy-qa.yml) - QA deployment
 - [`.github/workflows/deploy-prod.yml`](../.github/workflows/deploy-prod.yml) - Production deployment
+- [`.github/workflows/dependabot-auto-merge.yml`](../.github/workflows/dependabot-auto-merge.yml) - Auto-approve and merge Dependabot PRs
+- [`.github/dependabot.yml`](../.github/dependabot.yml) - Dependabot configuration
 
 ---
 
 ## Related Documentation
 
+- [DEPENDABOT.md](DEPENDABOT.md) - Automated dependency updates and auto-merge setup
 - [CLAUDE.md](../CLAUDE.md) - Project overview and manual deployment
 - [AWS SAM Documentation](https://docs.aws.amazon.com/serverless-application-model/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)

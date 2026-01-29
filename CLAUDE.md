@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Documentation Index
 
 - **[CI/CD Pipeline](docs/CI-CD.md)** - Automated testing and deployment workflows via GitHub Actions
+- **[Dependabot](docs/DEPENDABOT.md)** - Automated dependency updates with auto-merge
 - **[README.md](README.md)** - Quick start guide and common commands
 
 ## Project Overview
