@@ -45,10 +45,23 @@ runs:
             message += `\n${diffMessage}\n`;
           }
 
-          // Post as workflow run comment (appears in Actions tab)
-          await github.rest.repos.createCommitComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            commit_sha: context.sha,
-            body: message
-          });
+          // Post comment based on context
+          // For PRs: use issue comment (requires pull-requests: write)
+          // For non-PRs: use commit comment (requires contents: write)
+          if (context.issue && context.issue.number) {
+            // We're in a PR context - post as issue comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message
+            });
+          } else {
+            // Not in PR context - post as commit comment
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: message
+            });
+          }

@@ -14,6 +14,8 @@ jobs:
     environment:
       name: production
       url: https://weather.weekendwanderings.com
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code

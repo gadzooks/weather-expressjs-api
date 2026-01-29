@@ -11,6 +11,8 @@ jobs:
   deploy-qa:
     runs-on: ubuntu-latest
     environment: qa
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
