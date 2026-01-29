@@ -276,6 +276,52 @@ Find URLs in:
 
 ---
 
+## Slack Notifications
+
+The CI/CD pipeline integrates with Slack via the GitHub Slack app for real-time deployment updates.
+
+### What Gets Notified
+
+**Deployment Events:**
+- Dev deployment status (on every PR)
+- QA deployment status (on merge to master)
+- Production deployment status (on manual trigger)
+
+**Production Diff:**
+- Automatically shown before production deployments
+- Displays commit messages and changed files
+- Appears in both Slack and GitHub workflow comments
+
+**Weekly Reminders:**
+- Alert if production hasn't been deployed in 7+ days
+- Creates/updates a GitHub issue (visible in Slack)
+- Runs every Monday at 9 AM UTC
+
+### Setup
+
+See [SLACK-SETUP.md](SLACK-SETUP.md) for complete setup instructions.
+
+Quick setup:
+1. Install GitHub Slack app to workspace
+2. Invite app to channel: `/invite @github`
+3. Subscribe: `/github subscribe gadzooks/weather-expressjs workflows issues`
+
+### Notification Format
+
+All notifications include:
+- Environment emoji (🔧 Dev, 🧪 QA, 🚀 Prod)
+- Deployment status (✅ success or ❌ failure)
+- Commit SHA and workflow run link
+- API URL (for successful deployments)
+
+Production deployments also include:
+- Number of commits since last deployment
+- List of commit messages
+- File change statistics
+- Link to full diff on GitHub
+
+---
+
 ## Manual Deployment (Command Line)
 
 You can deploy directly from your local machine using the AWS SAM CLI, bypassing the GitHub Actions CI/CD pipeline entirely. This is useful for:

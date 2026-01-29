@@ -19,6 +19,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Fetch full git history
+        run: git fetch --unshallow --tags
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -31,6 +34,24 @@ jobs:
           corepack prepare yarn@4.12.0 --activate
           yarn --version
           yarn install --frozen-lockfile
+
+      - name: Get Last Production Deployment
+        id: last_prod
+        uses: ./.github/actions/get-last-prod-deployment
+
+      - name: Generate Production Diff
+        id: prod_diff
+        if: steps.last_prod.outputs.found == 'true'
+        uses: ./.github/actions/generate-prod-diff
+        with:
+          last_prod_sha: ${{ steps.last_prod.outputs.sha }}
+          current_sha: ${{ github.sha }}
+
+      - name: Display Diff Summary
+        if: steps.prod_diff.outcome == 'success'
+        run: |
+          echo "::notice::Production Diff: ${{ steps.prod_diff.outputs.summary }}"
+          echo "${{ steps.prod_diff.outputs.commit_list }}"
 
       - name: Build
         run: yarn build
@@ -105,6 +126,17 @@ jobs:
             const timestamp = new Date().toISOString().split('T')[0];
             const tagName = `prod-${timestamp}-${sha}`;
 
+            let releaseBody = `## Production Deployment\n\n✅ Successfully deployed to production\n\n`;
+            releaseBody += `**Commit:** ${context.sha}\n**API URL:** ${apiUrl}\n\n`;
+
+            // Add diff if available
+            const diffMessage = `${{ steps.prod_diff.outputs.github_message }}`;
+            if (diffMessage) {
+              releaseBody += `\n---\n\n${diffMessage}\n`;
+            }
+
+            releaseBody += `\n**Endpoints:**\n- [Mock Forecast](${apiUrl}forecasts/mock)\n- [Real Forecast](${apiUrl}forecasts/real)`;
+
             // Create tag first
             await github.rest.git.createRef({
               owner: context.repo.owner,
@@ -113,13 +145,22 @@ jobs:
               sha: context.sha
             });
 
-            // Create release
+            // Create release with diff
             await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: tagName,
               name: `Production Release ${timestamp}`,
-              body: `## Production Deployment\n\n✅ Successfully deployed to production\n\n**Commit:** ${context.sha}\n**API URL:** ${apiUrl}\n\n**Endpoints:**\n- [Mock Forecast](${apiUrl}forecasts/mock)\n- [Real Forecast](${apiUrl}forecasts/real)`,
+              body: releaseBody,
               draft: false,
               prerelease: false
             });
+
+      - name: Post Deployment Summary
+        if: always()
+        uses: ./.github/actions/post-deployment-summary
+        with:
+          environment: production
+          status: ${{ job.status }}
+          api_url: ${{ steps.deploy.outputs.api_url }}
+          diff_message: ${{ steps.prod_diff.outputs.github_message }}

@@ -206,3 +206,11 @@ jobs:
               repo: context.repo.repo,
               body: message
             });
+
+      - name: Post Deployment Summary
+        if: always()
+        uses: ./.github/actions/post-deployment-summary
+        with:
+          environment: dev
+          status: ${{ job.status }}
+          api_url: ${{ steps.deploy.outputs.api_url }}

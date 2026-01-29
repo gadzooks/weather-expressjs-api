@@ -91,3 +91,11 @@ jobs:
             cat response.json
             exit 1
           fi
+
+      - name: Post Deployment Summary
+        if: always()
+        uses: ./.github/actions/post-deployment-summary
+        with:
+          environment: qa
+          status: ${{ job.status }}
+          api_url: ${{ steps.deploy.outputs.api_url }}
