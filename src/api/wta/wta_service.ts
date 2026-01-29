@@ -12,7 +12,6 @@ import {
 const WTA_BASE_URL = 'https://www.wta.org/@@search_tripreport_listing';
 const PAGE_SIZE = 50;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CheerioSelection = ReturnType<ReturnType<typeof cheerio.load>>;
 
 function buildWtaUrl(params: WtaQueryParams): string {
