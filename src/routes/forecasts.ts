@@ -21,6 +21,29 @@ const router = Router();
 
 const regionHash: RegionHash = loadRegions();
 
+/**
+ * Check if cached forecast data starts from today's date.
+ * Visual Crossing returns forecasts starting from today, so cached data
+ * with yesterday's dates should be treated as stale.
+ */
+function isForecastCurrent(forecast: ForecastResponse): boolean {
+  if (!forecast.dates || forecast.dates.length === 0) {
+    return false;
+  }
+
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const firstDate = forecast.dates[0];
+
+  if (firstDate !== today) {
+    console.log(
+      `Cached forecast is stale: first date is ${firstDate}, expected ${today}`
+    );
+    return false;
+  }
+
+  return true;
+}
+
 // FIXME: add tests for these endpoints!
 
 router.get('/mock', async function (req, res) {
@@ -30,8 +53,9 @@ router.get('/mock', async function (req, res) {
     // Try S3 cache first (persistent, survives Lambda restarts)
     let result = await s3CacheService.getCachedData<ForecastResponse>(cacheKey);
 
-    if (!result) {
-      // S3 cache miss - fetch from API (uses in-memory cache per location)
+    // Treat cache as miss if dates are stale (don't start from today)
+    if (!result || !isForecastCurrent(result)) {
+      // S3 cache miss or stale - fetch from API (uses in-memory cache per location)
       result = await getForecastForAllRegions(
         regionHash,
         mockVisualCrossingForecast,
@@ -65,8 +89,9 @@ router.get('/real', async function (req, res) {
     // Try S3 cache first (persistent, survives Lambda restarts)
     let result = await s3CacheService.getCachedData<ForecastResponse>(cacheKey);
 
-    if (!result) {
-      // S3 cache miss - fetch from API (uses in-memory cache per location)
+    // Treat cache as miss if dates are stale (don't start from today)
+    if (!result || !isForecastCurrent(result)) {
+      // S3 cache miss or stale - fetch from API (uses in-memory cache per location)
       result = await getForecastForAllRegions(
         regionHash,
         VisualCrossingApi.getForecast,
