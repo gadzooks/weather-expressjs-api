@@ -44,7 +44,7 @@
     "node": ">=24.x"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1014.0",
+    "@aws-sdk/client-s3": "^3.1019.0",
     "@vendia/serverless-express": "^4.12.6",
     "body-parser": "^2.2.2",
     "cheerio": "^1.2.0",
@@ -76,8 +76,8 @@
     "@types/node": "^25.5.0",
     "@types/supertest": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.8",
-    "@typescript-eslint/eslint-plugin": "^8.57.1",
-    "@typescript-eslint/parser": "^8.57.1",
+    "@typescript-eslint/eslint-plugin": "^8.58.0",
+    "@typescript-eslint/parser": "^8.58.0",
     "@usebruno/cli": "^3.2.0",
     "aws-sdk-client-mock": "^4.1.0",
     "babel-jest": "^30.3.0",
@@ -100,11 +100,11 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.1"
+    "typescript-eslint": "^8.58.0"
   },
   "resolutions": {
     "braces": "^3.0.3",
     "micromatch": "^4.0.8",
-    "qs": "^6.14.1"
+    "qs": "^6.15.0"
   }
 }
