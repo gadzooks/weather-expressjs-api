@@ -3468,6 +3468,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@smithy/core@npm:^3.29.3":
+  version: 3.29.3
+  resolution: "@smithy/core@npm:3.29.3"
+  dependencies:
+    "@smithy/types": "npm:^4.16.1"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/530322e1b4eeaf89c64c0e57385714f8e2dc53adeae7cfad56fa957dfa5f67755a0d875f3a15c67f01ecccef83cc51a3b854f6c35987606626e5c11901f2de94
+  languageName: node
+  linkType: hard
+
 "@smithy/credential-provider-imds@npm:^4.2.12":
   version: 4.2.12
   resolution: "@smithy/credential-provider-imds@npm:4.2.12"
@@ -3813,6 +3823,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@smithy/types@npm:^4.16.1":
+  version: 4.16.1
+  resolution: "@smithy/types@npm:4.16.1"
+  dependencies:
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/e024d9d148deca7bd21d032a9316db109bbe7cf256ffbb8d3981655b9f4f7695c08ec9b87f5a8cf1442e783ba26cb27e4f09603c5bfa3ba1e526c41b1b3e94d2
+  languageName: node
+  linkType: hard
+
 "@smithy/url-parser@npm:^4.2.12":
   version: 4.2.12
   resolution: "@smithy/url-parser@npm:4.2.12"
@@ -3836,11 +3855,12 @@ __metadata:
   linkType: hard
 
 "@smithy/util-body-length-browser@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "@smithy/util-body-length-browser@npm:4.2.2"
+  version: 4.4.8
+  resolution: "@smithy/util-body-length-browser@npm:4.4.8"
   dependencies:
+    "@smithy/core": "npm:^3.29.3"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/4444039b995068eeda3dd0b143eb22cf86c7ef7632a590559dad12b0e681a728a7d82f8ed4f4019cdc09a72e4b5f14281262b64db75514dbcc08d170d9e8f1db
+  checksum: 10c0/add24b3c3253d9b3ed88904c6790a69b10bef4d4ec28567307e4ec1f0a079289a65a795dd4b0866f0052453bfc7a1a2f4dc1d446ef747dc213515015ae7827ea
   languageName: node
   linkType: hard
 
