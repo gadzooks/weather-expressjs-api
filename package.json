@@ -44,7 +44,7 @@
     "node": ">=24.x"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1100.0",
+    "@aws-sdk/client-s3": "^3.1105.0",
     "@vendia/serverless-express": "^4.12.6",
     "body-parser": "^2.3.0",
     "cheerio": "^1.2.0",
@@ -53,10 +53,10 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-actuator": "^1.8.4",
-    "express-rate-limit": "^8.6.1",
+    "express-rate-limit": "^8.6.2",
     "helmet": "^8.3.0",
     "http-errors": "~2.0.1",
-    "js-yaml": "^5.2.2",
+    "js-yaml": "^5.2.3",
     "node-cache": "^5.1.2"
   },
   "devDependencies": {
@@ -76,8 +76,8 @@
     "@types/node": "^25.9.5",
     "@types/supertest": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.8",
-    "@typescript-eslint/eslint-plugin": "^8.65.0",
-    "@typescript-eslint/parser": "^8.65.0",
+    "@typescript-eslint/eslint-plugin": "^8.66.0",
+    "@typescript-eslint/parser": "^8.66.0",
     "@usebruno/cli": "^3.5.3",
     "aws-sdk-client-mock": "^4.1.0",
     "babel-jest": "^30.4.1",
@@ -100,7 +100,7 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.65.0"
+    "typescript-eslint": "^8.66.0"
   },
   "resolutions": {
     "braces": "^3.0.3",
