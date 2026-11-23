@@ -1075,14 +1075,14 @@ __metadata:
   linkType: hard
 
 "@babel/plugin-transform-explicit-resource-management@npm:^7.29.7":
-  version: 7.29.7
-  resolution: "@babel/plugin-transform-explicit-resource-management@npm:7.29.7"
+  version: 7.29.15
+  resolution: "@babel/plugin-transform-explicit-resource-management@npm:7.29.15"
   dependencies:
     "@babel/helper-plugin-utils": "npm:^7.29.7"
-    "@babel/plugin-transform-destructuring": "npm:^7.29.7"
+    "@babel/plugin-transform-destructuring": "npm:^7.29.13"
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 10c0/083ef2bbc8c78ff80d70b1fe12604a8a2cc6a5ec68115c6efa4be7b5291b7576a092a102739af7c7e743cad79234b7cb7efe4216ca1913b598e0afc04a9962d5
+  checksum: 10c0/1c3eb334d213752edabd6a394e043ab599cecf7fcc76cdbcfac874a71a145ccbce99b78c7bdbedf5bf149bbab71e3ed47e74ea3ba91a16564b826ecabe0586ce
   languageName: node
   linkType: hard
 
