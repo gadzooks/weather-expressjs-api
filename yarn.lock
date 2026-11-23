@@ -1065,13 +1065,13 @@ __metadata:
   linkType: hard
 
 "@babel/plugin-transform-duplicate-keys@npm:^7.29.7":
-  version: 7.29.7
-  resolution: "@babel/plugin-transform-duplicate-keys@npm:7.29.7"
+  version: 7.29.15
+  resolution: "@babel/plugin-transform-duplicate-keys@npm:7.29.15"
   dependencies:
     "@babel/helper-plugin-utils": "npm:^7.29.7"
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 10c0/0d895326d8b29f6acaa8da72ebdc6393537311eaa33d8cab99cbb322a73c21be51d5d932a6d0c124e4f51539c5731dc3ed93084d3a2078a63db59dda6b00a724
+  checksum: 10c0/ac49c4a58a4cb6e6819cc88a046f740390ce9974159cab62ee2d74821f5c58dfb30063caf25c02c6cf22af2e924cfaa7112eb5712e4ba19382dca027f3b270c6
   languageName: node
   linkType: hard
 
