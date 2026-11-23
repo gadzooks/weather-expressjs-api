@@ -978,13 +978,13 @@ __metadata:
   linkType: hard
 
 "@babel/plugin-transform-block-scoping@npm:^7.29.13":
-  version: 7.29.13
-  resolution: "@babel/plugin-transform-block-scoping@npm:7.29.13"
+  version: 7.29.15
+  resolution: "@babel/plugin-transform-block-scoping@npm:7.29.15"
   dependencies:
     "@babel/helper-plugin-utils": "npm:^7.29.7"
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 10c0/7dc1f12be162ea66064b89131cc80428676a193e5ea07b2efd9d1968b953c202abe572d57e55163a13169ea94a97b0387e92ab750c0b1bb4ba11c6e3c8b6ee95
+  checksum: 10c0/4237959f97db92a1527b2a0de7d25830634e59833e5ff08d6fa58d2a102cb94d878ecce23a510fc33a4ce2d95c8372e78ec500e5b89de8faf34fc80ba4b18711
   languageName: node
   linkType: hard
 
